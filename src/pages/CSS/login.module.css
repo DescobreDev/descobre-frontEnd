@@ -1,5 +1,5 @@
-.auth-container {
-  min-height: 100vh;
+.authContainer {
+  min-height: stretch;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -7,7 +7,7 @@
   background: linear-gradient(135deg, #f97316 0%, #ec4899 50%, #9333ea 100%);
 }
 
-.auth-card {
+.authCard {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-radius: 24px;
@@ -18,45 +18,52 @@
   animation: fadeIn 0.4s ease;
 }
 
-.logo-box {
+.logoBox {
   display: flex;
+  align-items: center;
+  overflow: hidden;
+  max-height: 115px;
 }
 
-.auth-header {
+.logoImg {
+  max-height: 420px;
+}
+
+.authHeader {
   text-align: center;
   margin-bottom: 36px;
 }
 
-.auth-header h1 {
+.authHeader h1 {
   font-size: 24px;
   color: #1f2937;
   margin-bottom: 8px;
 }
 
-.auth-header p {
+.authHeader p {
   font-size: 14px;
   color: #6b7280;
 }
 
-.auth-form {
+.authForm {
   display: flex;
   flex-direction: column;
   gap: 20px;
 }
 
-.auth-field {
+.authField {
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
-.auth-field label {
+.authField label {
   font-size: 14px;
   font-weight: 500;
   color: #374151;
 }
 
-.auth-field input {
+.authField input {
   padding: 14px;
   border-radius: 12px;
   border: 2px solid #e5e7eb;
@@ -66,13 +73,13 @@
   transition: 0.2s;
 }
 
-.auth-field input:focus {
+.authField input:focus {
   border-color: #f97316;
   background: white;
   box-shadow: 0 0 0 3px rgba(249,115,22,0.1);
 }
 
-.auth-error {
+.authError {
   background: #fff4f2;
   border: 1px solid #ef4444;
   padding: 12px;
@@ -81,7 +88,7 @@
   font-size: 14px;
 }
 
-.auth-button {
+.authButton {
   padding: 14px;
   border-radius: 12px;
   border: none;
@@ -92,25 +99,25 @@
   transition: 0.2s;
 }
 
-.auth-button:hover {
+.authButton:hover {
   transform: translateY(-1px);
   box-shadow: 0 8px 20px rgba(249,115,22,0.4);
 }
 
-.auth-button:disabled {
+.authButton:disabled {
   background: #d1d5db;
   cursor: not-allowed;
   box-shadow: none;
 }
 
-.auth-footer {
+.authFooter {
   text-align: center;
   margin-top: 24px;
   font-size: 14px;
   color: #6b7280;
 }
 
-.auth-footer a {
+.authFooter a {
   color: #f97316;
   font-weight: 600;
   text-decoration: none;

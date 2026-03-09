@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { AuthContext } from "../context/authContext";
 import api from "../services/api";
-import "./CSS/login.css";
+import styles from "./CSS/login.module.css";
 import logo from "../assets/LOGO-DESCOBRE.svg";
 
 function Login() {
@@ -9,38 +10,55 @@ function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function handleLogin(e) {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
+  const { user, loading, setUser } = useContext(AuthContext);
+  const [loadingBtn, setLoadingBtn] = useState(false);
 
-    try {
-      const response = await api.post("/auth/login", { email, password });
-      localStorage.setItem("token", response.data.access_token);
+  useEffect(() => {
+    if (!loading && user) {
       navigate("/dashboard");
-    } catch (err) {
-      setError(err.response?.data?.message || "Erro ao fazer login");
-    } finally {
-      setLoading(false);
     }
+  }, [user, loading, navigate]);
+
+  async function handleLogin(e) {
+  e.preventDefault();
+  setLoadingBtn(true);
+  setError("");
+
+  try {
+    const response = await api.post("/auth/login", { email, password });
+
+    const token = response.data.access_token;
+    localStorage.setItem("token", token);
+
+    const userResponse = await api.get("/users/me");
+    setUser(userResponse.data);
+
+    navigate("/dashboard");
+
+  } catch (err) {
+    setError(err.response?.data?.message || "Erro ao fazer login");
+  } finally {
+    setLoadingBtn(true);
   }
+}
 
   return (
-    <div className="auth-container">
-      <div className="auth-card">
+    <div className={styles.authContainer}>
+      <div className={styles.authCard}>
 
-        <div className="auth-header">
-          <div className="logo-box"><img src={logo} alt="Logo Descobre" height="200px" /></div>
+        <div className={styles.authHeader}>
+          <div className={styles.logoBox}>
+            <img src={logo} alt="Logo Descobre" className={styles.logoImg} />
+          </div>
           <h1>Bem-vindo de volta</h1>
           <p>Entre na sua conta para continuar</p>
         </div>
 
-        <form onSubmit={handleLogin} className="auth-form">
+        <form onSubmit={handleLogin} className={styles.authForm}>
 
-          <div className="auth-field">
+          <div className={styles.authField}>
             <label>Email</label>
             <input
               type="email"
@@ -51,25 +69,25 @@ function Login() {
             />
           </div>
 
-          <div className="auth-field">
+          <div className={styles.authField}>
             <label>Senha</label>
             <input
               type="password"
-              placeholder="••••••••"
+              placeholder="Digite sua senha"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
 
-          {error && <div className="auth-error">{error}</div>}
+          {error && <div className={styles.authError}>{error}</div>}
 
-          <button type="submit" className="auth-button" disabled={loading}>
+          <button type="submit" className={styles.authButton} disabled={loading}>
             {loading ? "Entrando..." : "Entrar"}
           </button>
         </form>
 
-        <div className="auth-footer">
+        <div className={styles.authFooter}>
           Não tem conta? <Link to="/register">Criar conta</Link>
         </div>
 
