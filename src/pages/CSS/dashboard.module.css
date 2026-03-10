@@ -124,9 +124,93 @@
 
 /* CONTENT */
 
-.contentBox {
+.content {
   background: white;
   padding: 30px;
   border-radius: 16px;
   box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+}
+
+/* WELCOME MODAL */
+
+.welcome_modal {
+  text-align: center;
+  padding: 8px 16px 24px;
+}
+
+.welcome_modal_icon {
+  width: 64px;
+  height: 64px;
+  border-radius: 18px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 20px;
+  box-shadow: 0 8px 24px rgba(99, 102, 241, 0.35);
+}
+
+.welcome_modal_title {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #111827;
+  margin-bottom: 8px;
+}
+
+.welcome_modal_subtitle {
+  color: #6b7280;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+.welcome_modal_subtitle strong {
+  color: #374151;
+}
+
+.welcome_modal_card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 28px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.welcome_modal_card_title {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.welcome_modal_card_subtitle {
+  font-size: 0.8rem;
+  color: #9ca3af;
+  margin: 0;
+}
+
+.welcome_modal_btn {
+  width: 100%;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+  transition: opacity 0.2s;
+}
+
+.welcome_modal_btn:hover {
+  opacity: 0.88;
 }
