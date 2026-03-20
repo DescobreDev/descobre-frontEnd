@@ -1,0 +1,116 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fafafa;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  animation: fadeOut 0.4s ease forwards;
+  animation-delay: 2.6s;
+}
+
+@keyframes fadeOut {
+  to { opacity: 0; pointer-events: none; }
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Logo dots */
+.logoWrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+  height: 48px;
+}
+
+.logoDot {
+  width: 14px;
+  border-radius: 99px;
+  background: #6366f1;
+  animation: dotRise 1.2s ease-in-out infinite;
+}
+
+.logoDot:nth-child(1) {
+  height: 24px;
+  animation-delay: 0s;
+}
+
+.logoDot:nth-child(2) {
+  height: 40px;
+  animation-delay: 0.15s;
+  background: #818cf8;
+}
+
+.logoDot:nth-child(3) {
+  height: 16px;
+  animation-delay: 0.3s;
+  background: #c7d2fe;
+}
+
+@keyframes dotRise {
+  0%, 100% { transform: translateY(0); opacity: 0.7; }
+  50%       { transform: translateY(-10px); opacity: 1; }
+}
+
+/* Brand name */
+.brandName {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #1e1e2e;
+  letter-spacing: -0.5px;
+  animation: fadeSlideUp 0.6s ease forwards;
+  animation-delay: 0.2s;
+  opacity: 0;
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Progress bar */
+.progressWrap {
+  width: 180px;
+  height: 3px;
+  background: #e5e7f0;
+  border-radius: 99px;
+  overflow: hidden;
+  animation: fadeSlideUp 0.6s ease forwards;
+  animation-delay: 0.4s;
+  opacity: 0;
+}
+
+.progressBar {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #6366f1, #818cf8);
+  border-radius: 99px;
+  animation: progress 2.2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  animation-delay: 0.5s;
+}
+
+@keyframes progress {
+  0%   { width: 0%; }
+  30%  { width: 40%; }
+  60%  { width: 70%; }
+  85%  { width: 88%; }
+  100% { width: 100%; }
+}
+
+/* Hint text */
+.hint {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  color: #94a3b8;
+  animation: fadeSlideUp 0.6s ease forwards;
+  animation-delay: 0.6s;
+  opacity: 0;
+}

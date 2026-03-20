@@ -8,7 +8,7 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
 
   async function loadUser() {
-    const token = localStorage.getItem("token");
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
 
     if (!token) {
       setLoading(false);
@@ -18,23 +18,24 @@ export function AuthProvider({ children }) {
     try {
       const response = await api.get("/users/me");
       setUser(response.data);
-      console.log(response.data);
     } catch (error) {
       localStorage.removeItem("token");
+      sessionStorage.removeItem("token");
       setUser(null);
     } finally {
       setLoading(false);
     }
   }
 
+  function logout() {
+    localStorage.removeItem("token");
+    sessionStorage.removeItem("token");
+    setUser(null);
+  }
+
   useEffect(() => {
     loadUser();
   }, []);
-
-  function logout() {
-    localStorage.removeItem("token");
-    setUser(null);
-  }
 
   return (
     <AuthContext.Provider value={{ user, setUser, logout, loading }}>

@@ -1,21 +1,68 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
+/* ══════════════════════════════════════════════════
+   VARIÁVEIS GLOBAIS
+   ══════════════════════════════════════════════════ */
 :root {
-  --color-primary: #f97316;
-  --color-primary-dark: #ea580c;
-  --color-secondary: #ec4899;
-  --color-tertiary: #9333ea;
+  /* Laranja — cor principal */
+  --orange:               #f97316;
+  --orange-dark:          #ea580c;
+  --orange-light:         #fff7ed;
+  --orange-glow:          rgba(249, 115, 22, 0.18);
+  --orange-border:        rgba(249, 115, 22, 0.3);
 
-  --color-text: #1f2937;
-  --color-text-muted: #6b7280;
+  /* Aliases para compatibilidade */
+  --color-primary:        #f97316;
+  --color-primary-dark:   #ea580c;
 
-  --color-border: #e5e7eb;
-  --color-input-bg: #f9fafb;
+  /* Outros tons */
+  --color-secondary:      #ec4899;
+  --color-tertiary:       #9333ea;
+  --indigo:               #6366f1;
+  --indigo-soft:          #eef2ff;
+  --green:                #10b981;
+  --red:                  #ef4444;
+  --color-error:          #ef4444;
 
-  --color-error: #ef4444;
+  /* Superfícies */
+  --surface:              #ffffff;
+  --surface-2:            #f8fafc;
+  --color-input-bg:       #f9fafb;
+
+  /* Bordas */
+  --border:               #e9ecf2;
+  --color-border:         #e5e7eb;
+
+  /* Texto */
+  --text:                 #0d1829;
+  --color-text:           #1f2937;
+  --text-2:               #5a6a82;
+  --color-text-muted:     #6b7280;
+  --text-muted:           #9aaabb;
+
+  /* Sidebar */
+  --sidebar-bg:           #0c1220;
+  --sidebar-hover:        rgba(255, 255, 255, 0.05);
+  --sidebar-active-bg:    rgba(249, 115, 22, 0.12);
+  --sidebar-text:         #6b7f9e;
+  --sidebar-text-active:  #f1f5f9;
+  --sidebar-w:            300px;
+
+  /* Sombras */
+  --shadow-xs: 0 1px 2px rgba(13, 24, 41, 0.06);
+  --shadow-sm: 0 2px 8px rgba(13, 24, 41, 0.07), 0 1px 3px rgba(13, 24, 41, 0.05);
+  --shadow-md: 0 6px 24px rgba(13, 24, 41, 0.10), 0 2px 8px rgba(13, 24, 41, 0.06);
+
+  /* Border radius */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
 }
 
+/* ══════════════════════════════════════════════════
+   RESET E BASE
+   ══════════════════════════════════════════════════ */
 html,
 body,
 #root {
@@ -23,16 +70,11 @@ body,
   width: 100%;
 }
 
-*{
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-text-muted) #f3f4f6;
-}
-
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  font-family: 'Poppins', 'Courier New', Courier, monospace;
+  font-family: 'Poppins', sans-serif;
   background: #ffffff;
   color: var(--color-text);
 }
@@ -41,21 +83,20 @@ a {
   font-weight: 500;
   color: var(--color-primary);
   text-decoration: none;
-  transition: 0.2s;
+  transition: color 0.2s;
 }
 
 a:hover {
   color: var(--color-primary-dark);
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
-}
-
-/* =========================
+/* ══════════════════════════════════════════════════
    SCROLLBAR GLOBAL
-========================= */
+   ══════════════════════════════════════════════════ */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--text-muted) #f3f4f6;
+}
 
 ::-webkit-scrollbar {
   width: 4px;
@@ -80,102 +121,204 @@ h1 {
   display: none;
 }
 
-/* =========================
-   BUTTONS
-========================= */
-
-.btn {
-  padding: 14px 16px;
-  border-radius: 12px;
-  border: none;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
+/* ══════════════════════════════════════════════════
+   BOTÕES GLOBAIS
+   ══════════════════════════════════════════════════ */
 .btn-primary {
-  background: linear-gradient(
-    135deg,
-    var(--color-primary),
-    var(--color-primary-dark)
-  );
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, var(--orange), var(--orange-dark));
   color: white;
+  border: none;
+  border-radius: var(--r-sm);
+  font-size: 13.5px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  box-shadow: 0 3px 12px rgba(249, 115, 22, 0.35);
+  transition: opacity 0.15s, transform 0.15s;
 }
 
 .btn-primary:hover {
+  opacity: 0.9;
   transform: translateY(-1px);
-  box-shadow: 0 8px 20px rgba(249, 115, 22, 0.4);
 }
 
 .btn-primary:disabled {
-  background: #d1d5db;
+  opacity: 0.6;
   cursor: not-allowed;
+  transform: none;
   box-shadow: none;
 }
 
-/* =========================
-   INPUTS
-========================= */
+.btn-secondary {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 16px;
+  background: var(--surface-2);
+  color: var(--text-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: 13.5px;
+  font-weight: 500;
+  font-family: 'Poppins', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
 
+.btn-secondary:hover {
+  background: var(--border);
+  border-color: #d0d7e3;
+}
+
+/* ══════════════════════════════════════════════════
+   INPUTS GLOBAIS
+   ══════════════════════════════════════════════════ */
 .input {
-  padding: 14px;
-  border-radius: 12px;
-  border: 2px solid var(--color-border);
-  background: var(--color-input-bg);
-  font-size: 14px;
-  outline: none;
-  transition: 0.2s;
   width: 100%;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  font-family: 'Poppins', sans-serif;
+  color: var(--text);
+  background: var(--surface);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  box-sizing: border-box;
+}
+
+.input::placeholder {
+  color: var(--text-muted);
 }
 
 .input:focus {
-  border-color: var(--color-primary);
-  background: white;
-  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+  border-color: var(--orange);
+  box-shadow: 0 0 0 3px var(--orange-glow);
 }
 
-/* =========================
-   FORM FIELD
-========================= */
+.input:disabled,
+.input[readonly] {
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+
+.textarea {
+  resize: none;
+  line-height: 1.6;
+}
+
+/* ══════════════════════════════════════════════════
+   FORMULÁRIOS GLOBAIS
+   ══════════════════════════════════════════════════ */
+.form-section-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 12px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px 16px;
+  margin-bottom: 16px;
+}
 
 .form-field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
-.form-field label {
-  font-size: 14px;
+.form-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-2);
+  letter-spacing: 0.01em;
+}
+
+.col-span-2 {
+  grid-column: span 2;
+}
+
+.input-wrap {
+  position: relative;
+}
+
+.input-badge {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--orange);
+  animation: pulse 1.2s ease infinite;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 20px 0 16px;
+}
+
+/* ══════════════════════════════════════════════════
+   FEEDBACK E ERROS GLOBAIS
+   ══════════════════════════════════════════════════ */
+.feedback-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-radius: var(--r-sm);
+  font-size: 13px;
   font-weight: 500;
-  color: var(--color-text);
+  margin-bottom: 16px;
 }
 
-/* =========================
-   ALERTS
-========================= */
-
-.alert-error {
-  background: #fff4f2;
-  border: 1px solid var(--color-error);
-  padding: 12px;
-  border-radius: 10px;
-  color: #b91c1c;
-  font-size: 14px;
+.feedback-success {
+  background: #f0fdf4;
+  color: #16a34a;
+  border: 1px solid #bbf7d0;
 }
 
-/* =========================
-   UTILITIES
-========================= */
-
-.headerBgGradient {
-  background-image: linear-gradient(145deg, #ea580c, #f97316);
-  color: white;
-  border-radius: 5px 5px 0 0;
-  padding: 20px;
+.feedback-error {
+  background: #fef2f2;
+  color: #dc2626;
+  border: 1px solid #fecaca;
 }
 
+.feedback-warning {
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+
+/* ══════════════════════════════════════════════════
+   CARDS GLOBAIS
+   ══════════════════════════════════════════════════ */
 .card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.card-glass {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
   border-radius: 24px;
@@ -183,6 +326,77 @@ h1 {
   padding: 40px;
 }
 
+.card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 2px;
+  letter-spacing: -0.02em;
+}
+
+.card-subtitle {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════════════
+   MODAIS — ESTRUTURA BASE GLOBAL
+   ══════════════════════════════════════════════════ */
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.modal-icon {
+  width: 66px;
+  height: 66px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.modal-icon-indigo {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  box-shadow: 0 8px 28px rgba(99, 102, 241, 0.35);
+}
+
+.modal-icon-orange {
+  background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+  box-shadow: 0 8px 28px rgba(249, 115, 22, 0.35);
+}
+
+.modal-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--text);
+  text-align: center;
+  margin: 0;
+  letter-spacing: -0.03em;
+}
+
+.modal-subtitle {
+  font-size: 0.9rem;
+  color: var(--text-2);
+  text-align: center;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════════════
+   UTILITÁRIOS GLOBAIS
+   ══════════════════════════════════════════════════ */
 .centered-container {
   min-height: 100vh;
   display: flex;
@@ -192,38 +406,78 @@ h1 {
 }
 
 .gradient-bg {
-  background: linear-gradient(
+  background-image: linear-gradient(
     135deg,
-    var(--color-primary) 0%,
-    var(--color-secondary) 50%,
-    var(--color-tertiary) 100%
+    var(--color-primary),
+    var(--color-primary-dark)
   );
+  
+  border-radius: 5px 5px 0 0;
+  color: white;
 }
 
-/* =========================
-   ANIMATIONS
-========================= */
+.page-content {
+  padding: 28px 32px;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  animation: fadeSlideUp 0.35s ease both;
+}
 
+/* ══════════════════════════════════════════════════
+   ANIMAÇÕES GLOBAIS
+   ══════════════════════════════════════════════════ */
 @keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(15px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
+@keyframes fadeSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.4; }
+}
+
+@keyframes growUp {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+
 .fade-in {
   animation: fadeIn 0.4s ease;
 }
 
-/* =========================
+/* ══════════════════════════════════════════════════
    LIGHT MODE
-========================= */
-
+   ══════════════════════════════════════════════════ */
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;

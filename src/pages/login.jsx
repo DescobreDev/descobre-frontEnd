@@ -1,48 +1,51 @@
-import { useState, useEffect, useContext } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useContext, useState } from "react";
 import { AuthContext } from "../context/authContext";
+import { useNavigate, Link } from "react-router-dom";
 import api from "../services/api";
 import styles from "./CSS/login.module.css";
 import logo from "../assets/LOGO-DESCOBRE.svg";
+import { Eye, EyeSlash } from "@phosphor-icons/react";
 
 function Login() {
   const navigate = useNavigate();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const { user, loading, setUser } = useContext(AuthContext);
-  const [loadingBtn, setLoadingBtn] = useState(false);
-
-  useEffect(() => {
-    if (!loading && user) {
-      navigate("/dashboard");
-    }
-  }, [user, loading, navigate]);
+  const { setUser } = useContext(AuthContext);
 
   async function handleLogin(e) {
-  e.preventDefault();
-  setLoadingBtn(true);
-  setError("");
+    e.preventDefault();
+    setLoading(true);
+    setError("");
 
-  try {
-    const response = await api.post("/auth/login", { email, password });
+    try {
+      const response = await api.post("/auth/login", {
+        email,
+        password,
+        rememberMe,
+      });
 
-    const token = response.data.access_token;
-    localStorage.setItem("token", token);
+      const token = response.data.access_token;
 
-    const userResponse = await api.get("/users/me");
-    setUser(userResponse.data);
+        if (rememberMe) {
+          localStorage.setItem("token", token);
+        } else {
+          localStorage.setItem("token", token);
+        }
+      const userResponse = await api.get("/users/me");
+      setUser(userResponse.data);
 
-    navigate("/dashboard");
-
-  } catch (err) {
-    setError(err.response?.data?.message || "Erro ao fazer login");
-  } finally {
-    setLoadingBtn(true);
+      navigate("/dashboard");
+    } catch (err) {
+      setError(err.response?.data?.message || "Email ou senha incorretos");
+    } finally {
+      setLoading(false);
+    }
   }
-}
 
   return (
     <div className={styles.authContainer}>
@@ -52,8 +55,8 @@ function Login() {
           <div className={styles.logoBox}>
             <img src={logo} alt="Logo Descobre" className={styles.logoImg} />
           </div>
-          <h1>Bem-vindo de volta</h1>
-          <p>Entre na sua conta para continuar</p>
+          <h1>Entrar</h1>
+          <p>Bem-vindo de volta</p>
         </div>
 
         <form onSubmit={handleLogin} className={styles.authForm}>
@@ -71,16 +74,39 @@ function Login() {
 
           <div className={styles.authField}>
             <label>Senha</label>
-            <input
-              type="password"
-              placeholder="Digite sua senha"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+            <div className={styles.inputWrapper}>
+              <input
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className={styles.eyeButton}
+                onClick={() => setShowPassword((v) => !v)}
+                tabIndex={-1}
+                aria-label="Alternar visibilidade da senha"
+              >
+                {showPassword ? <EyeSlash size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
-          {error && <div className={styles.authError}>{error}</div>}
+          <div className={styles.rememberRow}>
+            <label className={styles.rememberLabel}>
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className={styles.rememberCheckbox}
+              />
+              Mantenha-me conectado
+            </label>
+          </div>
+
+          {error && <div className={styles.authError}>⚠️ {error}</div>}
 
           <button type="submit" className={styles.authButton} disabled={loading}>
             {loading ? "Entrando..." : "Entrar"}

@@ -1,0 +1,426 @@
+
+/* ── Page header ── */
+.pageHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  animation: fadeSlideDown 0.4s ease both;
+}
+
+.pageTitle {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-primary, #0f172a);
+  margin: 0 0 4px;
+  letter-spacing: -0.04em;
+}
+
+.pageSubtitle {
+  font-size: 13.5px;
+  color: var(--text-secondary, #64748b);
+  margin: 0;
+}
+
+/* Billing toggle — visual only for now */
+.billingToggle {
+  display: flex;
+  gap: 4px;
+  background: var(--surface-2, #f8fafc);
+  border: 1px solid var(--border, #e9ecf0);
+  border-radius: 10px;
+  padding: 4px;
+}
+
+.billingToggle span {
+  padding: 6px 16px;
+  border-radius: 7px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.billingActive {
+  background: var(--surface, #fff);
+  color: var(--text-primary, #0f172a);
+  box-shadow: 0 1px 4px rgba(15,23,42,0.08);
+}
+
+.billingInactive {
+  color: var(--text-muted, #94a3b8);
+}
+
+.discount {
+  font-style: normal;
+  color: #10b981;
+  font-weight: 700;
+}
+
+.flex {
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+  width: 100%;
+}
+
+/* ── Card base ── */
+.card {
+  position: relative;
+  background: var(--surface, #fff);
+  border: 1.5px solid var(--border, #e9ecf0);
+  border-radius: 20px;
+  padding: 28px 24px 24px;
+  display: flex;
+  width: 100%;
+  flex: 1;
+  flex-direction: column;
+  gap: 0;
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(15,23,42,0.06));
+  animation: fadeSlideUp 0.5s ease both;
+  transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+}
+
+.card:hover {
+  box-shadow: var(--shadow-lg, 0 12px 40px rgba(15,23,42,0.12));
+  transform: translateY(-4px);
+}
+
+/* Recommended card */
+.cardRecommended {
+  border-color: #f97316;
+  box-shadow: 0 0 0 1px #f97316, var(--shadow-md, 0 4px 16px rgba(15,23,42,0.08));
+  background: #fffaf7;
+}
+
+.cardRecommended:hover {
+  box-shadow: 0 0 0 1px #f97316, 0 16px 48px rgba(249,115,22,0.18);
+  transform: translateY(-6px);
+}
+
+/* Current plan card */
+.cardCurrent {
+  background: var(--surface-2, #f8fafc);
+  opacity: 0.85;
+}
+
+/* ── Recommended badge ── */
+.badge {
+  position: absolute;
+  top: -14px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 5px 14px;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(249,115,22,0.4);
+}
+
+/* ── Card header ── */
+.cardHeader {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.planIconWrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.planName {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--text-primary, #0f172a);
+  margin: 0 0 3px;
+  letter-spacing: -0.03em;
+}
+
+.planDesc {
+  font-size: 12.5px;
+  color: var(--text-secondary, #64748b);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Price ── */
+.priceRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  margin-bottom: 20px;
+  line-height: 1;
+}
+
+.currency {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  margin-top: 10px;
+}
+
+.priceInt {
+  font-size: 3rem;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+  letter-spacing: -0.05em;
+}
+
+.priceSuffix {
+  display: flex;
+  flex-direction: column;
+  margin-top: 8px;
+  gap: 1px;
+}
+
+.priceCents {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--text-primary, #0f172a);
+}
+
+.pricePer {
+  font-size: 0.75rem;
+  color: var(--text-muted, #94a3b8);
+  font-weight: 500;
+}
+
+/* ── Divider ── */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border, #e9ecf0);
+  margin: 0 0 16px;
+}
+
+/* ── Features ── */
+.featuresLabel {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted, #94a3b8);
+  margin: 0 0 12px;
+}
+
+.featureList {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  padding-bottom: 24px;
+}
+
+.featureItem {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  font-size: 13.5px;
+  font-weight: 500;
+  color: var(--text-primary, #0f172a);
+}
+
+/* ── CTA buttons ── */
+.btnCurrent {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border, #e9ecf0);
+  background: transparent;
+  color: var(--text-muted, #94a3b8);
+  font-size: 13.5px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  cursor: default;
+}
+
+.btnSubscribe {
+  width: 100%;
+  padding: 13px;
+  border-radius: 12px;
+  border: 1.5px solid var(--border, #e9ecf0);
+  background: transparent;
+  color: var(--text-primary, #0f172a);
+  font-size: 13.5px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, transform 0.15s, box-shadow 0.15s;
+}
+
+.btnSubscribe:hover {
+  border-color: #6366f1;
+  color: #6366f1;
+  background: #eef2ff;
+  transform: translateY(-1px);
+}
+
+/* Accent button — recommended plan */
+.btnSubscribeAccent {
+  background: linear-gradient(135deg, #f97316, #ea580c);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 4px 14px rgba(249,115,22,0.35);
+}
+
+.btnSubscribeAccent:hover {
+  background: linear-gradient(135deg, #fb923c, #f97316);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(249,115,22,0.45);
+}
+
+/* ── Footer note ── */
+.footerNote {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text-muted, #94a3b8);
+  margin: 0;
+  animation: fadeSlideUp 0.5s ease both;
+  animation-delay: 400ms;
+}
+
+.loadingWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 80px 0;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent-orange);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.purchased_modal {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 8px 0 16px;
+  gap: 16px;
+}
+
+.purchased_modal_icon {
+  width: 72px;
+  height: 72px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.purchased_modal_title {
+  font-size: 22px;
+  font-weight: 600;
+  color: #1e1e2e;
+  margin: 0;
+}
+
+.purchased_modal_subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+  line-height: 1.6;
+}
+
+.purchased_modal_features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  width: 100%;
+  margin: 4px 0;
+}
+
+.purchased_modal_feature {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #f8f7ff;
+  border: 1px solid #e0e7ff;
+  border-radius: 10px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #3730a3;
+  font-weight: 500;
+}
+
+.purchased_modal_btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 13px 28px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  justify-content: center;
+  margin-top: 4px;
+  transition: opacity 0.2s;
+}
+
+.purchased_modal_btn:hover {
+  opacity: 0.9;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.errorMsg {
+  text-align: center;
+  color: #ef4444;
+  padding: 60px 0;
+  font-size: 14px;
+}
+
+/* ── Animations ── */
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeSlideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsivo ── */
+@media (max-width: 900px) {
+  .flex { display: grid; grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
+  .pageHeader { flex-direction: column; align-items: flex-start; gap: 16px; }
+}
