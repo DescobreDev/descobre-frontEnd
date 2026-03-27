@@ -1,0 +1,366 @@
+/* ════════════════════════════════
+   HEADER
+════════════════════════════════ */
+.pageHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.pageTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 2px;
+  letter-spacing: -0.03em;
+}
+
+.pageSubtitle {
+  font-size: 13px;
+  color: var(--text-2);
+  margin: 0;
+}
+
+/* ════════════════════════════════
+   WIZARD
+════════════════════════════════ */
+.stepIndicator {
+  display: flex;
+  align-items: center;
+  padding: 20px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-xs);
+}
+
+.stepItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.stepItem:last-child {
+  flex: 0;
+}
+
+.stepCircle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.stepActive {
+  background: var(--orange);
+  color: white;
+  box-shadow: 0 0 0 4px var(--orange-glow);
+}
+
+.stepDone {
+  background: var(--orange-light);
+  color: var(--orange);
+}
+
+.stepIdle {
+  background: var(--surface-2);
+  color: var(--text-muted);
+  border: 1.5px solid var(--border);
+}
+
+.stepLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.stepLabelActive {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.stepLine {
+  flex: 1;
+  height: 2px;
+  background: var(--border);
+  border-radius: 99px;
+  margin: 0 12px;
+  transition: background 0.3s;
+}
+
+.stepLineDone {
+  background: var(--orange);
+}
+
+/* ════════════════════════════════
+   FORM
+════════════════════════════════ */
+.formPage {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.formFooter {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding-top: 8px;
+}
+
+/* ════════════════════════════════
+   ERROS
+════════════════════════════════ */
+.inputError {
+  border-color: var(--red) !important;
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
+}
+
+.errorMsg {
+  font-size: 11.5px;
+  color: var(--red);
+  margin-top: 3px;
+  display: block;
+}
+
+/* ════════════════════════════════
+   NOTE REMOTO
+════════════════════════════════ */
+.remoteNote {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--orange-light);
+  border: 1px solid var(--orange-border);
+  border-radius: var(--r-md);
+  font-size: 13px;
+  color: var(--orange);
+  font-weight: 500;
+}
+
+/* ════════════════════════════════
+   TOGGLE
+════════════════════════════════ */
+.toggleLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.toggleInput {
+  display: none;
+}
+
+.toggleTrack {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  background: var(--border);
+  border-radius: 99px;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+
+.toggleInput:checked + .toggleTrack {
+  background: var(--orange);
+}
+
+.toggleThumb {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+
+.toggleInput:checked + .toggleTrack .toggleThumb {
+  transform: translateX(18px);
+}
+
+/* ════════════════════════════════
+   BENEFITS
+════════════════════════════════ */
+.benefitsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.benefitChip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 12.5px;
+  font-weight: 500;
+  border: 1.5px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.benefitChip:hover {
+  border-color: var(--orange-border);
+  color: var(--orange);
+  background: var(--orange-light);
+}
+
+.benefitChipActive {
+  border-color: var(--orange);
+  background: var(--orange-light);
+  color: var(--orange);
+  font-weight: 600;
+}
+
+.newBenefitRow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.customBenefits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.customChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 99px;
+  font-size: 12.5px;
+  font-weight: 600;
+  background: var(--indigo-soft);
+  color: var(--indigo);
+  border: 1.5px solid rgba(99,102,241,0.2);
+}
+
+.customChip button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--indigo);
+  display: flex;
+  align-items: center;
+  padding: 0;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+
+.customChip button:hover {
+  opacity: 1;
+}
+
+/* ════════════════════════════════
+   ACTION BUTTONS
+════════════════════════════════ */
+.actionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.actionBtn:hover {
+  background: var(--orange-light);
+  border-color: var(--orange-border);
+  color: var(--orange);
+}
+
+.actionBtnDanger:hover {
+  background: #fef2f2;
+  border-color: #fecaca;
+  color: #ef4444;
+}
+
+/* ════════════════════════════════
+   INFO GRID
+════════════════════════════════ */
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+
+.infoCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  box-shadow: var(--shadow-xs);
+}
+
+.infoLabel {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  margin: 0 0 4px;
+}
+
+.infoValue {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+
+/* ════════════════════════════════
+   RESPONSIVO
+════════════════════════════════ */
+@media (max-width: 1100px) {
+  .infoGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 700px) {
+  .infoGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .pageHeader {
+    flex-direction: column;
+  }
+
+  .stepLabel {
+    display: none;
+  }
+
+  .stepLine {
+    margin: 0 6px;
+  }
+}

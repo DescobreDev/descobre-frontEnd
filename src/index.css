@@ -6,53 +6,54 @@
    ══════════════════════════════════════════════════ */
 :root {
   /* Laranja — cor principal */
-  --orange:               #f97316;
-  --orange-dark:          #ea580c;
-  --orange-light:         #fff7ed;
-  --orange-glow:          rgba(249, 115, 22, 0.18);
-  --orange-border:        rgba(249, 115, 22, 0.3);
+  --orange: #f97316;
+  --orange-dark: #ea580c;
+  --orange-light: #fff7ed;
+  --orange-glow: rgba(249, 115, 22, 0.18);
+  --orange-border: rgba(249, 115, 22, 0.3);
 
   /* Aliases para compatibilidade */
-  --color-primary:        #f97316;
-  --color-primary-dark:   #ea580c;
+  --color-primary: #f97316;
+  --color-primary-dark: #ea580c;
 
   /* Outros tons */
-  --color-secondary:      #ec4899;
-  --color-tertiary:       #9333ea;
-  --indigo:               #6366f1;
-  --indigo-soft:          #eef2ff;
-  --green:                #10b981;
-  --red:                  #ef4444;
-  --color-error:          #ef4444;
+  --color-secondary: #ec4899;
+  --color-tertiary: #9333ea;
+  --indigo: #6366f1;
+  --indigo-soft: #eef2ff;
+  --green: #10b981;
+  --red: #ef4444;
+  --color-error: #ef4444;
 
   /* Superfícies */
-  --surface:              #ffffff;
-  --surface-2:            #f8fafc;
-  --color-input-bg:       #f9fafb;
+  --surface: #ffffff;
+  --surface-2: #f8fafc;
+  --color-input-bg: #f9fafb;
 
   /* Bordas */
-  --border:               #e9ecf2;
-  --color-border:         #e5e7eb;
+  --border: #e9ecf2;
+  --color-border: #e5e7eb;
 
   /* Texto */
-  --text:                 #0d1829;
-  --color-text:           #1f2937;
-  --text-2:               #5a6a82;
-  --color-text-muted:     #6b7280;
-  --text-muted:           #9aaabb;
+  --text: #0d1829;
+  --color-text: #1f2937;
+  --text-2: #5a6a82;
+  --color-text-muted: #6b7280;
+  --text-muted: #9aaabb;
 
   /* Sidebar */
-  --sidebar-bg:           #0c1220;
-  --sidebar-hover:        rgba(255, 255, 255, 0.05);
-  --sidebar-active-bg:    rgba(249, 115, 22, 0.12);
-  --sidebar-text:         #6b7f9e;
-  --sidebar-text-active:  #f1f5f9;
-  --sidebar-w:            300px;
+  --sidebar-bg: #1c1c1d;
+  --sidebar-hover: rgba(255, 255, 255, 0.05);
+  --sidebar-active-bg: rgba(249, 115, 22, 0.12);
+  --sidebar-text: #6b7f9e;
+  --sidebar-text-active: #f1f5f9;
+  --sidebar-w: 325px;
 
   /* Sombras */
   --shadow-xs: 0 1px 2px rgba(13, 24, 41, 0.06);
   --shadow-sm: 0 2px 8px rgba(13, 24, 41, 0.07), 0 1px 3px rgba(13, 24, 41, 0.05);
-  --shadow-md: 0 6px 24px rgba(13, 24, 41, 0.10), 0 2px 8px rgba(13, 24, 41, 0.06);
+  --shadow-md: 12px 10px 20px 2px rgb(0 0 0 / 0.12), 6px 4px 8px -2px rgb(0 0 0 / 0.08);
+  ;
 
   /* Border radius */
   --r-sm: 8px;
@@ -88,6 +89,12 @@ a {
 
 a:hover {
   color: var(--color-primary-dark);
+}
+
+input,
+textarea,
+select {
+  background-color: #f2f5fa7d !important;
 }
 
 /* ══════════════════════════════════════════════════
@@ -227,7 +234,6 @@ a:hover {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 12px 16px;
-  margin-bottom: 16px;
 }
 
 .form-field {
@@ -237,7 +243,7 @@ a:hover {
 }
 
 .form-label {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   color: var(--text-2);
   letter-spacing: 0.01em;
@@ -286,7 +292,7 @@ a:hover {
   border-radius: var(--r-sm);
   font-size: 13px;
   font-weight: 500;
-  margin-bottom: 16px;
+  margin-bottom: 15px;
 }
 
 .feedback-success {
@@ -315,6 +321,7 @@ a:hover {
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
   padding: 24px;
+  height: 100%;
   box-shadow: var(--shadow-sm);
 }
 
@@ -334,7 +341,7 @@ a:hover {
 }
 
 .card-title {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 700;
   color: var(--text);
   margin: 0 0 2px;
@@ -342,9 +349,94 @@ a:hover {
 }
 
 .card-subtitle {
-  font-size: 12.5px;
+  font-size: 14px;
   color: var(--text-muted);
   margin: 0;
+}
+
+/* ══════════════════════════════════════════════════
+   MODAIS — DROPDOWN
+   ══════════════════════════════════════════════════ */
+
+.selectContainer {
+  position: relative;
+  width: 100%;
+}
+
+.selectTrigger {
+  width: 100%;
+  padding: 10px 14px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+
+  font-size: 14px;
+  color: #111827;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.selectTrigger:hover {
+  border-color: #c7d2fe;
+}
+
+.selectTriggerOpen {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+}
+
+.selectPlaceholder {
+  color: #9ca3af;
+}
+
+.selectDropdown {
+  position: absolute;
+  width: 100%;
+  margin-top: 6px;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  z-index: 50;
+  animation: fadeSlide 0.15s ease;
+  max-height: 309px;
+  overflow-y: auto;
+}
+
+.selectOption {
+  padding: 10px 14px;
+  font-size: 14px;
+  cursor: pointer;
+
+  transition: all 0.15s ease;
+}
+
+.selectOption:hover {
+  background: #f5f7ff;
+}
+
+.selectOptionActive {
+  background: #eef2ff;
+  color: #4f46e5;
+  font-weight: 500;
+}
+
+@keyframes fadeSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ══════════════════════════════════════════════════
@@ -406,23 +498,36 @@ a:hover {
 }
 
 .gradient-bg {
-  background-image: linear-gradient(
-    135deg,
-    var(--color-primary),
-    var(--color-primary-dark)
-  );
-  
+  background-image: linear-gradient(135deg,
+      var(--color-primary),
+      var(--color-primary-dark));
+
   border-radius: 5px 5px 0 0;
   color: white;
 }
 
+.hrGradient {
+  background-image: linear-gradient(135deg,
+      var(--color-primary),
+      var(--color-primary-dark));
+  border-radius: 5px;
+  width: 100%;
+  height: 4px;
+  margin-bottom: 20px;
+  margin-top: 10px;
+}
+
 .page-content {
   padding: 28px 32px;
-  min-height: 100%;
+  min-height: calc(100vh - 155px);
   display: flex;
   flex-direction: column;
   gap: 32px;
   animation: fadeSlideUp 0.35s ease both;
+  background: #ffffff;
+  margin: 15px;
+  /* box-shadow: var(--shadow-lg); */
+  border-radius: var(--r-sm);
 }
 
 /* ══════════════════════════════════════════════════
@@ -433,6 +538,7 @@ a:hover {
     opacity: 0;
     transform: translateY(15px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -444,6 +550,7 @@ a:hover {
     opacity: 0;
     transform: translateY(12px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -455,6 +562,7 @@ a:hover {
     opacity: 0;
     transform: translateY(-8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -462,13 +570,25 @@ a:hover {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50%       { opacity: 0.4; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.4;
+  }
 }
 
 @keyframes growUp {
-  from { transform: scaleY(0); }
-  to   { transform: scaleY(1); }
+  from {
+    transform: scaleY(0);
+  }
+
+  to {
+    transform: scaleY(1);
+  }
 }
 
 .fade-in {

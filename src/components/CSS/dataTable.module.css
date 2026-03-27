@@ -1,0 +1,111 @@
+.tableWrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.thead {
+  background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+  border-bottom: 1px solid var(--border);
+}
+
+.th {
+  padding: 16px 22px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  white-space: nowrap;
+  color: white;
+}
+
+.tr {
+  border-bottom: 1px solid var(--border);
+  animation: fadeSlideUp 0.3s ease both;
+  transition: background 0.12s;
+}
+
+.tr:last-child {
+  border-bottom: none;
+}
+
+.trClickable {
+  cursor: pointer;
+}
+
+.trClickable:hover {
+  background: var(--surface-2);
+}
+
+.td {
+  padding: 14px 16px;
+  font-size: 13.5px;
+  color: var(--text);
+  vertical-align: middle;
+}
+
+.actionsCell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+}
+
+.empty {
+  padding: 48px 16px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+.loadingWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 48px;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+.spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid var(--border);
+  border-top-color: var(--orange);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.pagination button {
+  min-width: 40px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeSlideUp {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

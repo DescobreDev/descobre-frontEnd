@@ -1,0 +1,361 @@
+/* ══════════════════════════════════════════════════
+   MY COMPANY PAGE
+   ══════════════════════════════════════════════════ */
+
+.mycompany-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.mycompany-header__title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.03em;
+}
+
+.mycompany-header__subtitle {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+  color: var(--text-muted);
+}
+
+.mycompany-header__actions {
+  display: flex;
+  gap: 10px;
+}
+
+.mycompany-grid {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  align-items: start;
+}
+
+.mycompany-col-left {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.mycompany-col-right {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ══════════════════════════════════════════════════
+   SECTION
+   ══════════════════════════════════════════════════ */
+.mycompany-section {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.mycompany-section__header {
+  padding: 18px 24px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mycompany-section__title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: -0.02em;
+}
+
+.mycompany-section__subtitle {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.mycompany-section__body {
+  padding: 20px 24px 24px;
+}
+
+/* ══════════════════════════════════════════════════
+   FORM FIELD
+   ══════════════════════════════════════════════════ */
+.mycompany-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.mycompany-field--span2 {
+  grid-column: span 2;
+}
+
+.mycompany-field__label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-2);
+  letter-spacing: 0.01em;
+}
+
+/* input readonly state */
+.mycompany-input--readonly {
+  background: var(--surface-2) !important;
+  color: var(--text-2) !important;
+  cursor: default !important;
+}
+
+.mycompany-input--editing {
+  background: #fff !important;
+  color: var(--text) !important;
+  cursor: text !important;
+}
+
+/* char counter below textarea */
+.mycompany-char-count {
+  margin: 8px 0 0;
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+/* ══════════════════════════════════════════════════
+   PLAN CARD (right column)
+   ══════════════════════════════════════════════════ */
+.mycompany-plan {
+  border-radius: var(--r-lg);
+  padding: 20px 20px 18px;
+  box-shadow: var(--shadow-sm);
+}
+
+.mycompany-plan__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.mycompany-plan__label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.mycompany-plan__badge {
+  font-size: 11.5px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 99px;
+  color: #fff;
+  /* background set inline */
+}
+
+.mycompany-plan__price {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.mycompany-plan__price-unit {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  margin-left: 4px;
+}
+
+.mycompany-plan__desc {
+  font-size: 12.5px;
+  color: var(--text-2);
+  margin: 10px 0 16px;
+  line-height: 1.5;
+}
+
+.mycompany-plan__features {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.mycompany-plan__feature {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--text-2);
+}
+
+.mycompany-plan__upgrade {
+  width: 100%;
+  justify-content: center;
+  font-size: 13px;
+}
+
+/* ══════════════════════════════════════════════════
+   CONSUMPTION CARD
+   ══════════════════════════════════════════════════ */
+.mycompany-consumption {
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.mycompany-consumption__header {
+  padding: 16px 20px 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+.mycompany-consumption__title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.mycompany-consumption__body {
+  padding: 16px 20px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.mycompany-consumption__footer {
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+
+.mycompany-consumption__since {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.mycompany-consumption__since strong {
+  color: var(--text-2);
+}
+
+/* ── usage bar ── */
+.usage-bar {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.usage-bar__row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.usage-bar__label {
+  font-size: 13px;
+  color: var(--text-2);
+  font-weight: 500;
+}
+
+.usage-bar__count {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.usage-bar__count--normal { color: var(--text-2); }
+.usage-bar__count--warn   { color: #ef4444; }
+
+.usage-bar__track {
+  height: 6px;
+  border-radius: 99px;
+  background: #f1f5f9;
+  overflow: hidden;
+}
+
+.usage-bar__fill {
+  height: 100%;
+  border-radius: 99px;
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.usage-bar__fill--warn {
+  background: linear-gradient(90deg, #f97316, #ef4444) !important;
+}
+
+/* ══════════════════════════════════════════════════
+   ONBOARDING STATUS CARD
+   ══════════════════════════════════════════════════ */
+.mycompany-onboarding {
+  border-radius: var(--r-md);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.mycompany-onboarding__icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mycompany-onboarding__title {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.mycompany-onboarding__desc {
+  margin: 2px 0 0;
+  font-size: 12px;
+  color: var(--text-2);
+}
+
+/* ══════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════ */
+@media (max-width: 960px) {
+  .mycompany-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mycompany-col-right {
+    order: -1;
+  }
+}
+
+@media (max-width: 640px) {
+  .mycompany-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .mycompany-header__actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .mycompany-header__actions .btn-primary,
+  .mycompany-header__actions .btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .mycompany-field--span2 {
+    grid-column: span 1;
+  }
+}

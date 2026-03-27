@@ -10,24 +10,28 @@ const Register = lazy(() => import("../pages/register"));
 const Dashboard = lazy(() => import("../pages/dashboard"));
 const Plans    = lazy(() => import("../pages/plans"));
 const Jobs     = lazy(() => import("../pages/jobs/jobsView"));
+const JobsNew    = lazy(() => import("../pages/jobs/jobsNew"));
+const JobsEdit   = lazy(() => import("../pages/jobs/jobsEdit"));
+const JobsDetail = lazy(() => import("../pages/jobs/jobsDetail"));
+const MyCompany = lazy(() => import("../pages/myCompany.jsx"));
 
 export default function AppRoutes() {
   return (
     <Suspense fallback={<Loading />}>
       <Routes>
-
-        {/* Rotas públicas — redireciona pro dashboard se já logado */}
         <Route path="/" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
 
-        {/* Rotas privadas */}
         <Route element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/plans" element={<Plans />} />
-          <Route path="/jobs" element={<Jobs />} />
+          <Route path="/jobs"          element={<Jobs />} />
+          <Route path="/jobs/new"      element={<JobsNew />} />
+          <Route path="/jobs/:id"      element={<JobsDetail />} />
+          <Route path="/jobs/:id/edit" element={<JobsEdit />} />
+          <Route path="/myCompany" element={<MyCompany />} />
         </Route>
 
-        {/* Qualquer URL inexistente — tenta ir pro dashboard */}
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
 
       </Routes>

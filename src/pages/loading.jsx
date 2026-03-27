@@ -10,7 +10,7 @@ export default function Loading() {
           <div className={styles.logoDot} />
         </div>
 
-        <span className={styles.brandName}>Descobre</span>
+        <span className={styles.brandName}>D.escobre</span>
 
         <div className={styles.progressWrap}>
           <div className={styles.progressBar} />

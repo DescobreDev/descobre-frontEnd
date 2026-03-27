@@ -13,13 +13,6 @@ import {
   CaretRight, Shield, EnvelopeSimple, Phone, CreditCard
 } from "@phosphor-icons/react";
 
-const PAGE_TITLES = {
-  "/dashboard": "Início",
-  "/jobs": "Vagas",
-  "/settings": "Configurações",
-  "/plans": "Planos",
-};
-
 const ESTADOS = [
   { value: 'AC', label: 'Acre' }, { value: 'AL', label: 'Alagoas' },
   { value: 'AP', label: 'Amapá' }, { value: 'AM', label: 'Amazonas' },
@@ -57,15 +50,13 @@ function rawCNPJ(value) { return value.replace(/\D/g, ''); }
 const NAV_ITEMS = [
   { to: '/dashboard', label: 'Início', Icon: House },
   { to: '/jobs', label: 'Vagas', Icon: ChartBar },
-  { to: '/settings', label: 'Configurações', Icon: Gear },
+  { to: '/myCompany', label: 'Minha Empresa', Icon: Buildings },
   { to: '/plans', label: 'Planos', Icon: CreditCard },
 ];
 
 function DashboardLayout() {
   const { user, logout, setUser } = useContext(AuthContext);
   const { plan, planName } = usePlan();
-
-  console.log('batata', plan);
   const [activeModal, setActiveModal] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loadingCNPJ, setLoadingCNPJ] = useState(false);
@@ -89,9 +80,7 @@ function DashboardLayout() {
   useEffect(() => { if (user && !user.company) setActiveModal("welcome"); }, [user]);
 
   const navigate = useNavigate();
-
   const location = useLocation();
-  const pageTitle = PAGE_TITLES[location.pathname] ?? "Dashboard";
 
   function handleLogout() { logout(); navigate("/"); }
 
@@ -243,8 +232,6 @@ function DashboardLayout() {
         {/* Top Header */}
         <header className={styles.header}>
           <div className={styles.headerLeft}>
-            <h1 className={styles.pageTitle}>{pageTitle}</h1>
-
             <div className={styles.searchBox}>
               <MagnifyingGlass size={15} className={styles.searchIcon} />
               <input className={styles.searchInput} placeholder="Buscar..." />

@@ -6,9 +6,9 @@ import Loading from "../pages/Loading";
 export default function PublicRoute({ children }) {
   const { user, loading } = useContext(AuthContext);
 
-  if (loading) return <Loading />; // ← aguarda aqui
+  if (loading) return <Loading />;
 
-  if (user) return <Navigate to="/dashboard" replace />;
+  if (user) return <Navigate to="/plans" replace />;
 
   return children;
 }
