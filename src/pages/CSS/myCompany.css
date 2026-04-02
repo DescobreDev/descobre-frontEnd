@@ -2,6 +2,10 @@
    MY COMPANY PAGE
    ══════════════════════════════════════════════════ */
 
+a:hover{
+  color: white;
+}
+
 .mycompany-header {
   display: flex;
   align-items: flex-start;

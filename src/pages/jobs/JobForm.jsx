@@ -75,7 +75,7 @@ function StepIndicator({ current }) {
     );
 }
 
-export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar vaga"}) {
+export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar vaga", updateVersion }) {
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
 
@@ -92,6 +92,8 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
     const [positionOptions, setPositionOptions] = useState([]);
     const [loadingSector, setLoadingSector] = useState(true);
     const [loadingPositions, setLoadingPositions] = useState(false);
+
+    const updateVersionInfo = updateVersion ?? false;
 
     useEffect(() => {
         api.get("/jobs/sector")
@@ -120,7 +122,6 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
             fetchPositions(initialData.sector.value);
         }
     }, []);
-    // ────────────────────────────────────────────────────────────
 
     const [form, setForm] = useState({
         title: initialData?.title ?? "",
@@ -246,9 +247,28 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
         setErrors({});
     }
 
+
     function handleSubmit(e) {
         e?.preventDefault();
         if (!validateStep2()) return;
+
+        if (updateVersionInfo) {
+            return onSubmit({
+                ...form,
+                workload: Number(form.workload),
+                salary: form.salary ? Number(form.salary) : null,
+                cep: isRemote ? null : form.cep,
+                address: isRemote ? null : form.address,
+                number: isRemote ? null : form.number,
+                complement: isRemote ? null : form.complement,
+                city: isRemote ? null : form.city,
+                state: isRemote ? null : form.state,
+                neighborhood: isRemote ? null : form.neighborhood,
+                benefitIds: selectedBenefits,
+                customBenefits: customBenefits,
+            });
+        }
+
         onSubmit({
             ...form,
             sectorId: form.sector?.value ?? null,
@@ -332,7 +352,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                                         value={form.sector}
                                         onChange={handleSectorChange}
                                         placeholder={loadingSector ? "Carregando..." : "Ex: Tecnologia"}
-                                        disabled={loadingSector}
+                                        disabled={updateVersionInfo}
                                     />
                                     {errors.sector && <span className={styles.errorMsg}>{errors.sector}</span>}
                                 </div>
@@ -345,7 +365,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                                         value={form.position}
                                         onChange={handlePositionChange}
                                         placeholder={loadingPositions ? "Carregando cargos..." : "Ex: Analista Pleno"}
-                                        disabled={!form.sector || loadingPositions}
+                                        disabled={updateVersionInfo || !form.sector || loadingPositions}
                                         disabledPlaceholder="Selecione um setor primeiro"
                                     />
                                     {errors.position && <span className={styles.errorMsg}>{errors.position}</span>}

@@ -396,17 +396,17 @@ select {
 
 .selectDropdown {
   position: absolute;
-  width: 100%;
   margin-top: 6px;
   background: #fff;
   border: 1px solid #e5e7eb;
   border-radius: 10px;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  z-index: 50;
+  z-index: 9999;
   animation: fadeSlide 0.15s ease;
   max-height: 309px;
   overflow-y: auto;
+  width: stretch;
 }
 
 .selectOption {

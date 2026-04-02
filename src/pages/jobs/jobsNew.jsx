@@ -33,15 +33,15 @@ export default function JobsNew() {
           </div>
         </div>
 
-        {error && (
-          <div className="feedback-banner feedback-error">{error}</div>
-        )}
-
         <JobForm
           onSubmit={handleSubmit}
           loading={loading}
           submitLabel="Publicar vaga"
         />
+
+        {error && (
+          <div className="feedback-banner feedback-error">{error}</div>
+        )}
 
       </div>
     </PlanGate>

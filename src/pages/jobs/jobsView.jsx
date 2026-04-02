@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { DataTable } from "../../components/DataTable";
 import { PlanGate } from "../../hooks/planGate";
 import api from "../../services/api";
-import AsyncSelect from "../../components/AsyncSelect"; // ajuste o caminho
+import AsyncSelect from "../../components/AsyncSelect";
 import {
   Plus, PencilSimple, Eye, MapPin,
 } from "@phosphor-icons/react";
@@ -12,7 +12,6 @@ import styles from "./CSS/jobs.module.css";
 const STATUS_LABEL = {
   ACTIVE: { label: "Ativa", color: "#10b981", bg: "#f0fdf4" },
   INACTIVE: { label: "Inativa", color: "#94a3b8", bg: "#f1f5f9" },
-  CLOSED: { label: "Encerrada", color: "#ef4444", bg: "#fef2f2" },
 };
 
 const PRIORITY_LABEL = {
@@ -25,7 +24,6 @@ const PRIORITY_LABEL = {
 const STATUS_OPTIONS = [
   { value: "ACTIVE", label: "Ativa" },
   { value: "INACTIVE", label: "Inativa" },
-  { value: "CLOSED", label: "Encerrada" },
 ];
 
 function Badge({ value, map }) {
@@ -126,9 +124,18 @@ export default function JobsView() {
         <div onClick={(e) => e.stopPropagation()}>
           <AsyncSelect
             name="status"
-            value={{ value, label: STATUS_LABEL[value]?.label ?? value }}
-            fetchOptions={async () => STATUS_OPTIONS}
+            value={{ value: row.status, label: STATUS_LABEL[row.status]?.label }}
+            fetchOptions={async (search = "") =>
+              STATUS_OPTIONS.filter((s) =>
+                s.label.toLowerCase().includes(search.toLowerCase())
+              )
+            }
             onChange={(option) => handleStatusChange(row, option)}
+            placeholder="Status"
+            colorMap={{
+              ACTIVE: { color: STATUS_LABEL.ACTIVE.color, bg: STATUS_LABEL.ACTIVE.bg },
+              INACTIVE: { color: STATUS_LABEL.INACTIVE.color, bg: STATUS_LABEL.INACTIVE.bg },
+            }}
           />
         </div>
       ),
@@ -156,9 +163,6 @@ export default function JobsView() {
           </button>
         </div>
 
-        {error && (
-          <div className="feedback-banner feedback-error">{error}</div>
-        )}
 
         <DataTable
           columns={columns}

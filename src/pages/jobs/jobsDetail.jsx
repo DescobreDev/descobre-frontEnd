@@ -86,6 +86,7 @@ export default function JobsDetail() {
     const [position, setPosition] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [statusSaved, setStatusSaved] = useState(false);
 
     useEffect(() => {
         api.get(`/jobs/${id}`)
@@ -102,10 +103,9 @@ export default function JobsDetail() {
     const STATUS_OPTIONS = [
         { value: "ACTIVE", label: "Ativa" },
         { value: "INACTIVE", label: "Inativa" },
-        { value: "CLOSED", label: "Encerrada" },
     ];
 
-    async function fetchStatusOptions(search) {
+    async function fetchStatusOptions(search = "") {
         return STATUS_OPTIONS.filter((s) =>
             s.label.toLowerCase().includes(search.toLowerCase())
         );
@@ -115,6 +115,8 @@ export default function JobsDetail() {
         try {
             await api.post(`/jobs/${id}/status`, { status: option.value });
             setJob((prev) => ({ ...prev, status: option.value }));
+            setStatusSaved(true);
+            setTimeout(() => setStatusSaved(false), 3000);
         } catch {
             alert("Erro ao atualizar status da vaga.");
         }
@@ -147,7 +149,6 @@ export default function JobsDetail() {
     }
 
     const priorityStyle = PRIORITY_STYLE[job.priority] ?? PRIORITY_STYLE.MEDIUM;
-    const statusStyle = STATUS_STYLE[job.status] ?? STATUS_STYLE.ACTIVE;
 
     const fullAddress = job.workFormat === "REMOTE"
         ? "Remoto"
@@ -175,20 +176,39 @@ export default function JobsDetail() {
         <PlanGate>
             <div className="page-content">
 
-                <div className={styles.pageHeader}>
+                {statusSaved && (
+                    <div className="feedback-banner feedback-success mb-0" style={{ margin: 0 }}>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                            <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        Status da vaga atualizado com sucesso!
+                    </div>
+                )}
+
+                <div className={styles.pageHeader} style={{ flexWrap: 'nowrap', alignItems: 'center' }}>
                     <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
                         <button className="btn-secondary" style={{ padding: "8px 12px" }} onClick={() => navigate("/jobs")}>
                             <ArrowLeft size={16} weight="bold" />
                         </button>
                         <div>
-                            <div style={{ display: "flex", alignItems: "center", gap: 8, flexWrap: "wrap" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "nowrap" }}>
                                 <h1 className={styles.pageTitle}>{job.title}</h1>
-                                <Badge label={PRIORITY_MAP[job.priority]} color={priorityStyle.color} bg={priorityStyle.bg} />
-                                <Badge label={STATUS_MAP[job.status]} color={statusStyle.color} bg={statusStyle.bg} />
+
                                 {job.visible
                                     ? <Eye size={16} color="var(--green)" title="Visível" />
                                     : <EyeSlash size={16} color="var(--text-muted)" title="Oculta" />
                                 }
+                                
+                                <Badge label={PRIORITY_MAP[job.priority]} color={priorityStyle.color} bg={priorityStyle.bg} />
+                                
+                                <AsyncSelect
+                                    name="status"
+                                    value={{ value: job.status, label: STATUS_MAP[job.status] }}
+                                    fetchOptions={fetchStatusOptions}
+                                    onChange={handleStatusChange}
+                                    placeholder="Status da vaga"
+                                    colorMap={STATUS_STYLE}
+                                />
                             </div>
                             <p className={styles.pageSubtitle}>
                                 {sector} · {position}
@@ -206,14 +226,6 @@ export default function JobsDetail() {
                                 Atualizada em {formattedUpdatedAt}
                             </span>
                         </div>
-
-                        <AsyncSelect
-                            name="status"
-                            value={{ value: job.status, label: STATUS_MAP[job.status] }}
-                            fetchOptions={fetchStatusOptions}
-                            onChange={handleStatusChange}
-                            placeholder="Status da vaga"
-                        />
 
                         <button className="btn-secondary" onClick={() => navigate(`/jobs/${id}/edit`)}>
                             <PencilSimple size={16} />

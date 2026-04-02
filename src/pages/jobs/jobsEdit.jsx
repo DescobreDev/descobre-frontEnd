@@ -21,8 +21,6 @@ export default function JobsEdit() {
         setJob(res.data[0]);
         setSector(res.data[1])
         setPosition(res.data[2])
-
-        console.log('SAPOHA', res.data[1], res.data[2])
       })
       .catch(() => setError("Vaga não encontrada."))
       .finally(() => setFetching(false));
@@ -74,11 +72,12 @@ export default function JobsEdit() {
 
               position: position
                 ? { value: position.id, label: position.name }
-                : null
+                : null,
             }}
             onSubmit={handleSubmit}
             loading={loading}
             submitLabel="Salvar alterações"
+            updateVersion={true}
           />
         )}
 

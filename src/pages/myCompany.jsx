@@ -1,6 +1,7 @@
-import { useContext, useState } from "react";
+import { useContext, useState, useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
+import api from "../services/api";
 import "./CSS/myCompany.css";
 
 /* ─── helpers ─── */
@@ -79,13 +80,20 @@ function Field({ label, span2 = false, children }) {
 /* ─── main ─── */
 export default function MyCompany() {
     const { user } = useContext(AuthContext);
+    const { setUser } = useContext(AuthContext);
     const company = user?.company ?? {};
+
     const subscription = company.subscription?.[0];
     const plan = subscription?.plan;
     const planStyle = planColors[plan?.name] ?? planColors.Basic;
 
     const [editing, setEditing] = useState(false);
     const [saved, setSaved] = useState(false);
+
+    // ── usage state ──
+    const [usage, setUsage] = useState(null);
+    const [usageLoading, setUsageLoading] = useState(true);
+
     const [form, setForm] = useState({
         name: company.name ?? "",
         email: company.email ?? "",
@@ -102,6 +110,21 @@ export default function MyCompany() {
         employees: company.employees ?? "",
     });
 
+    // ── busca usage ao montar ──
+    useEffect(() => {
+        async function fetchUsage() {
+            try {
+                const { data } = await api.get("/company/usage");
+                setUsage(data);
+            } catch (err) {
+                console.error("Erro ao buscar usage:", err);
+            } finally {
+                setUsageLoading(false);
+            }
+        }
+        fetchUsage();
+    }, []);
+
     const set = (k) => (e) => {
         let v = e.target.value;
         if (k === "cnpj") v = fmtCNPJ(v);
@@ -110,11 +133,16 @@ export default function MyCompany() {
         setForm((p) => ({ ...p, [k]: v }));
     };
 
-    const handleSave = () => {
-        // aqui você chama sua API
-        setEditing(false);
-        setSaved(true);
-        setTimeout(() => setSaved(false), 3000);
+    const handleSave = async () => {
+        try {
+            await api.post("/company/update", form);
+            setEditing(false);
+            setSaved(true);
+            setTimeout(() => setSaved(false), 3000);
+            window.location.reload();
+        } catch (error) {
+            console.error(error);
+        }
     };
 
     const inputClass = `input ${editing ? "mycompany-input--editing" : "mycompany-input--readonly"}`;
@@ -291,10 +319,38 @@ export default function MyCompany() {
                                 <span className="mycompany-consumption__title">Consumo do plano</span>
                             </div>
                             <div className="mycompany-consumption__body">
-                                <UsageBar label="Vagas" used={28} total={plan.maxJobs} color="#6366f1" />
-                                <UsageBar label="Resumos com IA" used={82} total={plan.maxAiResume} color="#f97316" />
-                                <UsageBar label="Faixa Salarial com IA" used={45} total={plan.maxAiSalary} color="#6366f1" />
-                                <UsageBar label="Entrevistas com IA" used={15} total={plan.maxInterviews} color="#6366f1" />
+                                {usageLoading ? (
+                                    <p className="mycompany-consumption__loading">Carregando uso…</p>
+                                ) : usage ? (
+                                    <>
+                                        <UsageBar
+                                            label="Vagas"
+                                            used={usage.jobsUsed.used}
+                                            total={usage.jobsUsed.limit}
+                                            color="#6366f1"
+                                        />
+                                        <UsageBar
+                                            label="Resumos com IA"
+                                            used={usage.aiResumeUsed.used}
+                                            total={usage.aiResumeUsed.limit}
+                                            color="#f97316"
+                                        />
+                                        <UsageBar
+                                            label="Faixa Salarial com IA"
+                                            used={usage.aiSalaryUsed.used}
+                                            total={usage.aiSalaryUsed.limit}
+                                            color="#6366f1"
+                                        />
+                                        <UsageBar
+                                            label="Entrevistas com IA"
+                                            used={usage.interviewsUsed.used}
+                                            total={usage.interviewsUsed.limit}
+                                            color="#6366f1"
+                                        />
+                                    </>
+                                ) : (
+                                    <p className="mycompany-consumption__loading">Dados indisponíveis.</p>
+                                )}
 
                                 <div className="mycompany-consumption__footer">
                                     <p className="mycompany-consumption__since">
