@@ -55,12 +55,16 @@ function UsageBar({ label, used, total, color = "#6366f1" }) {
 }
 
 /* ─── Section ─── */
-function Section({ title, subtitle, children }) {
+function Section({ title, subtitle, rightSection, children }) {
     return (
         <div className="mycompany-section">
-            <div className="mycompany-section__header">
-                <span className="mycompany-section__title">{title}</span>
-                {subtitle && <span className="mycompany-section__subtitle">{subtitle}</span>}
+            <div className="mycompany-section__header !flex !flex-row justify-between">
+                <div className="flex flex-col">
+                    <span className="mycompany-section__title">{title}</span>
+                    {subtitle && <span className="mycompany-section__subtitle">{subtitle}</span>}
+                </div>
+
+                {rightSection}
             </div>
             <div className="mycompany-section__body">{children}</div>
         </div>
@@ -98,8 +102,8 @@ export default function MyCompany() {
         name: company.name ?? "",
         email: company.email ?? "",
         phone: company.phone ?? "",
-        site: company.site ?? "",
         cnpj: company.cnpj ?? "",
+        site: company.site ?? "",
         cep: company.cep ?? "",
         address: company.address ?? "",
         number: company.number ?? "",
@@ -142,6 +146,31 @@ export default function MyCompany() {
             window.location.reload();
         } catch (error) {
             console.error(error);
+        }
+    };
+
+    const handleFetchCNPJ = async () => {
+        try {
+            const cnpjLimpo = form.cnpj.replace(/\D/g, "");
+
+            const response = await fetch(`https://publica.cnpj.ws/cnpj/${cnpjLimpo}`);
+            const data = await response.json();
+
+            setForm((prev) => ({
+                ...prev,
+                name: data.razao_social ?? prev.name,
+                email: data.estabelecimento?.email ?? prev.email,
+                phone: fmtPhone(data.estabelecimento?.telefone1 ?? prev.phone),
+                cep: fmtCEP(data.estabelecimento?.cep ?? prev.cep),
+                address: data.estabelecimento?.logradouro ?? prev.address,
+                number: data.estabelecimento?.numero ?? prev.number,
+                complement: data.estabelecimento?.complemento ?? prev.complement,
+                city: data.estabelecimento?.cidade?.nome ?? prev.city,
+                state: data.estabelecimento?.estado?.sigla ?? prev.state,
+            }));
+
+        } catch (error) {
+            console.error("Erro ao buscar CNPJ:", error);
         }
     };
 
@@ -204,13 +233,22 @@ export default function MyCompany() {
                 <div className="mycompany-col-left">
 
                     {/* identidade */}
-                    <Section title="Identidade da empresa" subtitle="Nome, CNPJ e informações básicas">
+                    <Section title="Identidade da empresa" subtitle="Nome, CNPJ e informações básicas"
+                        rightSection={
+                            editing && (
+                                <button className="btn-primary" onClick={handleFetchCNPJ}>
+                                    Atualizar dados pelo CNPJ
+                                </button>
+                            )
+                        }
+                    >
+
                         <div className="form-grid">
                             <Field label="Razão social" span2>
                                 <input className={inputClass} disabled={!editing} value={form.name} onChange={set("name")} placeholder="Nome da empresa" />
                             </Field>
                             <Field label="CNPJ">
-                                <input className={inputClass} disabled={!editing} value={form.cnpj} onChange={set("cnpj")} placeholder="00.000.000/0000-00" />
+                                <input className="input mycompany-input--readonly" disabled="true" value={fmtCNPJ(form.cnpj)} onChange={set("cnpj")} placeholder="00.000.000/0000-00" />
                             </Field>
                             <Field label="Nº de funcionários">
                                 <input className={inputClass} disabled={!editing} type="number" value={form.employees} onChange={set("employees")} placeholder="Ex: 10" />
