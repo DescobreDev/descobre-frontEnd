@@ -230,7 +230,7 @@ export default function MyCompany() {
             <div className="mycompany-grid">
 
                 {/* ── coluna esquerda ── */}
-                <div className="mycompany-col-left">
+                <div className="mcompany-col-left">
 
                     {/* identidade */}
                     <Section title="Identidade da empresa" subtitle="Nome, CNPJ e informações básicas"
