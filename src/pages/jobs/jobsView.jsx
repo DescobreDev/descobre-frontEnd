@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { DataTable } from "../../components/DataTable";
+import { DataTable } from "../../components/dataTable";
 import { PlanGate } from "../../hooks/planGate";
 import api from "../../services/api";
 import AsyncSelect from "../../components/AsyncSelect";
