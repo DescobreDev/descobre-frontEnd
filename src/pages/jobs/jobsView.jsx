@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { DataTable } from "../../components/dataTable";
 import { PlanGate } from "../../hooks/planGate";
 import api from "../../services/api";
-import AsyncSelect from "../../components/AsyncSelect";
+import AsyncSelect from "../../components/asyncSelect";
 import {
   Plus, PencilSimple, Eye, MapPin,
 } from "@phosphor-icons/react";
