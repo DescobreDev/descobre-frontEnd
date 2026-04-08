@@ -4,7 +4,7 @@ import { AuthContext } from "../context/authContext";
 import { useLocation } from "react-router-dom";
 import { usePlan } from "../hooks/usePlan";
 import api from "../services/api";
-import logo from "../assets/LOGO-DESCOBRE.svg";
+import logo from "../assets/LOGO-DESCOBRE-BRANCA.svg";
 import styles from "../pages/CSS/main.module.css";
 import { Modal } from '../components/modal';
 import {

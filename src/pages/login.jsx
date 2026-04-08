@@ -62,7 +62,7 @@ function Login() {
         <form onSubmit={handleLogin} className={styles.authForm}>
 
           <div className={styles.authField}>
-            <label>Email</label>
+            <label>E-mail</label>
             <input
               type="email"
               placeholder="seu@email.com"
