@@ -92,7 +92,7 @@ export default function JobsView() {
         <div>
           <p style={{ margin: 0, fontWeight: 600, fontSize: 14, color: "var(--text)" }}>{value}</p>
           <p style={{ margin: 0, fontSize: 12, color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
-            <MapPin size={11} /> {row.city} · {row.state}
+            <MapPin size={11} /> {row.city ? `${row.city} · ${row.state}` : 'Remoto'}
           </p>
         </div>
       ),

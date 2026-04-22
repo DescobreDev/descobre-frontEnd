@@ -1,4 +1,3 @@
-
 /* ── Page header ── */
 .pageHeader {
   display: flex;
@@ -21,40 +20,80 @@
   margin: 0;
 }
 
-/* Billing toggle — visual only for now */
 .billingToggle {
-  display: flex;
-  gap: 4px;
-  background: var(--surface-2, #f8fafc);
-  border: 1px solid var(--border, #e9ecf0);
-  border-radius: 10px;
+  display: inline-flex;
+  background: var(--orange-light);
+  border: 1px solid var(--orange-border);
+  border-radius: 999px;
   padding: 4px;
-}
-
-.billingToggle span {
-  padding: 6px 16px;
-  border-radius: 7px;
-  font-size: 13px;
-  font-weight: 600;
+  position: relative;
   cursor: pointer;
-  transition: background 0.15s, color 0.15s;
+  user-select: none;
 }
 
-.billingActive {
-  background: var(--surface, #fff);
-  color: var(--text-primary, #0f172a);
-  box-shadow: 0 1px 4px rgba(15,23,42,0.08);
+.billingPill {
+  position: absolute;
+  top: 4px;
+  bottom: 4px;
+  border-radius: 999px;
+  background: var(--orange);
+  transition: left 0.25s cubic-bezier(.4, 0, .2, 1), width 0.25s cubic-bezier(.4, 0, .2, 1);
+  z-index: 0;
+  pointer-events: none;
 }
 
-.billingInactive {
-  color: var(--text-muted, #94a3b8);
+.billingBtn {
+  position: relative;
+  z-index: 1;
+  padding: 6px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: 999px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-muted);
+  transition: color 0.2s;
+}
+
+.billingBtnActive {
+  color: var(--orange);
 }
 
 .discount {
-  font-style: normal;
-  color: #10b981;
-  font-weight: 700;
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--orange-light);
+  color: var(--orange-dark);
+  padding: 2px 7px;
+  border-radius: 999px;
 }
+
+.saveBadge {
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--orange-light);
+  color: var(--orange-dark);
+  padding: 3px 8px;
+  border-radius: var(--r-md);
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(4px);
+  transition: opacity 0.3s 0.1s, transform 0.3s 0.1s;
+  margin-top: 2px;
+  width: fit-content;
+}
+
+.saveBadgeVisible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.priceInt {
+  transition: opacity 0.15s;
+}
+
 
 .flex {
   display: flex;
@@ -75,25 +114,25 @@
   flex: 1;
   flex-direction: column;
   gap: 0;
-  box-shadow: var(--shadow-sm, 0 1px 3px rgba(15,23,42,0.06));
+  box-shadow: var(--shadow-sm, 0 1px 3px rgba(15, 23, 42, 0.06));
   animation: fadeSlideUp 0.5s ease both;
   transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
 }
 
 .card:hover {
-  box-shadow: var(--shadow-lg, 0 12px 40px rgba(15,23,42,0.12));
+  box-shadow: var(--shadow-lg, 0 12px 40px rgba(15, 23, 42, 0.12));
   transform: translateY(-4px);
 }
 
 /* Recommended card */
 .cardRecommended {
   border-color: #f97316;
-  box-shadow: 0 0 0 1px #f97316, var(--shadow-md, 0 4px 16px rgba(15,23,42,0.08));
+  box-shadow: 0 0 0 1px #f97316, var(--shadow-md, 0 4px 16px rgba(15, 23, 42, 0.08));
   background: #fffaf7;
 }
 
 .cardRecommended:hover {
-  box-shadow: 0 0 0 1px #f97316, 0 16px 48px rgba(249,115,22,0.18);
+  box-shadow: 0 0 0 1px #f97316, 0 16px 48px rgba(249, 115, 22, 0.18);
   transform: translateY(-6px);
 }
 
@@ -121,7 +160,7 @@
   align-items: center;
   gap: 5px;
   white-space: nowrap;
-  box-shadow: 0 4px 12px rgba(249,115,22,0.4);
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
 }
 
 /* ── Card header ── */
@@ -155,6 +194,10 @@
   color: var(--text-secondary, #64748b);
   margin: 0;
   line-height: 1.5;
+}
+
+.featureItemDisabled {
+  opacity: 0.5;
 }
 
 /* ── Price ── */
@@ -281,14 +324,14 @@
   background: linear-gradient(135deg, #f97316, #ea580c);
   border-color: transparent;
   color: #fff;
-  box-shadow: 0 4px 14px rgba(249,115,22,0.35);
+  box-shadow: 0 4px 14px rgba(249, 115, 22, 0.35);
 }
 
 .btnSubscribeAccent:hover {
   background: linear-gradient(135deg, #fb923c, #f97316);
   border-color: transparent;
   color: #fff;
-  box-shadow: 0 6px 20px rgba(249,115,22,0.45);
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.45);
 }
 
 /* ── Footer note ── */
@@ -397,8 +440,40 @@
   opacity: 0.9;
 }
 
+.card_future {
+  background: linear-gradient(135deg, #eef2ff, #f8faff);
+  border: 1.5px solid color-mix(in srgb, #6366f1 25%, transparent);
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin-bottom: 15px;
+}
+
+.futureList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.futureList li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  padding-top: 5px;
+}
+
+.bullet {
+  width: 6px;
+  height: 6px;
+  background-color: #6366f1;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .errorMsg {
@@ -410,17 +485,41 @@
 
 /* ── Animations ── */
 @keyframes fadeSlideUp {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes fadeSlideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ── Responsivo ── */
 @media (max-width: 900px) {
-  .flex { display: grid; grid-template-columns: 1fr; max-width: 420px; margin: 0 auto; }
-  .pageHeader { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .flex {
+    display: grid;
+    grid-template-columns: 1fr;
+    max-width: 420px;
+    margin: 0 auto;
+  }
+
+  .pageHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
 }

@@ -7,8 +7,9 @@ export default function PublicRoute({ children }) {
   const { user, loading } = useContext(AuthContext);
 
   if (loading) return <Loading />;
+  if (!user) return children;
 
-  if (user) return <Navigate to="/plans" replace />;
-
-  return children;
+  return user?.company?.subscription?.[0]?.active
+    ? <Navigate to="/dashboard" replace />
+    : <Navigate to="/plans" replace />;
 }

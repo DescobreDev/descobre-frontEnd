@@ -97,6 +97,7 @@ select {
   background-color: #f2f5fa7d !important;
 }
 
+
 /* ══════════════════════════════════════════════════
    SCROLLBAR GLOBAL
    ══════════════════════════════════════════════════ */
@@ -171,7 +172,6 @@ select {
   border-radius: var(--r-sm);
   font-size: 13.5px;
   font-weight: 500;
-  font-family: 'Poppins', sans-serif;
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
 }
@@ -179,6 +179,29 @@ select {
 .btn-secondary:hover {
   background: var(--border);
   border-color: #d0d7e3;
+}
+
+.btn-tertiary {
+  width: 100%;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+  transition: opacity 0.2s, transform 0.15s;
+}
+
+.btn-tertiary:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
 /* ══════════════════════════════════════════════════
@@ -217,6 +240,8 @@ select {
   resize: none;
   line-height: 1.6;
 }
+
+
 
 /* ══════════════════════════════════════════════════
    FORMULÁRIOS GLOBAIS

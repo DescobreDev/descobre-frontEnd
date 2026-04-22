@@ -37,6 +37,7 @@ function maskCNPJ(value) {
     .replace(/\.(\d{3})(\d)/, '.$1/$2')
     .replace(/(\d{4})(\d)/, '$1-$2');
 }
+
 function maskPhone(value) {
   return value.replace(/\D/g, '').slice(0, 11)
     .replace(/^(\d{2})(\d)/, '($1) $2')
@@ -56,7 +57,7 @@ const NAV_ITEMS = [
 
 function DashboardLayout() {
   const { user, logout, setUser } = useContext(AuthContext);
-  const { plan, planName } = usePlan();
+  const { planName, hasActivePlan  } = usePlan();
   const [activeModal, setActiveModal] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loadingCNPJ, setLoadingCNPJ] = useState(false);
@@ -185,12 +186,12 @@ function DashboardLayout() {
             <div className={styles.planBadge} onClick={() => navigate("/plans")}>
               <div className={styles.planBadgeTop}>
                 <span className={styles.planBadgeName}>
-                  {plan ? planName : "Sem plano"}
+                  {hasActivePlan ? planName : "Sem plano"}
                 </span>
                 <span className={styles.planBadgeAction}>Upgrade →</span>
               </div>
               <span className={styles.planBadgeUsage}>
-                {plan ? "Plano ativo" : "Assine um plano para começar"}
+                {hasActivePlan ? "Plano ativo" : "Assine um plano para começar"}
               </span>
             </div>
 
@@ -246,7 +247,7 @@ function DashboardLayout() {
           </div>
         </header>
 
-        {!plan && (
+        {!hasActivePlan && (
           <div className={styles.limitBanner}>
             <span>⚠ Você não possui um plano ativo.</span>
             <button onClick={() => navigate("/plans")} className={styles.limitBannerBtn}>

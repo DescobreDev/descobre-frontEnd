@@ -1,0 +1,328 @@
+/* ══════════════════════════════════════════════════
+   WIZARD WRAPPER
+   ══════════════════════════════════════════════════ */
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 4px 0 8px;
+}
+
+.planPreview {
+  width: 30%;
+  flex-shrink: 0;
+  border-radius: var(--r-lg);
+  padding: 18px 16px;
+  background: var(--plan-soft);
+  border: 1.5px solid color-mix(in srgb, var(--plan-color) 20%, transparent);
+  box-shadow: 0 2px 12px color-mix(in srgb, var(--plan-color) 10%, transparent);
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  align-self: flex-start;
+  position: sticky;
+  top: 0;
+  height: stretch;
+}
+
+.planPreviewHeader {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.planPreviewIconWrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--plan-color) 15%, white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.planPreviewLabel {
+  display: block;
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+}
+
+.planPreviewName {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+.planPreviewPriceWrap {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  margin-bottom: 16px;
+}
+
+.planPreviewCurrency {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--plan-color);
+  margin-top: 2px;
+}
+
+.planPreviewPrice {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.planPreviewPriceUnit {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.planPreviewDivider {
+  height: 1px;
+  background: color-mix(in srgb, var(--plan-color) 18%, transparent);
+  margin-bottom: 14px;
+}
+
+.planPreviewFeatures {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.planPreviewFeature {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--text-2);
+  font-weight: 500;
+}
+
+.planPreviewNote {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--text-muted);
+  padding-top: 12px;
+  border-top: 1px solid color-mix(in srgb, var(--plan-color) 15%, transparent);
+  font-weight: 500;
+  margin-top: auto;
+}
+
+/* ══════════════════════════════════════════════════
+   STEP INDICATOR
+   ══════════════════════════════════════════════════ */
+.stepIndicator {
+  display: flex;
+  align-items: center;
+  padding: 20px 24px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-xs);
+}
+
+.stepItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.stepItem:last-child {
+  flex: 0;
+}
+
+.stepCircle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  flex-shrink: 0;
+  transition: all 0.2s;
+}
+
+.stepActive {
+  background: var(--orange);
+  color: white;
+  box-shadow: 0 0 0 4px var(--orange-glow);
+}
+
+.stepDone {
+  background: var(--orange-light);
+  color: var(--orange);
+}
+
+.stepIdle {
+  background: var(--surface-2);
+  color: var(--text-muted);
+  border: 1.5px solid var(--border);
+}
+
+.stepLabel {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-muted);
+  white-space: nowrap;
+}
+
+.stepLabelActive {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.stepLine {
+  flex: 1;
+  height: 2px;
+  background: var(--border);
+  border-radius: 99px;
+  margin: 0 12px;
+  transition: background 0.3s;
+}
+
+.stepLineDone {
+  background: var(--orange);
+}
+
+/* ══════════════════════════════════════════════════
+   STEP CONTENT
+   ══════════════════════════════════════════════════ */
+.stepContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: fadeSlideUp 0.3s ease both;
+}
+
+.stepDesc {
+  font-size: 13px;
+  color: var(--text-2);
+  margin: 0;
+  line-height: 1.65;
+}
+
+/* ══════════════════════════════════════════════════
+   BADGE DE SEGURANÇA
+   ══════════════════════════════════════════════════ */
+.securityBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #15803d;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 6px;
+  padding: 5px 10px;
+  align-self: flex-start;
+  letter-spacing: 0.02em;
+}
+
+/* ══════════════════════════════════════════════════
+   ROW DE CAMPOS
+   ══════════════════════════════════════════════════ */
+.row {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.rowField {
+  flex: 1;
+  min-width: 0;
+}
+
+.rowFieldSmall {
+  width: 86px;
+  flex-shrink: 0;
+}
+
+/* ══════════════════════════════════════════════════
+   SEÇÃO TITULAR
+   ══════════════════════════════════════════════════ */
+.sectionLabel {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 2px;
+}
+
+/* ══════════════════════════════════════════════════
+   BOTÃO INNER (com ícone + texto)
+   ══════════════════════════════════════════════════ */
+.btnInner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+/* ══════════════════════════════════════════════════
+   SPINNER
+   ══════════════════════════════════════════════════ */
+.spinner {
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ══════════════════════════════════════════════════
+   CARD DO CARTÃO SALVO
+   ══════════════════════════════════════════════════ */
+.savedCard {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+}
+
+.savedCardBrand {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--orange);
+  background: var(--orange-light);
+  border: 1px solid var(--orange-border);
+  border-radius: 4px;
+  padding: 3px 7px;
+  letter-spacing: 0.05em;
+}
+
+.savedCardInfo {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 500;
+}
+
+.savedCardSub {
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}

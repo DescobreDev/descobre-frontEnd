@@ -1,27 +1,62 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import styles from "./CSS/plans.module.css";
-import { CheckCircle, Star, ArrowRight, Lightning, Buildings, Crown, Briefcase, Robot, CurrencyDollar, Microphone   } from "@phosphor-icons/react";
+import { CheckCircle, Star, ArrowRight, Lightning, Buildings, Crown, Briefcase, Robot, CurrencyDollar, Microphone } from "@phosphor-icons/react";
 import api from "../services/api";
 import { Modal } from '../components/modal';
+import WizardModalAsaas from "../components/wizardModalAsaas";
 import { AuthContext } from "../context/authContext";
 
+const ANNUAL_PRICES = {
+    Bronze: 2500,
+    Prata: 6600,
+    Ouro: 15900,
+};
+
+const MONTHLY_PRICES = {
+    Bronze: 229,
+    Prata: 599,
+    Ouro: 1490,
+};
+
+const PLAN_FEATURES = {
+    Bronze: {
+        dashboard: { label: "Dashboard Simples", included: true },
+        disc: { label: "Análise DISC", included: false },
+        cv: { label: "CV Importado", included: true },
+    },
+    Prata: {
+        dashboard: { label: "Dashboard Intermediário", included: true },
+        disc: { label: "Análise DISC", included: true },
+        cv: { label: "CV Importado + Guiado", included: true },
+    },
+    Ouro: {
+        dashboard: { label: "Dashboard Avançado", included: true },
+        disc: { label: "Análise DISC", included: true },
+        cv: { label: "CV Importado + Guiado", included: true },
+    },
+};
+
 const PLAN_STYLE = {
-    Starter: { icon: Star, color: "#64748b", colorSoft: "#f1f5f9" },
-    Basic: { icon: Lightning, color: "#f97316", colorSoft: "#fff7ed" },
+    Bronze: { icon: Star, color: "#64748b", colorSoft: "#f1f5f9" },
+    Prata: { icon: Lightning, color: "#f97316", colorSoft: "#fff7ed" },
     Ouro: { icon: Crown, color: "#6366f1", colorSoft: "#eef2ff" },
 };
 
-function buildFeatures(plan) {
+function buildFeatures(plan, isAnnual) {
+    const extras = PLAN_FEATURES[plan.name] ?? {};
     return [
-        `${plan.maxJobs} vagas ativas`,
-        `${plan.maxAiResume} usos de Resumo de Cargo IA`,
-        `${plan.maxAiSalary} usos de Faixa Salarial IA`,
-        `${plan.maxInterviews} entrevistas com IA`,
+        { label: `${plan.maxJobs} vagas ativas`, included: true },
+        { label: `${plan.maxAiResume} usos de Resumo de Cargo IA`, included: true },
+        { label: `${plan.maxAiSalary} usos de Faixa Salarial IA`, included: true },
+        { label: `${plan.maxInterviews} entrevistas com IA`, included: true },
+        ...(extras.dashboard ? [{ label: extras.dashboard.label, included: extras.dashboard.included }] : []),
+        ...(extras.disc ? [{ label: extras.disc.label, included: extras.disc.included }] : []),
+        ...(extras.cv ? [{ label: extras.cv.label, included: extras.cv.included }] : []),
     ];
 }
 
-function PlanCard({ plan, index, currentPlanId, setError, setLoading }) {
+function PlanCard({ plan, index, currentPlanId, isAnnual }) {
     const style = PLAN_STYLE[plan.name] ?? {
         icon: Buildings,
         color: "#6366f1",
@@ -30,9 +65,8 @@ function PlanCard({ plan, index, currentPlanId, setError, setLoading }) {
 
     const Icon = style.icon;
     const isCurrent = plan.id === currentPlanId;
-    const features = buildFeatures(plan);
     const [activeModal, setActiveModal] = useState(null);
-    const { setUser } = useContext(AuthContext)
+    const [openWizard, setOpenWizard] = useState(false);
     const navigate = useNavigate();
 
     function redirectForMainPage() {
@@ -40,34 +74,11 @@ function PlanCard({ plan, index, currentPlanId, setError, setLoading }) {
         navigate("/dashboard");
     }
 
-    async function subscribePlan(e) {
-        e.preventDefault();
-
-        try {
-            const response = await api.post("/plans/subscribe", {
-                planId: plan.id
-            });
-
-            if (response.status === 201) {
-                const updatedUser = await api.get("/users/me");
-                setUser(updatedUser.data);
-
-                setActiveModal("purchasedPlan");
-            }
-
-        } catch (err) {
-            setError(err.response?.data?.message || "Erro ao adquirir um plano");
-        } finally {
-            setLoading(false);
-        }
-    }
-
     return (
         <div
             className={`${styles.card} ${plan.recommended ? styles.cardRecommended : ""} ${isCurrent ? styles.cardCurrent : ""}`}
             style={{ animationDelay: `${index * 100}ms` }}
         >
-
             <Modal isOpen={activeModal === "purchasedPlan"} onClose={() => setActiveModal(null)} title="">
                 <div className={styles.purchased_modal}>
 
@@ -107,6 +118,17 @@ function PlanCard({ plan, index, currentPlanId, setError, setLoading }) {
                 </div>
             </Modal>
 
+            <WizardModalAsaas
+                isOpen={openWizard}
+                onClose={() => setOpenWizard(false)}
+                plan={plan}
+                isAnnual={isAnnual}
+                onComplete={() => {
+                    setOpenWizard(false);
+                    setActiveModal("purchasedPlan");
+                }}
+            />
+
             {plan.recommended && (
                 <div className={styles.badge}>
                     <Lightning size={12} weight="fill" />
@@ -124,33 +146,79 @@ function PlanCard({ plan, index, currentPlanId, setError, setLoading }) {
                 </div>
             </div>
 
-            <div className={styles.priceRow}>
-                <span className={styles.currency}>R$</span>
-                <span className={styles.priceInt}>
-                    {Number(plan.price).toLocaleString('pt-BR', { minimumFractionDigits: 0 })}
-                </span>
-                <div className={styles.priceSuffix}>
-                    <span className={styles.priceCents}>,00</span>
-                    <span className={styles.pricePer}>/mês</span>
+            {/* ── Preço ── */}
+            {isAnnual ? (
+                <div className={styles.priceRow}>
+                    <span className={styles.currency}>R$</span>
+                    <span className={styles.priceInt}>
+                        {Number(ANNUAL_PRICES[plan.name] ?? plan.price).toLocaleString("pt-BR", {
+                            minimumFractionDigits: 0,
+                        })}
+                    </span>
+                    <div className={styles.priceSuffix}>
+                        <span className={styles.priceCents}>,00</span>
+                        <span className={styles.pricePer}>/ano</span>
+                    </div>
                 </div>
-            </div>
+            ) : (
+                <div className={styles.priceRow}>
+                    <span className={styles.currency}>R$</span>
+                    <span className={styles.priceInt}>
+                        {Number(plan.price).toLocaleString("pt-BR", { minimumFractionDigits: 0 })}
+                    </span>
+                    <div className={styles.priceSuffix}>
+                        <span className={styles.priceCents}>,00</span>
+                        <span className={styles.pricePer}>/mês</span>
+                    </div>
+                </div>
+            )}
+
+            {MONTHLY_PRICES[plan.name] && (
+                <span className={`${styles.saveBadge} ${isAnnual ? styles.saveBadgeVisible : ""}`}>
+                    Economize R${" "}
+                    {(
+                        MONTHLY_PRICES[plan.name] * 12 - ANNUAL_PRICES[plan.name]
+                    ).toLocaleString("pt-BR")}
+                </span>
+            )}
 
             <hr className={styles.divider} />
 
             <p className={styles.featuresLabel}>Recursos mensais inclusos</p>
             <ul className={styles.featureList}>
-                {features.map((f) => (
-                    <li key={f} className={styles.featureItem}>
+                {buildFeatures(plan, isAnnual).map((f) => (
+                    <li key={f.label} className={`${styles.featureItem} ${!f.included ? styles.featureItemDisabled : ""}`}>
                         <CheckCircle
                             size={17}
                             weight="fill"
-                            color={plan.recommended ? style.color : "#10b981"}
+                            color={!f.included ? "#cbd5e1" : plan.recommended ? style.color : "#10b981"}
                             style={{ flexShrink: 0 }}
                         />
-                        {f}
+                        <span style={{ color: !f.included ? "#94a3b8" : undefined, textDecoration: !f.included ? "line-through" : undefined }}>
+                            {f.label}
+                        </span>
                     </li>
                 ))}
             </ul>
+
+            {index === 2 && (
+                <div className={`${styles.card_future} card`}>
+                    <span className={styles.featuresLabel} style={{ color: "#6366f1" }}>
+                        Próximas Funcionalidades
+                    </span>
+
+                    <ul className={styles.futureList}>
+                        <li>
+                            <span className={styles.bullet}></span>
+                            Entrevista por IA
+                        </li>
+                        <li>
+                            <span className={styles.bullet}></span>
+                            Checagem legal do candidato
+                        </li>
+                    </ul>
+                </div>
+            )}
 
             {isCurrent ? (
                 <button className={styles.btnCurrent} disabled>
@@ -160,7 +228,7 @@ function PlanCard({ plan, index, currentPlanId, setError, setLoading }) {
             ) : (
                 <button
                     className={`${styles.btnSubscribe} ${plan.recommended ? styles.btnSubscribeAccent : ""}`}
-                    onClick={subscribePlan}
+                    onClick={() => setOpenWizard(true)}
                 >
                     Assinar Agora
                     <ArrowRight size={16} weight="bold" />
@@ -174,15 +242,34 @@ function Plans() {
     const [plans, setPlans] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [isAnnual, setIsAnnual] = useState(false);
     const { user } = useContext(AuthContext);
 
-    const currentPlanId = user?.company?.subscription?.[0]?.planId ?? null;
+    const pillRef = useRef(null);
+    const btnMRef = useRef(null);
+    const btnARef = useRef(null);
+
+    let currentPlanId = null;
+
+    if (user?.company?.subscription?.[0]?.active === true) {
+        currentPlanId = user?.company?.subscription?.[0]?.planId ?? null;
+    }
 
     useEffect(() => {
         api.get("/plans")
             .then((res) => setPlans(res.data))
+
+
             .catch(() => setError("Não foi possível carregar os planos."))
             .finally(() => setLoading(false));
+    }, []);
+
+    useEffect(() => {
+        const pill = pillRef.current;
+        const target = btnMRef.current;
+        if (!pill || !target) return;
+        pill.style.left = (target.offsetLeft - 4) + "px";
+        pill.style.width = target.offsetWidth + "px";
     }, []);
 
     if (loading) {
@@ -214,10 +301,22 @@ function Plans() {
                     </p>
                 </div>
                 <div className={styles.billingToggle}>
-                    <span className={styles.billingActive}>Mensal</span>
-                    <span className={styles.billingInactive}>
-                        Anual <em className={styles.discount}>−20%</em>
-                    </span>
+                    <div className={styles.billingPill} ref={pillRef} />
+                    <div
+                        className={`${styles.billingBtn} ${!isAnnual ? styles.billingBtnActive : ""}`}
+                        ref={btnMRef}
+                        onClick={() => setIsAnnual(false)}
+                    >
+                        Mensal
+                    </div>
+                    <div
+                        className={`${styles.billingBtn} ${isAnnual ? styles.billingBtnActive : ""}`}
+                        ref={btnARef}
+                        onClick={() => setIsAnnual(true)}
+                    >
+                        Anual
+                        <em className={styles.discount}>−5%</em>
+                    </div>
                 </div>
             </div>
 
@@ -228,6 +327,7 @@ function Plans() {
                         plan={plan}
                         index={i}
                         currentPlanId={currentPlanId}
+                        isAnnual={isAnnual}
                         setError={setError}
                         setLoading={setLoading}
                     />

@@ -282,6 +282,23 @@ export default function JobsDetail() {
                             </Section>
                         </div>
                     )}
+
+                    {job.workFormat == "REMOTE" && (
+                        <div className="w-1/4">
+                            <Section title="Localização" subtitle="Endereço onde a vaga será exercida">
+                                <div className="flex items-start gap-2.5 align-center">
+                                    <MapPin
+                                        size={16}
+                                        className="mt-[2px] shrink-0 text-[var(--orange)]"
+                                        weight="duotone"
+                                    />
+                                    <p className="text-sm text-[var(--text-2)] leading-7">
+                                        Trabalho remoto.
+                                    </p>
+                                </div>
+                            </Section>
+                        </div>
+                    )}
                 </section>
 
                 {/* ── Benefícios ── */}

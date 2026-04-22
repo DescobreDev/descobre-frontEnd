@@ -84,11 +84,11 @@ function Field({ label, span2 = false, children }) {
 /* ─── main ─── */
 export default function MyCompany() {
     const { user } = useContext(AuthContext);
-    const { setUser } = useContext(AuthContext);
     const company = user?.company ?? {};
 
     const subscription = company.subscription?.[0];
     const plan = subscription?.plan;
+
     const planStyle = planColors[plan?.name] ?? planColors.Basic;
 
     const [editing, setEditing] = useState(false);
@@ -230,7 +230,7 @@ export default function MyCompany() {
             <div className="mycompany-grid">
 
                 {/* ── coluna esquerda ── */}
-                <div className="mcompany-col-left">
+                <div className="mycompany-col-left">
 
                     {/* identidade */}
                     <Section title="Identidade da empresa" subtitle="Nome, CNPJ e informações básicas"
@@ -319,7 +319,7 @@ export default function MyCompany() {
                             </div>
 
                             <div className="mycompany-plan__price">
-                                R$ {Number(plan.price).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
+                                R$ {Number(subscription.isAnnual ? plan.annualPrice : plan.price).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
                                 <span className="mycompany-plan__price-unit">/mês</span>
                             </div>
 

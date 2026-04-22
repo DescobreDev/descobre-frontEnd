@@ -8,9 +8,10 @@ interface ModalProps {
   children: React.ReactNode
   canClose?: boolean
   bodyRef?: RefObject<HTMLDivElement | null>
+  maxWidth?: string
 }
 
-export function Modal({ isOpen, onClose, title, children, canClose, bodyRef }: ModalProps) {
+export function Modal({ isOpen, onClose, title, children, canClose, bodyRef, maxWidth = "max-w-2xl"}: ModalProps) {
   const [visible, setVisible] = useState(false)
   const [rendered, setRendered] = useState(false)
 
@@ -40,7 +41,7 @@ export function Modal({ isOpen, onClose, title, children, canClose, bodyRef }: M
           transform: visible ? 'scale(1)' : 'scale(0.95)',
           transition: 'opacity 0.3s ease, transform 0.3s ease',
         }}
-        className="bg-white rounded-lg shadow-lg w-full max-w-2xl flex flex-col max-h-[90vh]"
+        className={`bg-white rounded-lg shadow-lg w-full ${maxWidth} flex flex-col max-h-[90vh]`}
       >
         {title.length > 0 &&
           <div className="px-6 py-4 flex justify-between items-center flex-shrink-0 gradient-bg">

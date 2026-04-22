@@ -14,6 +14,7 @@ const JobsNew    = lazy(() => import("../pages/jobs/jobsNew"));
 const JobsEdit   = lazy(() => import("../pages/jobs/jobsEdit"));
 const JobsDetail = lazy(() => import("../pages/jobs/jobsDetail"));
 const MyCompany = lazy(() => import("../pages/myCompany.jsx"));
+const VerifyEmail = lazy(() => import("../pages/verifyEmail.jsx"));
 
 export default function AppRoutes() {
   return (
@@ -21,6 +22,7 @@ export default function AppRoutes() {
       <Routes>
         <Route path="/" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
 
         <Route element={<PrivateRoute><DashboardLayout /></PrivateRoute>}>
           <Route path="/dashboard" element={<Dashboard />} />
