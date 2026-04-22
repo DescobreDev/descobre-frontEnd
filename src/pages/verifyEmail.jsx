@@ -1,4 +1,3 @@
-// src/pages/VerifyEmail.jsx
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useContext } from "react";
@@ -11,7 +10,12 @@ function VerifyEmail() {
   const location = useLocation();
   const { setUser } = useContext(AuthContext);
 
+
   const email = location.state?.email ?? "";
+
+  useEffect(() => {
+    if (!email) navigate("/", { replace: true });
+  }, [email, navigate]);
 
   const [digits, setDigits] = useState(["", "", "", "", "", ""]);
   const [loading, setLoading] = useState(false);
@@ -78,7 +82,8 @@ function VerifyEmail() {
       setUser(userResponse.data);
 
       setSuccess("Email verificado! Redirecionando...");
-      setTimeout(() => navigate("/dashboard"), 1500);
+
+      setTimeout(() => navigate("/dashboard", { replace: true }), 1500);
     } catch (err) {
       const msg = err.response?.data?.message || "Código inválido.";
       setError(msg);
@@ -89,7 +94,6 @@ function VerifyEmail() {
     }
   }
 
-  // ── Reenvio ──
   async function handleResend() {
     setError("");
     setSuccess("");
@@ -140,8 +144,8 @@ function VerifyEmail() {
                   border: error
                     ? "2px solid #EF4444"
                     : d
-                    ? "2px solid #4F46E5"
-                    : "2px solid #E5E7EB",
+                      ? "2px solid #4F46E5"
+                      : "2px solid #E5E7EB",
                   borderRadius: "10px",
                   outline: "none",
                   transition: "border-color 0.15s",
