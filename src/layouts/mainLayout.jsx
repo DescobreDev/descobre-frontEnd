@@ -10,7 +10,7 @@ import { Modal } from '../components/modal';
 import {
   Buildings, ArrowRight, Sparkle, CheckCircle, WarningCircle,
   House, ChartBar, Gear, SignOut, Bell, MagnifyingGlass,
-  CaretRight, Shield, EnvelopeSimple, Phone, CreditCard
+  CaretRight, Shield, EnvelopeSimple, Phone, CreditCard, MoneyIcon
 } from "@phosphor-icons/react";
 
 const ESTADOS = [
@@ -53,6 +53,7 @@ const NAV_ITEMS = [
   { to: '/jobs', label: 'Vagas', Icon: ChartBar },
   { to: '/myCompany', label: 'Minha Empresa', Icon: Buildings },
   { to: '/plans', label: 'Planos', Icon: CreditCard },
+  { to: '/payments', label: 'Pagamentos', Icon: MoneyIcon },
 ];
 
 function DashboardLayout() {
@@ -229,23 +230,6 @@ function DashboardLayout() {
 
       {/* ── MAIN ── */}
       <main className={styles.main}>
-
-        {/* Top Header */}
-        <header className={styles.header}>
-          <div className={styles.headerLeft}>
-            <div className={styles.searchBox}>
-              <MagnifyingGlass size={15} className={styles.searchIcon} />
-              <input className={styles.searchInput} placeholder="Buscar..." />
-            </div>
-          </div>
-          <div className={styles.headerRight}>
-            <button className={styles.notifBtn}>
-              <Bell size={18} weight="duotone" />
-              <span className={styles.notifDot} />
-            </button>
-            <div className={styles.headerAvatar}>{userInitial}</div>
-          </div>
-        </header>
 
         {!hasActivePlan && (
           <div className={styles.limitBanner}>

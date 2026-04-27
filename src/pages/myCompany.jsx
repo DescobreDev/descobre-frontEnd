@@ -306,7 +306,7 @@ export default function MyCompany() {
                 <div className="mycompany-col-right">
 
                     {/* plano */}
-                    {plan && (
+                    {plan && subscription.active === true && (
                         <div
                             className="mycompany-plan"
                             style={{ background: planStyle.bg, border: `1.5px solid ${planStyle.ring}` }}
@@ -320,7 +320,9 @@ export default function MyCompany() {
 
                             <div className="mycompany-plan__price">
                                 R$ {Number(subscription.isAnnual ? plan.annualPrice : plan.price).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}
-                                <span className="mycompany-plan__price-unit">/mês</span>
+                                <span className="mycompany-plan__price-unit">
+                                    {subscription.isAnnual ? '/ano' : '/mês'}
+                                </span>
                             </div>
 
                             <p className="mycompany-plan__desc">{plan.description}</p>
@@ -330,7 +332,7 @@ export default function MyCompany() {
                                     `Até ${plan.maxJobs} vagas ativas`,
                                     `${plan.maxAiResume} resumos com IA/mês`,
                                     `${plan.maxAiSalary} análises salariais com IA`,
-                                    `${plan.maxInterviews} entrevistas com IA`,
+                                    // `${plan.maxInterviews} entrevistas com IA`,
                                 ].map((f) => (
                                     <div key={f} className="mycompany-plan__feature">
                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={planStyle.pill} strokeWidth="2.5">
@@ -351,7 +353,7 @@ export default function MyCompany() {
                     )}
 
                     {/* consumo */}
-                    {plan && (
+                    {plan && subscription.active === true && (
                         <div className="mycompany-consumption">
                             <div className="mycompany-consumption__header">
                                 <span className="mycompany-consumption__title">Consumo do plano</span>
@@ -379,25 +381,27 @@ export default function MyCompany() {
                                             total={usage.aiSalaryUsed.limit}
                                             color="#6366f1"
                                         />
-                                        <UsageBar
+                                        {/* <UsageBar
                                             label="Entrevistas com IA"
                                             used={usage.interviewsUsed.used}
                                             total={usage.interviewsUsed.limit}
                                             color="#6366f1"
-                                        />
+                                        /> */}
                                     </>
                                 ) : (
                                     <p className="mycompany-consumption__loading">Dados indisponíveis.</p>
                                 )}
 
                                 <div className="mycompany-consumption__footer">
-                                    <p className="mycompany-consumption__since">
-                                        {subscription?.endDate ? (
-                                            <>Próxima renovação: <strong>{new Date(subscription.endDate).toLocaleDateString("pt-BR")}</strong></>
-                                        ) : (
-                                            <>Plano ativo desde <strong>{new Date(subscription?.startDate).toLocaleDateString("pt-BR")}</strong></>
-                                        )}
-                                    </p>
+                                <p className="mycompany-consumption__since">
+                                    {subscription.active === false ? '' : (
+                                    subscription?.endDate ? (
+                                        <>Próxima renovação: <strong>{new Date(subscription.endDate).toLocaleDateString("pt-BR")}</strong></>
+                                    ) : (
+                                        <>Plano ativo desde <strong>{new Date(subscription?.startDate).toLocaleDateString("pt-BR")}</strong></>
+                                    )
+                                    )}
+                                </p>
                                 </div>
                             </div>
                         </div>

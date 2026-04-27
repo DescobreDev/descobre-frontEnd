@@ -1,0 +1,330 @@
+.header { margin-bottom: 1.5rem; }
+
+/* ───── Card do plano ───── */
+.planCard {
+  background: #fff;
+  border: 0.5px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.125rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.planCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: #1d4ed8;
+  border-radius: 12px 0 0 12px;
+}
+
+.planInfo { display: flex; align-items: center; gap: 14px; }
+
+.planIcon {
+  width: 38px;
+  height: 38px;
+  border-radius: 9px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.planName  { font-size: 14px; font-weight: 500; color: #111827; }
+.planCycle { font-size: 12px; color: #6b7280; margin-top: 3px; }
+
+/* Badge ativo */
+.planActiveBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #e8f5e9;
+  color: #1b5e20;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 20px;
+  margin-top: 6px;
+}
+.planActiveDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #2e7d32;
+  flex-shrink: 0;
+}
+
+/* Badge cancelado */
+.planCanceledBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #fff7ed;
+  color: #9a3412;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 20px;
+  margin-top: 6px;
+}
+.planCanceledDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ea580c;
+  flex-shrink: 0;
+}
+
+/* Lado direito do card */
+.planRight {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
+.planPrice {
+  font-size: 20px;
+  font-weight: 500;
+  color: #111827;
+}
+.planPrice span {
+  font-size: 12px;
+  font-weight: 400;
+  color: #9ca3af;
+}
+
+/* Botão de cancelar (link discreto) */
+.cancelTrigger {
+  background: none;
+  border: none;
+  padding: 0;
+  font-size: 12px;
+  color: #9ca3af;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color 0.15s;
+}
+.cancelTrigger:hover { color: #dc2626; }
+
+/* ───── Stat cards ───── */
+.statsRow {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 1.5rem;
+}
+
+.statCard {
+  background: #f9fafb;
+  border-radius: 10px;
+  padding: 0.875rem 1rem;
+}
+.statLabel {
+  font-size: 11px;
+  font-weight: 500;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.statVal {
+  font-size: 20px;
+  font-weight: 500;
+  color: #111827;
+  margin-top: 6px;
+}
+.statVal span {
+  font-size: 12px;
+  font-weight: 400;
+  color: #9ca3af;
+}
+
+/* ───── Label de seção ───── */
+.sectionLabel {
+  font-size: 11px;
+  font-weight: 500;
+  color: #9ca3af;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+}
+
+/* ───── Lista ───── */
+.paymentList { display: flex; flex-direction: column; gap: 6px; }
+.empty { font-size: 13px; color: #9ca3af; padding: 0.75rem 0; }
+
+/* ───── Row ───── */
+.paymentRow {
+  background: #fff;
+  border: 0.5px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 13px 16px;
+  display: grid;
+  grid-template-columns: auto 76px 1fr auto auto auto;
+  align-items: center;
+  gap: 12px;
+  transition: border-color 0.15s;
+}
+.paymentRow:hover { border-color: #d1d5db; }
+
+.monthDot   { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.dotSuccess { background: #2e7d32; }
+.dotWarning { background: #f57f17; }
+.dotDanger  { background: #c62828; }
+.dotInfo    { background: #1d4ed8; }
+.dotDefault { background: #d1d5db; }
+
+.rowMonth    { font-size: 12px; color: #6b7280; }
+.rowDesc     { min-width: 0; }
+.rowDescMain { font-size: 13px; color: #111827; }
+.rowDescSub  { font-size: 11px; color: #9ca3af; margin-top: 2px; }
+
+.rowAmount {
+  font-size: 13px;
+  font-weight: 500;
+  color: #111827;
+  white-space: nowrap;
+}
+
+/* ───── Badge ───── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.badge-success { background: #e8f5e9; color: #1b5e20; }
+.badge-info    { background: #e3f2fd; color: #0d47a1; }
+.badge-danger  { background: #ffebee; color: #c62828; }
+.badge-warning { background: #fffde7; color: #f57f17; }
+.badge-default { background: #f3f4f6; color: #6b7280; }
+
+/* ───── ID chip ───── */
+.idChip {
+  font-family: monospace;
+  font-size: 10px;
+  color: #9ca3af;
+  background: #f9fafb;
+  border: 0.5px solid #e5e7eb;
+  border-radius: 4px;
+  padding: 2px 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.1s;
+  user-select: none;
+}
+.idChip:hover { color: #374151; }
+
+/* ───── Modal de cancelamento ───── */
+.cancelBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 12px;
+}
+
+.cancelIcon {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #fff7ed;
+  color: #ea580c;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-bottom: 4px;
+}
+
+.cancelTitle {
+  font-size: 15px;
+  font-weight: 500;
+  color: #111827;
+}
+
+.cancelDesc {
+  font-size: 13px;
+  color: #6b7280;
+  line-height: 1.6;
+  max-width: 340px;
+}
+
+.cancelError {
+  font-size: 12px;
+  color: #dc2626;
+  background: #fef2f2;
+  border: 0.5px solid #fecaca;
+  border-radius: 8px;
+  padding: 8px 12px;
+  width: 100%;
+}
+
+.cancelActions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.cancelBtnSecondary {
+  flex: 1;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
+  background: #f9fafb;
+  border: 0.5px solid #e5e7eb;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.cancelBtnSecondary:hover:not(:disabled) { background: #f3f4f6; border-color: #d1d5db; }
+.cancelBtnSecondary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.cancelBtnDanger {
+  flex: 1;
+  padding: 10px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #fff;
+  background: #dc2626;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.cancelBtnDanger:hover:not(:disabled) { background: #b91c1c; }
+.cancelBtnDanger:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* ───── Responsivo ───── */
+@media (max-width: 600px) {
+  .paymentRow {
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto auto;
+  }
+  .rowMonth  { grid-column: 2; grid-row: 1; }
+  .rowDesc   { grid-column: 1 / -1; grid-row: 2; }
+  .rowAmount { grid-column: 3; grid-row: 1; }
+  .badge     { display: none; }
+  .idChip    { display: none; }
+
+  .statsRow { grid-template-columns: 1fr 1fr; }
+  .statsRow .statCard:last-child { grid-column: 1 / -1; }
+
+  .cancelActions { flex-direction: column; }
+  .planRight { align-items: flex-start; }
+}

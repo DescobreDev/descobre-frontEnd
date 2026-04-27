@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Plus, X, MapPin, Buildings, CheckCircle } from "@phosphor-icons/react";
+import { ArrowLeft, ArrowRight, Plus, X, MapPin, Buildings, CheckCircle, Sparkle } from "@phosphor-icons/react";
 import Select from "../../components/select";
 import SelectSearch from "../../components/selectSearch";
 import { AuthContext } from "../../context/authContext";
@@ -87,6 +87,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
     const [loadingCep, setLoadingCep] = useState(false);
     const [cepError, setCepError] = useState("");
     const [errors, setErrors] = useState({});
+    const [generatingDescription, setGeneratingDescription] = useState(false);
 
     const [sectorOptions, setSectorOptions] = useState([]);
     const [positionOptions, setPositionOptions] = useState([]);
@@ -94,6 +95,31 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
     const [loadingPositions, setLoadingPositions] = useState(false);
 
     const updateVersionInfo = updateVersion ?? false;
+
+    const [salaryLoading, setSalaryLoading] = useState(false);
+    const [salarySuggestion, setSalarySuggestion] = useState(null);
+
+    async function handleSalarySuggestion() {
+        if (!form.position || !form.sector || !form.title) return;
+        setSalaryLoading(true);
+        setSalarySuggestion(null);
+        try {
+            const { data } = await api.post('/ai/salarySuggestion', {
+                title: form.title,
+                sector: form.sector,
+                position: form.position,
+                workFormat: form.workFormat,
+                city: form.city,
+                state: form.state,
+            });
+            setSalarySuggestion(data);
+            setForm(prev => ({ ...prev, salary: data.mid }));
+        } catch {
+            console.error('Erro ao buscar sugestão de salário');
+        } finally {
+            setSalaryLoading(false);
+        }
+    }
 
     useEffect(() => {
         api.get("/jobs/sector")
@@ -210,6 +236,39 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
         }));
     }
 
+    // ── Gerar descrição com IA ──
+    async function handleGenerateDescription() {
+        if (!form.sector || !form.position || !form.title) {
+            setErrors((prev) => ({
+                ...prev,
+                ...(!form.title.trim() && { title: "Preencha o título antes de gerar" }),
+                ...(!form.sector && { sector: "Selecione o setor antes de gerar" }),
+                ...(!form.position && { position: "Selecione o cargo antes de gerar" }),
+            }));
+            return;
+        }
+
+        setGeneratingDescription(true);
+        try {
+            const res = await api.post("/ai/vacancySummary", {
+                title: form.title,
+                sector: form.sector?.label,
+                position: form.position?.label,
+                workFormat: form.workFormat,
+                city: form.city,
+                state: form.state,
+            });
+
+            const generated = typeof res.data === "string" ? res.data : res.data?.text ?? "";
+            setForm((prev) => ({ ...prev, description: generated }));
+            if (errors.description) setErrors((prev) => ({ ...prev, description: "" }));
+        } catch {
+            // silently fail – user can type manually
+        } finally {
+            setGeneratingDescription(false);
+        }
+    }
+
     function validateStep1() {
         const errs = {};
         if (!form.title.trim()) errs.title = "Título obrigatório";
@@ -246,7 +305,6 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
         setStep(0);
         setErrors({});
     }
-
 
     function handleSubmit(e) {
         e?.preventDefault();
@@ -322,6 +380,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
 
                         <div className="card-body">
                             <div className="form-grid">
+                                {/* Título + Formato */}
                                 <div className="col-span-2" style={{ display: "flex", gap: "16px" }}>
                                     <div style={{ flex: 3 }}>
                                         <div className="form-field">
@@ -344,6 +403,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                                     </div>
                                 </div>
 
+                                {/* Setor + Cargo */}
                                 <div className="form-field">
                                     <label className="form-label">Setor</label>
                                     <SelectSearch
@@ -372,15 +432,43 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                                 </div>
 
                                 <div className="form-field col-span-2">
-                                    <label className="form-label">Descrição da vaga</label>
-                                    <textarea name="description" value={form.description} onChange={handleChange}
-                                        placeholder="Descreva as responsabilidades, requisitos e diferenciais..."
-                                        rows={5} className={`input textarea ${errors.description ? styles.inputError : ""}`} />
-                                    {errors.description && <span className={styles.errorMsg}>{errors.description}</span>}
+                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                                        <label className="form-label" style={{ margin: 0 }}>Descrição da vaga</label>
+                                        <button
+                                            type="button"
+                                            className="btn-ai-salary"
+                                            onClick={handleGenerateDescription}
+                                            disabled={generatingDescription || !form.position || !form.sector}
+                                        >
+                                            <Sparkle size={14} weight="duotone" />
+                                            {generatingDescription ? "Gerando..." : "Gerar com IA"}
+                                        </button>
+                                    </div>
+
+                                    <textarea
+                                        name="description"
+                                        value={form.description}
+                                        onChange={handleChange}
+                                        placeholder="Descreva as responsabilidades, requisitos e diferenciais, ou use a IA para gerar automaticamente..."
+                                        rows={6}
+                                        className={`input textarea ${errors.description ? styles.inputError : ""}`}
+                                        disabled={generatingDescription}
+                                        style={{ resize: "vertical", transition: "border-color 0.15s" }}
+                                    />
+
+                                    {generatingDescription && (
+                                        <div className="salary-loading">
+                                            <div className="salary-spinner" />
+                                            A IA está redigindo a descrição...
+                                        </div>
+                                    )}
+
+                                    {errors.description && (
+                                        <span className={styles.errorMsg}>{errors.description}</span>
+                                    )}
                                 </div>
                             </div>
                         </div>
-
                     </div>
 
                     {isRemote && (
@@ -400,7 +488,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                                 {user?.company && (
                                     <button
                                         type="button"
-                                        className="btn-secondary"
+                                        className="btn-primary"
                                         onClick={fillCompanyAddress}
                                         style={{ fontSize: 12, padding: "7px 12px" }}
                                     >
@@ -544,10 +632,69 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                         </div>
 
                         <div className="form-grid">
-                            <div className="form-field">
+                            <div className="form-field salary-field">
                                 <label className="form-label">Salário (R$)</label>
-                                <input name="salary" type="number" value={form.salary} onChange={handleChange}
-                                    placeholder="Ex: 8000" className="input" />
+
+                                <div className="salary-input-row">
+                                    <input
+                                        name="salary"
+                                        type="number"
+                                        value={form.salary}
+                                        onChange={handleChange}
+                                        placeholder="Ex: 8000"
+                                        className="input"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={handleSalarySuggestion}
+                                        disabled={salaryLoading || !form.position || !form.sector}
+                                        className="btn-ai-salary"
+                                    >
+                                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                            <path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.5 3.5l1.4 1.4M11.1 11.1l1.4 1.4M3.5 12.5l1.4-1.4M11.1 4.9l1.4-1.4" />
+                                            <circle cx="8" cy="8" r="3" />
+                                        </svg>
+                                        Sugerir com IA
+                                    </button>
+                                </div>
+
+                                {salaryLoading && (
+                                    <div className="salary-loading">
+                                        <div className="salary-spinner" />
+                                        Buscando faixas salariais...
+                                    </div>
+                                )}
+
+                                {salarySuggestion && !salaryLoading && (
+                                    <div className="salary-suggestion-card">
+                                        <span className="salary-suggestion-title">Sugestão de mercado</span>
+
+                                        <div className="salary-pills">
+                                            {[
+                                                { label: 'Júnior', value: salarySuggestion.min },
+                                                { label: 'Pleno', value: salarySuggestion.mid },
+                                                { label: 'Sênior', value: salarySuggestion.max },
+                                            ].map(({ label, value }) => (
+                                                <button
+                                                    key={label}
+                                                    type="button"
+                                                    className={`salary-pill ${form.salary === value ? 'active' : ''}`}
+                                                    onClick={() => setForm(prev => ({ ...prev, salary: value }))}
+                                                >
+                                                    <span className="pill-label">{label}</span>
+                                                    <span className="pill-value">R$ {value.toLocaleString('pt-BR')}</span>
+                                                </button>
+                                            ))}
+                                        </div>
+
+                                        <span className="salary-source">
+                                            <svg width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                                <circle cx="6" cy="6" r="5" /><path d="M6 5v3M6 4h.01" />
+                                            </svg>
+                                            Fonte: {salarySuggestion.source}
+                                        </span>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="form-field">
@@ -562,8 +709,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                             <div className="form-field">
                                 <label className="form-label">Data limite</label>
                                 <input name="deadline" type="date" value={form.deadline}
-                                    onChange={handleChange} className={`input ${errors.workload ? styles.inputError : ""}`} />
-
+                                    onChange={handleChange} className={`input ${errors.deadline ? styles.inputError : ""}`} />
                                 {errors.deadline && <span className={styles.errorMsg}>{errors.deadline}</span>}
                             </div>
 

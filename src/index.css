@@ -514,6 +514,28 @@ select {
 /* ══════════════════════════════════════════════════
    UTILITÁRIOS GLOBAIS
    ══════════════════════════════════════════════════ */
+
+.pageHeader {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  animation: fadeSlideDown 0.4s ease both;
+}
+
+.pageTitle {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--text-primary, #0f172a);
+  margin: 0 0 4px;
+  letter-spacing: -0.04em;
+}
+
+.pageSubtitle {
+  font-size: 13.5px;
+  color: var(--text-secondary, #64748b);
+  margin: 0;
+}
+
 .centered-container {
   min-height: 100vh;
   display: flex;
@@ -544,7 +566,7 @@ select {
 
 .page-content {
   padding: 28px 32px;
-  min-height: calc(100vh - 155px);
+  min-height: calc(100vh - 80px);
   display: flex;
   flex-direction: column;
   gap: 32px;
@@ -553,6 +575,162 @@ select {
   margin: 15px;
   /* box-shadow: var(--shadow-lg); */
   border-radius: var(--r-sm);
+}
+
+/* Campo de salário com sugestão de IA */
+.salary-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.salary-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.salary-input-row .input {
+  flex: 1;
+}
+
+.btn-ai-salary {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 16px;
+  height: 42px;
+  background: var(--orange-light);
+  color: var(--orange-dark);
+  border: 1px solid var(--orange-border);
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, border-color 0.15s, transform 0.1s;
+}
+
+.btn-ai-salary:hover {
+  background: var(--orange-glow);
+  border-color: var(--orange);
+}
+
+.btn-ai-salary:active {
+  transform: scale(0.97);
+}
+
+.btn-ai-salary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn-ai-salary svg {
+  width: 15px;
+  height: 15px;
+  color: var(--orange);
+}
+
+/* Loading */
+.salary-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.salary-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--orange-border);
+  border-top-color: var(--orange);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Card de sugestão */
+.salary-suggestion-card {
+  background: var(--orange-light);
+  border: 1px solid var(--orange-border);
+  border-radius: var(--r-sm);
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.salary-suggestion-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--orange-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.salary-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.salary-pill {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 14px;
+  background: var(--surface);
+  border: 1px solid var(--orange-border);
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+  gap: 2px;
+}
+
+.salary-pill:hover {
+  border-color: var(--orange);
+  background: var(--orange-glow);
+}
+
+.salary-pill.active {
+  border-color: var(--orange);
+  background: var(--orange);
+}
+
+.salary-pill.active .pill-label,
+.salary-pill.active .pill-value {
+  color: #fff;
+}
+
+.pill-label {
+  font-size: 11px;
+  color: var(--text-2);
+  font-weight: 500;
+}
+
+.pill-value {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.salary-source {
+  font-size: 11px;
+  color: var(--text-2);
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 /* ══════════════════════════════════════════════════
