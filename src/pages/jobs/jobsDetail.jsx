@@ -198,9 +198,9 @@ export default function JobsDetail() {
                                     ? <Eye size={16} color="var(--green)" title="Visível" />
                                     : <EyeSlash size={16} color="var(--text-muted)" title="Oculta" />
                                 }
-                                
+
                                 <Badge label={PRIORITY_MAP[job.priority]} color={priorityStyle.color} bg={priorityStyle.bg} />
-                                
+
                                 <AsyncSelect
                                     name="status"
                                     value={{ value: job.status, label: STATUS_MAP[job.status] }}
@@ -231,6 +231,11 @@ export default function JobsDetail() {
                             <PencilSimple size={16} />
                             Editar
                         </button>
+
+                        <button className="btn-secondary" onClick={() => navigate(`/jobs/${id}/candidates`)}>
+                            <Users size={16} />
+                            Candidatos
+                        </button> 
 
                         <button
                             className="btn-primary"
