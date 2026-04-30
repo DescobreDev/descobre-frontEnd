@@ -569,7 +569,7 @@
 }
 
 .gradientText {
-  background: linear-gradient(90deg, #f97316, #ea580c);
+  background: linear-gradient(90deg, #ff8735, #bd4000);
   border: #ea580c;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
