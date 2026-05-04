@@ -3,40 +3,60 @@ import { useParams, useNavigate } from "react-router-dom";
 import {
   ArrowLeft, EnvelopeSimple, Phone,
   CheckCircle, FileText, Brain, X, ArrowRight,
+  Trophy, MapPin, TextT,
 } from "@phosphor-icons/react";
 import { PlanGate } from "../../hooks/planGate";
+import { Modal } from "../../components/modal";
 import api from "../../services/api";
 import styles from "./CSS/jobsCandidateDetail.module.css";
 
 const STATUS_LABELS = {
-  PENDING: "Aguardando",
-  IN_REVIEW: "Em triagem",
-  INTERVIEW: "Entrevista",
-  APPROVED: "Aprovado",
-  REJECTED: "Reprovado",
-  WITHDRAWN: "Desistiu",
+  RECEBIDA: "Aguardando",
+  ANALISE: "Análise",
+  ENTREVISTA: "Entrevista",
+  APROVADO: "Aprovado",
+  REPROVADO: "Reprovado",
+  DESISTIU: "Desistiu",
 };
 
 const STATUS_COLORS = {
-  PENDING: { color: "#f59e0b", bg: "#fef3c7", dot: "#f59e0b" },
-  IN_REVIEW: { color: "#3b82f6", bg: "#dbeafe", dot: "#3b82f6" },
-  INTERVIEW: { color: "#8b5cf6", bg: "#ede9fe", dot: "#8b5cf6" },
-  APPROVED: { color: "#10b981", bg: "#d1fae5", dot: "#10b981" },
-  REJECTED: { color: "#ef4444", bg: "#fee2e2", dot: "#ef4444" },
-  WITHDRAWN: { color: "#6b7280", bg: "#f3f4f6", dot: "#6b7280" },
+  RECEBIDA: { color: "#f59e0b", bg: "#fef3c7", dot: "#f59e0b" },
+  ANALISE: { color: "#3b82f6", bg: "#dbeafe", dot: "#3b82f6" },
+  ENTREVISTA: { color: "#8b5cf6", bg: "#ede9fe", dot: "#8b5cf6" },
+  APROVADO: { color: "#10b981", bg: "#d1fae5", dot: "#10b981" },
+  REPROVADO: { color: "#ef4444", bg: "#fee2e2", dot: "#ef4444" },
+  DESISTIU: { color: "#6b7280", bg: "#f3f4f6", dot: "#6b7280" },
 };
 
 const TIMELINE_STEPS = [
-  { key: "PENDING", label: "Candidatura", num: 1 },
-  { key: "IN_REVIEW", label: "Análise", num: 2 },
-  { key: "INTERVIEW", label: "Entrevista", num: 3 },
-  { key: "APPROVED", label: "Aprovado", num: 4 },
+  { key: "RECEBIDA", label: "Recebida", num: 1 },
+  { key: "ANALISE", label: "Análise", num: 2 },
+  { key: "ENTREVISTA", label: "Entrevista", num: 3 },
+  { key: "APROVADO", label: "Aprovado", num: 4 },
 ];
 
 const NEXT_STATUS = {
-  PENDING: "IN_REVIEW",
-  IN_REVIEW: "INTERVIEW",
-  INTERVIEW: "APPROVED",
+  RECEBIDA: "ANALISE",
+  ANALISE: "ENTREVISTA",
+  ENTREVISTA: "APROVADO",
+};
+
+const CONFIRM_COPY = {
+  ANALISE: {
+    title: "Mover para Análise",
+    body: "Você confirma que deseja mover este candidato para a etapa de Análise? Ele terá acesso ao currículo completo.",
+    btn: "Confirmar",
+  },
+  ENTREVISTA: {
+    title: "Convidar para Entrevista",
+    body: null,
+    btn: "Enviar convite",
+  },
+  APROVADO: {
+    title: "Contratar candidato",
+    body: "Ao confirmar, o candidato será marcado como Aprovado e a vaga será encerrada automaticamente. Essa ação não pode ser desfeita.",
+    btn: "Confirmar contratação",
+  },
 };
 
 const PROFILE_ITEMS = [
@@ -55,9 +75,101 @@ function fmtDate(val) {
   return new Date(val).toLocaleDateString("pt-BR");
 }
 
+function MatchBadge({ score }) {
+  const color =
+    score >= 80 ? { bg: "#d1fae5", color: "#065f46", label: "Recomendado" } :
+      score >= 50 ? { bg: "#dbeafe", color: "#1e40af", label: "Compatível" } :
+        { bg: "#fee2e2", color: "#991b1b", label: "Baixo match" };
+
+  return (
+    <div className={styles.matchBadgeWrap}>
+      <div className={styles.matchCircle} style={{ "--score": score }}>
+        <svg viewBox="0 0 36 36" className={styles.matchSvg}>
+          <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--border)" strokeWidth="2.5" />
+          <circle
+            cx="18" cy="18" r="15.9" fill="none"
+            stroke={color.color} strokeWidth="2.5"
+            strokeDasharray={`${score} 100`}
+            strokeLinecap="round"
+            transform="rotate(-90 18 18)"
+          />
+        </svg>
+        <span className={styles.matchPct}>{score}%</span>
+      </div>
+      <div>
+        <p className={styles.matchLabel}>Compatibilidade</p>
+        <span className={styles.matchTag} style={{ background: color.bg, color: color.color }}>
+          {color.label}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function MatchTab({ candidate, jobProfile, score }) {
+  if (!jobProfile) return (
+    <div className={styles.emptyState}>
+      <Brain size={40} />
+      <p>Esta vaga não possui perfil comportamental definido.</p>
+    </div>
+  );
+
+  return (
+    <div className={styles.tabContent}>
+      <div className={styles.matchHero}>
+        <MatchBadge score={score} />
+        <p className={styles.matchHint}>
+          O score leva em conta o peso de cada dimensão definido pela vaga.
+          Dimensões mais importantes para a vaga penalizam mais em caso de diferença.
+        </p>
+      </div>
+
+      <div className={styles.matchGrid}>
+        {PROFILE_ITEMS.map((item) => {
+          const jobVal = jobProfile?.[item.jobKey] ?? 0;
+          const candVal = candidate?.[item.key] ?? 0;
+          const diff = Math.abs(jobVal - candVal);
+          const weight = jobVal / 10;
+          const penalty = diff * weight;
+
+          return (
+            <div key={item.key} className={styles.matchCard}>
+              <div className={styles.matchCardHeader}>
+                <span className={styles.profileIcon}>{item.icon}</span>
+                <span className={styles.matchCardLabel}>{item.label}</span>
+                <span className={styles.matchCardWeight}>peso {Math.round(weight * 100)}%</span>
+              </div>
+
+              <div className={styles.matchRow}>
+                <div className={styles.matchSide}>
+                  <span className={styles.matchSideLabel}>Vaga</span>
+                  <div className={styles.profileBar}>
+                    <div className={styles.profileFill} style={{ width: `${(jobVal / 5) * 100}%`, background: "var(--orange)" }} />
+                  </div>
+                  <span className={styles.matchSideVal}>{jobVal}/5</span>
+                </div>
+                <div className={styles.matchSide}>
+                  <span className={styles.matchSideLabel}>Candidato</span>
+                  <div className={styles.profileBar}>
+                    <div className={styles.profileFill} style={{ width: `${(candVal / 5) * 100}%`, background: "#3b82f6" }} />
+                  </div>
+                  <span className={styles.matchSideVal}>{candVal}/5</span>
+                </div>
+              </div>
+
+              <div className={styles.matchPenalty} style={{ color: penalty > 0.4 ? "#ef4444" : penalty > 0.2 ? "#f59e0b" : "#10b981" }}>
+                penalidade {penalty.toFixed(2)}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 function TimelineBar({ status }) {
   const currentIdx = TIMELINE_STEPS.findIndex((s) => s.key === status);
-
   return (
     <div className={styles.timelineCard}>
       <p className={styles.sectionHeading}>Etapa da candidatura</p>
@@ -72,7 +184,7 @@ function TimelineBar({ status }) {
                 <div className={`${styles.timelineConnector} ${done ? styles.connectorDone : ""}`} />
               )}
               <div className={`${styles.timelineDot} ${done ? styles.dotDone : ""} ${current ? styles.dotCurrent : ""} ${future ? styles.dotFuture : ""}`}>
-                {done ? <CheckCircle size={18} weight="fill" /> : <span>{step.num}</span>}
+                {done ? <CheckCircle size={18} weight="fill" /> : <span className={styles.stepNumber}>{step.num}</span>}
               </div>
               <span className={`${styles.timelineLabel} ${done || current ? styles.labelActive : ""}`}>
                 {step.label}
@@ -166,14 +278,12 @@ function CurriculoTab({ resume }) {
 }
 
 function PerfilTab({ candidate }) {
-  const completed = candidate.profileCompleted;
-
   return (
     <div className={styles.tabContent}>
-      {!completed && (
+      {!candidate.profileCompleted && (
         <div className={styles.profileWarning}>
           <span>⚠️</span>
-          <p>Este candidato ainda não respondeu o questionário comportamental. Os valores abaixo são zerados.</p>
+          <p>Este candidato ainda não respondeu o questionário comportamental.</p>
         </div>
       )}
       <div className={styles.profileGrid}>
@@ -203,14 +313,114 @@ function PerfilTab({ candidate }) {
   );
 }
 
+function ModalConfirm({ open, onClose, onConfirm, loading, nextStatus }) {
+  const copy = CONFIRM_COPY[nextStatus];
+  if (!copy || copy.body === null) return null;
+  return (
+    <Modal isOpen={open} onClose={onClose} title={copy.title} canClose={!loading}>
+      <p style={{ fontSize: 14, color: "var(--text-2)", margin: "0 0 24px", lineHeight: 1.6 }}>
+        {copy.body}
+      </p>
+      <div style={{ display: "flex", justifyContent: "flex-end", gap: 10 }}>
+        <button className={styles.btnSecondary} onClick={onClose} disabled={loading}>Cancelar</button>
+        <button className={styles.btnAdvance} onClick={onConfirm} disabled={loading}>
+          {loading ? "Aguarde..." : copy.btn}
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
+function ModalEntrevista({ open, onClose, onConfirm, loading }) {
+  const [form, setForm] = useState({ address: "", message: "" });
+
+  function handleChange(e) {
+    const { name, value } = e.target;
+    setForm((p) => ({ ...p, [name]: value }));
+  }
+
+  return (
+    <Modal isOpen={open} onClose={onClose} title="Convidar para entrevista" canClose={!loading}>
+      <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+        <div className="form-field">
+          <label className="form-label">
+            <MapPin size={13} weight="bold" style={{ marginRight: 4 }} />
+            Endereço da entrevista
+          </label>
+          <input
+            name="address"
+            value={form.address}
+            onChange={handleChange}
+            className="input"
+            placeholder="Ex: Rua das Flores, 123 — Sala 4, São Paulo/SP"
+          />
+        </div>
+
+        <div className="form-field">
+          <label className="form-label">
+            <TextT size={13} weight="bold" style={{ marginRight: 4 }} />
+            Mensagem para o candidato
+          </label>
+          <textarea
+            name="message"
+            value={form.message}
+            onChange={handleChange}
+            className="input textarea"
+            rows={5}
+            placeholder="Ex: Olá! Gostaríamos de convidá-lo para uma entrevista presencial. Por favor compareça no endereço abaixo no dia combinado..."
+          />
+        </div>
+
+        <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 8 }}>
+          <button className={styles.btnSecondary} onClick={onClose} disabled={loading}>Cancelar</button>
+          <button
+            className={styles.btnAdvance}
+            onClick={() => onConfirm(form)}
+            disabled={loading || !form.address.trim() || !form.message.trim()}
+          >
+            {loading ? "Aguarde..." : "Confirmar convite"}
+          </button>
+        </div>
+      </div>
+    </Modal>
+  );
+}
+
+function ModalParabens({ open, onClose, candidateName }) {
+  const navigate = useNavigate();
+  return (
+    <Modal isOpen={open} onClose={() => { }} title="">
+      <div className={styles.parabensWrap}>
+        <div className={styles.parabensIcon}>
+          <Trophy size={48} weight="fill" color="var(--orange)" />
+        </div>
+        <h2 className={styles.parabensTitle}>Parabéns!</h2>
+        <p className={styles.parabensText}>
+          <strong>{candidateName}</strong> foi contratado com sucesso.<br />
+          A vaga foi encerrada automaticamente.
+        </p>
+        <button className={styles.btnAdvance} onClick={() => { onClose(); navigate("/jobs"); }}>
+          Ir para minhas vagas
+          <ArrowRight size={15} weight="bold" />
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
 export default function JobsCandidateDetail() {
   const { id, applicationId } = useParams();
   const navigate = useNavigate();
 
   const [application, setApplication] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState("curriculo");
+  const [tab, setTab] = useState("match");
   const [updating, setUpdating] = useState(false);
+
+  const [confirmModal, setConfirmModal] = useState(false);
+  const [entrevistaModal, setEntrevistaModal] = useState(false);
+  const [parabensModal, setParabensModal] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState(null);
 
   useEffect(() => {
     async function load() {
@@ -224,13 +434,45 @@ export default function JobsCandidateDetail() {
     load();
   }, [id, applicationId]);
 
-  async function handleAdvance() {
+  useEffect(() => {
+    if (!application) return;
+    if (application.status === "RECEBIDA") setTab("match");
+    else if (application.status === "ANALISE") setTab("curriculo");
+  }, [application?.status]);
+
+  function handleAdvanceClick() {
     const next = NEXT_STATUS[application.status];
     if (!next) return;
+    setPendingStatus(next);
+
+    if (next === "ENTREVISTA") {
+      setEntrevistaModal(true);
+    } else {
+      setConfirmModal(true);
+    }
+  }
+
+  async function handleConfirm() {
     setUpdating(true);
     try {
-      await api.patch(`/jobs/${id}/candidates/${applicationId}/status`, { status: next });
-      setApplication((prev) => ({ ...prev, status: next }));
+      await api.patch(`/jobs/${id}/candidates/${applicationId}/status`, { status: pendingStatus });
+      setApplication((prev) => ({ ...prev, status: pendingStatus }));
+      setConfirmModal(false);
+      if (pendingStatus === "APROVADO") setParabensModal(true);
+    } finally {
+      setUpdating(false);
+    }
+  }
+
+  async function handleEntrevistaConfirm(form) {
+    setUpdating(true);
+    try {
+      await api.patch(`/jobs/${id}/candidates/${applicationId}/status`, {
+        status: "ENTREVISTA",
+        note: `Endereço: ${form.address}\n\n${form.message}`,
+      });
+      setApplication((prev) => ({ ...prev, status: "ENTREVISTA" }));
+      setEntrevistaModal(false);
     } finally {
       setUpdating(false);
     }
@@ -239,18 +481,8 @@ export default function JobsCandidateDetail() {
   async function handleReject() {
     setUpdating(true);
     try {
-      await api.patch(`/jobs/${id}/candidates/${applicationId}/status`, { status: "REJECTED" });
-      setApplication((prev) => ({ ...prev, status: "REJECTED" }));
-    } finally {
-      setUpdating(false);
-    }
-  }
-
-  async function handleReactivate() {
-    setUpdating(true);
-    try {
-      await api.patch(`/jobs/${id}/candidates/${applicationId}/status`, { status: "PENDING" });
-      setApplication((prev) => ({ ...prev, status: "PENDING" }));
+      await api.patch(`/jobs/${id}/candidates/${applicationId}/status`, { status: "REPROVADO" });
+      setApplication((prev) => ({ ...prev, status: "REPROVADO" }));
     } finally {
       setUpdating(false);
     }
@@ -259,10 +491,14 @@ export default function JobsCandidateDetail() {
   if (loading) return <div className="page-content"><div className={styles.loadingState}>Carregando...</div></div>;
   if (!application) return <div className="page-content"><div className={styles.loadingState}>Candidatura não encontrada.</div></div>;
 
-  const { candidate } = application;
-  const statusStyle = STATUS_COLORS[application.status] ?? STATUS_COLORS.PENDING;
+  const { candidate, compatibility, jobProfile } = application;
+  const statusStyle = STATUS_COLORS[application.status] || STATUS_COLORS.RECEBIDA;
   const canAdvance = !!NEXT_STATUS[application.status];
-  const canReject = !["REJECTED", "APPROVED", "WITHDRAWN"].includes(application.status);
+  const canReject = !["REPROVADO", "APROVADO", "DESISTIU"].includes(application.status);
+
+  const showMatch = true;
+  const showCurriculo = ["ANALISE", "ENTREVISTA", "APROVADO"].includes(application.status);
+  const showPerfil = ["ANALISE", "ENTREVISTA", "APROVADO"].includes(application.status);
 
   return (
     <PlanGate>
@@ -271,10 +507,7 @@ export default function JobsCandidateDetail() {
 
           {/* Header */}
           <div className={styles.header}>
-            <button
-              className={styles.backBtn}
-              onClick={() => navigate(`/jobs/${id}/candidates`)}
-            >
+            <button className={styles.backBtn} onClick={() => navigate(`/jobs/${id}/candidates`)}>
               <ArrowLeft size={16} weight="bold" />
               <span>Voltar</span>
             </button>
@@ -285,50 +518,27 @@ export default function JobsCandidateDetail() {
             </div>
           </div>
 
-
-          {/* Ações */}
-          {(canAdvance || canReject || application.status === "REJECTED") && (
+          {/* Actions bar */}
+          {(canAdvance || canReject) && (
             <div className={styles.actionsBar}>
               <p className={styles.actionsHint}>Mover candidato para próxima etapa ou reprovar</p>
               <div className={styles.actionsGroup}>
-
-                {application.status === "REJECTED" && (
-                  <button
-                    className={styles.btnAdvance}
-                    onClick={handleReactivate}
-                    disabled={updating}
-                  >
-                    <ArrowLeft size={15} weight="bold" />
-                    {updating ? "Aguarde..." : "Reativar candidatura"}
-                  </button>
-                )}
-
                 {canReject && (
-                  <button
-                    className={styles.btnReject}
-                    onClick={handleReject}
-                    disabled={updating}
-                  >
+                  <button className={styles.btnReject} onClick={handleReject} disabled={updating}>
                     <X size={15} weight="bold" />
                     Reprovar
                   </button>
                 )}
-
                 {canAdvance && (
-                  <button
-                    className={styles.btnAdvance}
-                    onClick={handleAdvance}
-                    disabled={updating}
-                  >
+                  <button className={styles.btnAdvance} onClick={handleAdvanceClick} disabled={updating}>
                     {updating ? "Aguarde..." : (
                       <>
-                        Avançar para {STATUS_LABELS[NEXT_STATUS[application.status]]}
+                        {application.status === "ENTREVISTA" ? "Contratar" : `Avançar para ${STATUS_LABELS[NEXT_STATUS[application.status]]}`}
                         <ArrowRight size={15} weight="bold" />
                       </>
                     )}
                   </button>
                 )}
-
               </div>
             </div>
           )}
@@ -339,11 +549,7 @@ export default function JobsCandidateDetail() {
             <div className={styles.heroLeft}>
               <div className={styles.avatarWrap}>
                 <div className={styles.avatar}>{initials(candidate.name)}</div>
-                <span
-                  className={styles.statusDot}
-                  style={{ background: statusStyle.dot }}
-                  title={STATUS_LABELS[application.status]}
-                />
+                <span className={styles.statusDot} style={{ background: statusStyle.dot }} />
               </div>
               <div>
                 <h2 className={styles.heroName}>{candidate.name}</h2>
@@ -361,12 +567,8 @@ export default function JobsCandidateDetail() {
                 </div>
               </div>
             </div>
-
             <div className={styles.heroRight}>
-              <span
-                className={styles.statusBadge}
-                style={{ color: statusStyle.color, background: statusStyle.bg }}
-              >
+              <span className={styles.statusBadge} style={{ color: statusStyle.color, background: statusStyle.bg }}>
                 <span className={styles.statusBadgeDot} style={{ background: statusStyle.dot }} />
                 {STATUS_LABELS[application.status]}
               </span>
@@ -377,36 +579,68 @@ export default function JobsCandidateDetail() {
           </div>
 
           {/* Timeline */}
-          {!["REJECTED", "WITHDRAWN"].includes(application.status) && (
+          {!["REPROVADO", "DESISTIU"].includes(application.status) && (
             <TimelineBar status={application.status} />
           )}
 
-          {/* Tabs + Content */}
+          {/* Tabs */}
           <div className={styles.tabsCard}>
             <div className={styles.tabs}>
               <button
-                className={`${styles.tab} ${tab === "curriculo" ? styles.tabActive : ""}`}
-                onClick={() => setTab("curriculo")}
+                className={`${styles.tab} ${tab === "match" ? styles.tabActive : ""}`}
+                onClick={() => setTab("match")}
               >
-                <FileText size={15} weight={tab === "curriculo" ? "fill" : "regular"} />
-                Currículo
+                <Brain size={15} weight={tab === "match" ? "fill" : "regular"} />
+                Match
               </button>
-              <button
-                className={`${styles.tab} ${tab === "perfil" ? styles.tabActive : ""}`}
-                onClick={() => setTab("perfil")}
-              >
-                <Brain size={15} weight={tab === "perfil" ? "fill" : "regular"} />
-                Perfil Comportamental
-              </button>
+              {showCurriculo && (
+                <button
+                  className={`${styles.tab} ${tab === "curriculo" ? styles.tabActive : ""}`}
+                  onClick={() => setTab("curriculo")}
+                >
+                  <FileText size={15} weight={tab === "curriculo" ? "fill" : "regular"} />
+                  Currículo
+                </button>
+              )}
+              {showPerfil && (
+                <button
+                  className={`${styles.tab} ${tab === "perfil" ? styles.tabActive : ""}`}
+                  onClick={() => setTab("perfil")}
+                >
+                  <Brain size={15} weight={tab === "perfil" ? "fill" : "regular"} />
+                  Perfil Comportamental
+                </button>
+              )}
             </div>
 
             <div className={styles.tabBody}>
+              {tab === "match" && <MatchTab candidate={candidate} jobProfile={jobProfile} score={compatibility ?? 0} />}
               {tab === "curriculo" && <CurriculoTab resume={candidate.resume} />}
               {tab === "perfil" && <PerfilTab candidate={candidate} />}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Modais */}
+      <ModalConfirm
+        open={confirmModal}
+        onClose={() => setConfirmModal(false)}
+        onConfirm={handleConfirm}
+        loading={updating}
+        nextStatus={pendingStatus}
+      />
+      <ModalEntrevista
+        open={entrevistaModal}
+        onClose={() => setEntrevistaModal(false)}
+        onConfirm={handleEntrevistaConfirm}
+        loading={updating}
+      />
+      <ModalParabens
+        open={parabensModal}
+        onClose={() => setParabensModal(false)}
+        candidateName={candidate?.name}
+      />
     </PlanGate>
   );
 }

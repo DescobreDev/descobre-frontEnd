@@ -310,40 +310,29 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
         e?.preventDefault();
         if (!validateStep2()) return;
 
-        if (updateVersionInfo) {
-            return onSubmit({
-                ...form,
-                workload: Number(form.workload),
-                salary: form.salary ? Number(form.salary) : null,
-                cep: isRemote ? null : form.cep,
-                address: isRemote ? null : form.address,
-                number: isRemote ? null : form.number,
-                complement: isRemote ? null : form.complement,
-                city: isRemote ? null : form.city,
-                state: isRemote ? null : form.state,
-                neighborhood: isRemote ? null : form.neighborhood,
-                benefitIds: selectedBenefits,
-                customBenefits: customBenefits,
-            });
-        }
+        const { sector, position, ...rest } = form;
 
-        onSubmit({
-            ...form,
-            sectorId: form.sector?.value ?? null,
-            positionId: form.position?.value ?? null,
-            workload: Number(form.workload),
-            salary: form.salary ? Number(form.salary) : null,
-            cep: isRemote ? null : form.cep,
-            address: isRemote ? null : form.address,
-            number: isRemote ? null : form.number,
-            complement: isRemote ? null : form.complement,
-            city: isRemote ? null : form.city,
-            state: isRemote ? null : form.state,
-            neighborhood: isRemote ? null : form.neighborhood,
+        const payload = {
+            ...rest,
+            sectorId: sector?.value ?? null,
+            positionId: position?.value ?? null,
+            workload: Number(rest.workload),
+            salary: rest.salary ? Number(rest.salary) : null,
+            cep: isRemote ? null : rest.cep,
+            address: isRemote ? null : rest.address,
+            number: isRemote ? null : rest.number,
+            complement: isRemote ? null : rest.complement,
+            city: isRemote ? null : rest.city,
+            state: isRemote ? null : rest.state,
+            neighborhood: isRemote ? null : rest.neighborhood,
             benefitIds: selectedBenefits,
             customBenefits: customBenefits,
-        });
+        };
+
+        onSubmit(payload);
     }
+
+
 
     function toggleBenefit(id) {
         setSelectedBenefits((prev) =>

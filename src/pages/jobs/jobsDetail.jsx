@@ -235,7 +235,7 @@ export default function JobsDetail() {
                         <button className="btn-secondary" onClick={() => navigate(`/jobs/${id}/candidates`)}>
                             <Users size={16} />
                             Candidatos
-                        </button> 
+                        </button>
 
                         <button
                             className="btn-primary"
@@ -259,6 +259,18 @@ export default function JobsDetail() {
                     <InfoCard label="Vaga afirmativa" value={AFFIRMATIVE_MAP[job.affirmative]} icon={Users} />
                     <InfoCard label="Criada em" value={formattedCreatedAt} icon={Calendar} />
                 </div>
+
+                <Section
+                    title="Perfil ideal da vaga"
+                    subtitle="Distribuição comportamental esperada para o candidato"
+                >
+                    <div className={styles.profileGrid}>
+                        <InfoCard label="Analista" value={`${job.profile?.analyst ?? 0} pts.`} />
+                        <InfoCard label="Comunicador" value={`${job.profile?.communicator ?? 0} pts.`} />
+                        <InfoCard label="Executor" value={`${job.profile?.executor ?? 0} pts.`} />
+                        <InfoCard label="Planejador" value={`${job.profile?.planner ?? 0} pts.`} />
+                    </div>
+                </Section>
 
                 <section className="flex gap-4">
                     {/* ── Descrição ── */}

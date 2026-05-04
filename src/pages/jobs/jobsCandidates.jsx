@@ -49,6 +49,39 @@ const columns = [
         },
     },
     {
+        key: "compatibility",
+        title: "Match",
+        width: "10%",
+        render: (val) => {
+            let color = "#6b7280";
+            let bg = "#f3f4f6";
+
+            if (val >= 80) {
+                color = "#16a34a";
+                bg = "#dcfce7";
+            } else if (val >= 60) {
+                color = "#ca8a04";
+                bg = "#fef9c3";
+            } else {
+                color = "#dc2626";
+                bg = "#fee2e2";
+            }
+
+            return (
+                <span style={{
+                    color,
+                    background: bg,
+                    fontWeight: 700,
+                    fontSize: 12,
+                    padding: "2px 10px",
+                    borderRadius: 20,
+                }}>
+                    {val}%
+                </span>
+            );
+        },
+    },
+    {
         key: "appliedAt",
         title: "Candidatou-se em",
         width: "20%",
@@ -91,6 +124,7 @@ export default function JobsCandidates() {
                 candidatePhone: app.candidate.phone ?? "—",
                 status: app.status,
                 appliedAt: app.appliedAt,
+                compatibility: app.compatibility,
             }));
 
             setData(rows);
