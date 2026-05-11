@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { JobForm } from "./JobForm";
 import { PlanGate } from "../../hooks/planGate";
-import { Modal } from "../../components/Modal";
+import { Modal } from "../../components/modal";
 import api from "../../services/api";
 import styles from "./CSS/jobs.module.css";
 import {
