@@ -2,7 +2,7 @@ import { useEffect, useState, useContext } from "react";
 import { PlanGate } from "../hooks/planGate";
 import styles from "./CSS/payments.module.css";
 import { AuthContext } from "../context/authContext";
-import { Modal } from "../components/Modal";
+import { Modal } from "../components/modal";
 import api from "../services/api";
 
 const STATUS_MAP = {
