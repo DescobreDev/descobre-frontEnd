@@ -1,6 +1,3 @@
-/* ════════════════════════════════
-   HEADER
-════════════════════════════════ */
 .pageHeader {
   display: flex;
   align-items: flex-start;
@@ -23,9 +20,6 @@
   margin: 0;
 }
 
-/* ════════════════════════════════
-   WIZARD
-════════════════════════════════ */
 .stepIndicator {
   display: flex;
   align-items: center;
@@ -102,9 +96,6 @@
   background: var(--orange);
 }
 
-/* ════════════════════════════════
-   FORM
-════════════════════════════════ */
 .formPage {
   display: flex;
   flex-direction: column;
@@ -118,9 +109,6 @@
   padding-top: 8px;
 }
 
-/* ════════════════════════════════
-   ERROS
-════════════════════════════════ */
 .inputError {
   border-color: var(--red) !important;
   box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1) !important;
@@ -133,9 +121,6 @@
   display: block;
 }
 
-/* ════════════════════════════════
-   NOTE REMOTO
-════════════════════════════════ */
 .remoteNote {
   display: flex;
   align-items: center;
@@ -149,9 +134,6 @@
   font-weight: 500;
 }
 
-/* ════════════════════════════════
-   TOGGLE
-════════════════════════════════ */
 .toggleLabel {
   display: flex;
   align-items: center;
@@ -194,9 +176,6 @@
   transform: translateX(18px);
 }
 
-/* ════════════════════════════════
-   BENEFITS
-════════════════════════════════ */
 .benefitsList {
   display: flex;
   flex-wrap: wrap;
@@ -273,9 +252,6 @@
   opacity: 1;
 }
 
-/* ════════════════════════════════
-   ACTION BUTTONS
-════════════════════════════════ */
 .actionBtn {
   display: flex;
   align-items: center;
@@ -302,9 +278,6 @@
   color: #ef4444;
 }
 
-/* ════════════════════════════════
-   INFO GRID
-════════════════════════════════ */
 .infoGrid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -339,7 +312,6 @@
   margin: 0;
 }
 
-/* ── Warning Modal ── */
 .warning_modal {
   display: flex;
   flex-direction: column;
@@ -442,9 +414,6 @@
   gap: 16px;
 }
 
-/* ════════════════════════════════
-   RESPONSIVO
-════════════════════════════════ */
 @media (max-width: 1100px) {
   .infoGrid {
     grid-template-columns: repeat(2, 1fr);

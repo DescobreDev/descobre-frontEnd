@@ -4,7 +4,6 @@ import { AuthContext } from "../context/authContext";
 import api from "../services/api";
 import "./CSS/myCompany.css";
 
-/* ─── helpers ─── */
 const fmtCNPJ = (v = "") =>
     v.replace(/\D/g, "")
         .replace(/^(\d{2})(\d)/, "$1.$2")
@@ -13,14 +12,14 @@ const fmtCNPJ = (v = "") =>
         .replace(/(\d{4})(\d)/, "$1-$2")
         .slice(0, 18);
 
-const fmtPhone = (v = "") =>
-    v.replace(/\D/g, "")
-        .replace(/^(\d{2})(\d)/, "($1) $2")
-        .replace(/(\d{5})(\d{4})$/, "$1-$2")
-        .slice(0, 15);
-
-const fmtCEP = (v = "") =>
-    v.replace(/\D/g, "").replace(/(\d{5})(\d)/, "$1-$2").slice(0, 9);
+function maskPhone(value) {
+    return value.replace(/\D/g, '').slice(0, 11)
+        .replace(/^(\d{2})(\d)/, '($1) $2')
+        .replace(/(\d{5})(\d{1,4})$/, '$1-$2');
+}
+function maskCEP(value) {
+    return value.replace(/\D/g, '').slice(0, 8).replace(/^(\d{5})(\d)/, '$1-$2');
+}
 
 const planColors = {
     Starter: { pill: "#f97316", bg: "rgba(249,115,22,0.08)", ring: "rgba(249,115,22,0.25)" },
@@ -28,7 +27,6 @@ const planColors = {
     Pro: { pill: "#10b981", bg: "rgba(16,185,129,0.08)", ring: "rgba(16,185,129,0.25)" },
 };
 
-/* ─── UsageBar ─── */
 function UsageBar({ label, used, total, color = "#6366f1" }) {
     const pct = Math.min(100, Math.round((used / total) * 100));
     const warn = pct >= 80;
@@ -54,7 +52,6 @@ function UsageBar({ label, used, total, color = "#6366f1" }) {
     );
 }
 
-/* ─── Section ─── */
 function Section({ title, subtitle, rightSection, children }) {
     return (
         <div className="mycompany-section">
@@ -71,7 +68,6 @@ function Section({ title, subtitle, rightSection, children }) {
     );
 }
 
-/* ─── Field ─── */
 function Field({ label, span2 = false, children }) {
     return (
         <div className={`mycompany-field${span2 ? " mycompany-field--span2" : ""}`}>
@@ -81,7 +77,6 @@ function Field({ label, span2 = false, children }) {
     );
 }
 
-/* ─── main ─── */
 export default function MyCompany() {
     const { user } = useContext(AuthContext);
     const company = user?.company ?? {};
@@ -94,7 +89,6 @@ export default function MyCompany() {
     const [editing, setEditing] = useState(false);
     const [saved, setSaved] = useState(false);
 
-    // ── usage state ──
     const [usage, setUsage] = useState(null);
     const [usageLoading, setUsageLoading] = useState(true);
 
@@ -106,6 +100,7 @@ export default function MyCompany() {
         site: company.site ?? "",
         cep: company.cep ?? "",
         address: company.address ?? "",
+        district: company.district ?? "",
         number: company.number ?? "",
         complement: company.complement ?? "",
         city: company.city ?? "",
@@ -114,7 +109,6 @@ export default function MyCompany() {
         employees: company.employees ?? "",
     });
 
-    // ── busca usage ao montar ──
     useEffect(() => {
         async function fetchUsage() {
             try {
@@ -154,19 +148,22 @@ export default function MyCompany() {
             const cnpjLimpo = form.cnpj.replace(/\D/g, "");
 
             const response = await fetch(`https://publica.cnpj.ws/cnpj/${cnpjLimpo}`);
+            if (!response.ok) throw new Error('CNPJ não encontrado.');
             const data = await response.json();
+            const endereco = data.estabelecimento;
 
-            setForm((prev) => ({
+            setForm(prev => ({
                 ...prev,
-                name: data.razao_social ?? prev.name,
-                email: data.estabelecimento?.email ?? prev.email,
-                phone: fmtPhone(data.estabelecimento?.telefone1 ?? prev.phone),
-                cep: fmtCEP(data.estabelecimento?.cep ?? prev.cep),
-                address: data.estabelecimento?.logradouro ?? prev.address,
-                number: data.estabelecimento?.numero ?? prev.number,
-                complement: data.estabelecimento?.complemento ?? prev.complement,
-                city: data.estabelecimento?.cidade?.nome ?? prev.city,
-                state: data.estabelecimento?.estado?.sigla ?? prev.state,
+                name: data.razao_social || prev.name,
+                email: endereco?.email?.toLowerCase() || prev.email,
+                phone: maskPhone((endereco?.ddd1 ?? '') + (endereco?.telefone1 ?? '')) || prev.phone,
+                cep: maskCEP(endereco?.cep ?? '') || prev.cep,
+                address: `${endereco?.tipo_logradouro ?? ''} ${endereco?.logradouro ?? ''}`.trim() || prev.address,
+                district: endereco?.bairro ?? '',
+                number: endereco?.numero || prev.number,
+                complement: endereco?.complemento || prev.complement,
+                city: endereco?.cidade?.ibge_nome || prev.city,
+                state: endereco?.estado?.sigla || prev.state,
             }));
 
         } catch (error) {
@@ -178,8 +175,6 @@ export default function MyCompany() {
 
     return (
         <div className="page-content">
-
-            {/* ── header ── */}
             <div className="mycompany-header">
                 <div>
                     <h1 className="mycompany-header__title">Perfil da empresa</h1>
@@ -216,7 +211,6 @@ export default function MyCompany() {
                 </div>
             </div>
 
-            {/* ── feedback ── */}
             {saved && (
                 <div className="feedback-banner feedback-success">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
@@ -226,13 +220,8 @@ export default function MyCompany() {
                 </div>
             )}
 
-            {/* ── grid ── */}
             <div className="mycompany-grid">
-
-                {/* ── coluna esquerda ── */}
                 <div className="mycompany-col-left">
-
-                    {/* identidade */}
                     <Section title="Identidade da empresa" subtitle="Nome, CNPJ e informações básicas"
                         rightSection={
                             editing && (
@@ -265,7 +254,6 @@ export default function MyCompany() {
                         </div>
                     </Section>
 
-                    {/* endereço */}
                     <Section title="Endereço" subtitle="Localização registrada da empresa">
                         <div className="form-grid">
                             <Field label="CEP">
@@ -280,6 +268,9 @@ export default function MyCompany() {
                             <Field label="Logradouro">
                                 <input className={inputClass} disabled={!editing} value={form.address} onChange={set("address")} placeholder="Rua, Av…" />
                             </Field>
+                            <Field label="Bairro">
+                                <input className={inputClass} disabled={!editing} value={form.district} onChange={set("district")} placeholder="Vila ..." />
+                            </Field>
                             <Field label="Número">
                                 <input className={inputClass} disabled={!editing} value={form.number} onChange={set("number")} placeholder="Nº" />
                             </Field>
@@ -289,7 +280,6 @@ export default function MyCompany() {
                         </div>
                     </Section>
 
-                    {/* sobre */}
                     <Section title="Sobre a empresa" subtitle="Descrição pública exibida para candidatos">
                         <textarea
                             className={`${inputClass} textarea`}
@@ -302,10 +292,7 @@ export default function MyCompany() {
                     </Section>
                 </div>
 
-                {/* ── coluna direita ── */}
                 <div className="mycompany-col-right">
-
-                    {/* plano */}
                     {plan && subscription.active === true && (
                         <div
                             className="mycompany-plan"
@@ -352,7 +339,6 @@ export default function MyCompany() {
                         </div>
                     )}
 
-                    {/* consumo */}
                     {plan && subscription.active === true && (
                         <div className="mycompany-consumption">
                             <div className="mycompany-consumption__header">
@@ -393,21 +379,20 @@ export default function MyCompany() {
                                 )}
 
                                 <div className="mycompany-consumption__footer">
-                                <p className="mycompany-consumption__since">
-                                    {subscription.active === false ? '' : (
-                                    subscription?.endDate ? (
-                                        <>Próxima renovação: <strong>{new Date(subscription.endDate).toLocaleDateString("pt-BR")}</strong></>
-                                    ) : (
-                                        <>Plano ativo desde <strong>{new Date(subscription?.startDate).toLocaleDateString("pt-BR")}</strong></>
-                                    )
-                                    )}
-                                </p>
+                                    <p className="mycompany-consumption__since">
+                                        {subscription.active === false ? '' : (
+                                            subscription?.endDate ? (
+                                                <>Próxima renovação: <strong>{new Date(subscription.endDate).toLocaleDateString("pt-BR")}</strong></>
+                                            ) : (
+                                                <>Plano ativo desde <strong>{new Date(subscription?.startDate).toLocaleDateString("pt-BR")}</strong></>
+                                            )
+                                        )}
+                                    </p>
                                 </div>
                             </div>
                         </div>
                     )}
 
-                    {/* onboarding */}
                     <div
                         className="mycompany-onboarding"
                         style={{

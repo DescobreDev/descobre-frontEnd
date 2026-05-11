@@ -42,7 +42,7 @@ const affirmativeOptions = [
     { value: "PCD", label: "PCD" },
     { value: "WOMEN", label: "Mulheres" },
     { value: "FIFTY_PLUS", label: "50+" },
-    { value: "LGBTQIAPN", label: "LGBTQiapn+" },
+    { value: "LGBTQIAPN", label: "LGBTQIAPN+" },
 ];
 
 const stateOptions = ESTADOS.map((uf) => ({ value: uf, label: uf }));
@@ -166,8 +166,9 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
         cep: initialData?.cep ?? "",
         state: initialData?.state ?? "",
         city: initialData?.city ?? "",
-        neighborhood: initialData?.neighborhood ?? "",
+        district: initialData?.district ?? "",
         address: initialData?.address ?? "",
+        district: initialData?.district ?? "",
         number: initialData?.number ?? "",
         complement: initialData?.complement ?? "",
     });
@@ -210,7 +211,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
             setForm((prev) => ({
                 ...prev,
                 address: data.logradouro || prev.address,
-                neighborhood: data.bairro || prev.neighborhood,
+                district: data.bairro || prev.district,
                 city: data.localidade || prev.city,
                 state: data.uf || prev.state,
             }));
@@ -231,8 +232,9 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
             number: company.number || prev.number,
             complement: company.complement || prev.complement,
             city: company.city || prev.city,
+            district: company.district || prev.district,
             state: company.state || prev.state,
-            neighborhood: company.neighborhood || prev.neighborhood,
+            district: company.district || prev.district,
         }));
     }
 
@@ -280,7 +282,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
             if (!form.cep.trim()) errs.cep = "CEP obrigatório";
             if (!form.city.trim()) errs.city = "Cidade obrigatória";
             if (!form.state) errs.state = "Estado obrigatório";
-            if (!form.neighborhood.trim()) errs.neighborhood = "Bairro obrigatório";
+            if (!form.district.trim()) errs.district = "Bairro obrigatório";
             if (!form.address.trim()) errs.address = "Endereço obrigatório";
             if (!form.number.trim()) errs.number = "Número obrigatório";
         }
@@ -320,11 +322,12 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
             salary: rest.salary ? Number(rest.salary) : null,
             cep: isRemote ? null : rest.cep,
             address: isRemote ? null : rest.address,
+            district: isRemote ? null : rest.district,
             number: isRemote ? null : rest.number,
             complement: isRemote ? null : rest.complement,
             city: isRemote ? null : rest.city,
             state: isRemote ? null : rest.state,
-            neighborhood: isRemote ? null : rest.neighborhood,
+            district: isRemote ? null : rest.district,
             benefitIds: selectedBenefits,
             customBenefits: customBenefits,
         };
@@ -419,43 +422,6 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                                     />
                                     {errors.position && <span className={styles.errorMsg}>{errors.position}</span>}
                                 </div>
-
-                                <div className="form-field col-span-2">
-                                    <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
-                                        <label className="form-label" style={{ margin: 0 }}>Descrição da vaga</label>
-                                        <button
-                                            type="button"
-                                            className="btn-ai-salary"
-                                            onClick={handleGenerateDescription}
-                                            disabled={generatingDescription || !form.position || !form.sector}
-                                        >
-                                            <Sparkle size={14} weight="duotone" />
-                                            {generatingDescription ? "Gerando..." : "Gerar com IA"}
-                                        </button>
-                                    </div>
-
-                                    <textarea
-                                        name="description"
-                                        value={form.description}
-                                        onChange={handleChange}
-                                        placeholder="Descreva as responsabilidades, requisitos e diferenciais, ou use a IA para gerar automaticamente..."
-                                        rows={6}
-                                        className={`input textarea ${errors.description ? styles.inputError : ""}`}
-                                        disabled={generatingDescription}
-                                        style={{ resize: "vertical", transition: "border-color 0.15s" }}
-                                    />
-
-                                    {generatingDescription && (
-                                        <div className="salary-loading">
-                                            <div className="salary-spinner" />
-                                            A IA está redigindo a descrição...
-                                        </div>
-                                    )}
-
-                                    {errors.description && (
-                                        <span className={styles.errorMsg}>{errors.description}</span>
-                                    )}
-                                </div>
                             </div>
                         </div>
                     </div>
@@ -527,10 +493,10 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
 
                                 <div className="form-field">
                                     <label className="form-label">Bairro</label>
-                                    <input name="neighborhood" value={form.neighborhood} onChange={handleChange}
+                                    <input name="district" value={form.district} onChange={handleChange}
                                         placeholder="Bela Vista"
-                                        className={`input ${errors.neighborhood ? styles.inputError : ""}`} />
-                                    {errors.neighborhood && <span className={styles.errorMsg}>{errors.neighborhood}</span>}
+                                        className={`input ${errors.district ? styles.inputError : ""}`} />
+                                    {errors.district && <span className={styles.errorMsg}>{errors.district}</span>}
                                 </div>
 
                                 <div className="form-field col-span-2">
@@ -557,6 +523,53 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                             </div>
                         </div>
                     )}
+
+                    <div className="card">
+                        <div className="card-header">
+                            <div>
+                                <p className="card-title">Descrição da vaga</p>
+                                <p className="card-subtitle">Responsabilidades, requisitos e informações essenciais da oportunidade</p>
+                            </div>
+
+                            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "6px" }}>
+                                <button
+                                    type="button"
+                                    className="btn-ai-salary"
+                                    onClick={handleGenerateDescription}
+                                    disabled={generatingDescription || !form.position || !form.sector}
+                                >
+                                    <Sparkle size={14} weight="duotone" />
+                                    {generatingDescription ? "Gerando..." : "Gerar com IA"}
+                                </button>
+                            </div>
+                        </div>
+
+                        <div className="form-field col-span-2">
+
+
+                            <textarea
+                                name="description"
+                                value={form.description}
+                                onChange={handleChange}
+                                placeholder="Descreva as responsabilidades, requisitos e diferenciais, ou use a IA para gerar automaticamente..."
+                                rows={6}
+                                className={`input textarea ${errors.description ? styles.inputError : ""}`}
+                                disabled={generatingDescription}
+                                style={{ resize: "vertical", transition: "border-color 0.15s" }}
+                            />
+
+                            {generatingDescription && (
+                                <div className="salary-loading">
+                                    <div className="salary-spinner" />
+                                    A IA está redigindo a descrição...
+                                </div>
+                            )}
+
+                            {errors.description && (
+                                <span className={styles.errorMsg}>{errors.description}</span>
+                            )}
+                        </div>
+                    </div>
                 </>
             )}
 

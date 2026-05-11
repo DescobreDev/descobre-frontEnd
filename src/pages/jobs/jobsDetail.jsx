@@ -6,73 +6,91 @@ import api from "../../services/api";
 import {
     ArrowLeft, PencilSimple, Trash, MapPin, Clock,
     Briefcase, CurrencyDollar, Calendar, Eye, EyeSlash,
-    CheckCircle, Buildings, Tag, Users
+    CheckCircle, Buildings, Tag, Users, Warning, Trophy
 } from "@phosphor-icons/react";
-import styles from "./CSS/jobs.module.css";
+import styles from "./CSS/JobsDetail.module.css";
 
 const CONTRACT_MAP = { CLT: "CLT", PJ: "PJ", FREELANCER: "Freelancer" };
 const FORMAT_MAP = { REMOTE: "Remoto", HYBRID: "Híbrido", ONSITE: "Presencial" };
 const TYPE_MAP = { STANDARD: "Padrão", INTERNSHIP: "Estágio", TRAINEE: "Trainee" };
 const PRIORITY_MAP = { LOW: "Baixa", MEDIUM: "Média", HIGH: "Alta", URGENT: "Urgente" };
-const AFFIRMATIVE_MAP = {
-    NOT_INFORMED: "Não informado",
-    PCD: "PCD",
-    WOMEN: "Mulheres",
-    FIFTY_PLUS: "50+",
-    LGBTQIAPN: "LGBTQiapn+",
+const STATUS_MAP = {
+    ACTIVE: "Ativa",
+    INACTIVE: "Inativa",
+    HIRED: "Contratada",
 };
-const STATUS_MAP = { ACTIVE: "Ativa", INACTIVE: "Inativa", CLOSED: "Encerrada" };
+const AFFIRMATIVE_MAP = {
+    NOT_INFORMED: "Não informado", PCD: "PCD", WOMEN: "Mulheres",
+    FIFTY_PLUS: "50+", LGBTQIAPN: "LGBTQIAPN+",
+};
 
 const PRIORITY_STYLE = {
-    LOW: { color: "#64748b", bg: "#f1f5f9" },
-    MEDIUM: { color: "#f97316", bg: "#fff7ed" },
-    HIGH: { color: "#6366f1", bg: "#eef2ff" },
-    URGENT: { color: "#ef4444", bg: "#fef2f2" },
+    LOW: { color: "#64748b", bg: "#f1f5f9", dot: "#94a3b8" },
+    MEDIUM: { color: "#f97316", bg: "#fff7ed", dot: "#f97316" },
+    HIGH: { color: "#6366f1", bg: "#eef2ff", dot: "#6366f1" },
+    URGENT: { color: "#ef4444", bg: "#fef2f2", dot: "#ef4444" },
 };
 
 const STATUS_STYLE = {
     ACTIVE: { color: "#16a34a", bg: "#f0fdf4" },
     INACTIVE: { color: "#64748b", bg: "#f1f5f9" },
-    CLOSED: { color: "#ef4444", bg: "#fef2f2" },
+    HIRED: { color: "#059669", bg: "#d1fae5" },
 };
 
-function Badge({ label, color, bg }) {
-    return (
-        <span style={{
-            fontSize: 12, fontWeight: 600, padding: "3px 10px",
-            borderRadius: 99, color, background: bg,
-            whiteSpace: "nowrap",
-        }}>
-            {label}
-        </span>
-    );
-}
+const PROFILE_COLORS = {
+    analyst: { color: "#3b82f6", label: "Analista" },
+    communicator: { color: "#eab308", label: "Comunicador" },
+    executor: { color: "#ef4444", label: "Executor" },
+    planner: { color: "#22c55e", label: "Planejador" },
+};
 
 function InfoCard({ label, value, icon: Icon }) {
     return (
         <div className={styles.infoCard}>
-            {Icon && <Icon size={16} color="var(--orange)" weight="duotone" />}
-            <div>
+            <div className={styles.infoCardAccent} />
+            <div className={styles.infoCardTop}>
+                {Icon && (
+                    <div className={styles.infoIconWrap}>
+                        <Icon size={15} color="var(--orange)" weight="duotone" />
+                    </div>
+                )}
                 <p className={styles.infoLabel}>{label}</p>
-                <p className={styles.infoValue}>{value || "—"}</p>
+            </div>
+            <p className={styles.infoValue}>{value || "—"}</p>
+        </div>
+    );
+}
+
+function ProfileBar({ field, value = 0 }) {
+    const cfg = PROFILE_COLORS[field];
+    const max = 5;
+    const pct = Math.min((value / max) * 100, 100);
+    return (
+        <div className={styles.profileItem}>
+            <div className={styles.profileLabel}>
+                <span>{cfg.label}</span>
+                <span style={{ color: cfg.color, fontWeight: 700 }}>{value} pts</span>
+            </div>
+            <div className={styles.profileBarBg}>
+                <div
+                    className={styles.profileBarFill}
+                    style={{ width: `${pct}%`, background: cfg.color }}
+                />
             </div>
         </div>
     );
 }
 
-function Section({ title, subtitle, children, className = "", headerClass = "" }) {
+function SectionCard({ title, subtitle, children, className = "", extra }) {
     return (
-        <div className={`card ${className}`}>
-            <div
-                className={`card-header ${headerClass}`}
-                style={{ marginBottom: 16 }}
-            >
+        <div className={`${styles.card} ${className}`}>
+            <div className={styles.cardHeader}>
                 <div>
-                    <p className="card-title">{title}</p>
-                    {subtitle && <p className="card-subtitle">{subtitle}</p>}
+                    <p className={styles.cardTitle}>{title}</p>
+                    {subtitle && <p className={styles.cardSub}>{subtitle}</p>}
                 </div>
+                {extra}
             </div>
-
             {children}
         </div>
     );
@@ -92,9 +110,8 @@ export default function JobsDetail() {
         api.get(`/jobs/${id}`)
             .then((res) => {
                 setJob(res.data[0]);
-
                 setSector(res.data[1].name);
-                setPosition(res.data[2].name)
+                setPosition(res.data[2].name);
             })
             .catch(() => setError("Vaga não encontrada."))
             .finally(() => setLoading(false));
@@ -134,27 +151,36 @@ export default function JobsDetail() {
 
     if (loading) {
         return (
-            <div className="page-content" style={{ display: "flex", alignItems: "center", justifyContent: "center", minHeight: 300 }}>
-                <div style={{ textAlign: "center", color: "var(--text-muted)" }}>Carregando...</div>
+            <div className={styles.centered}>
+                <div className={styles.spinner} />
+                <span className={styles.spinnerLabel}>Carregando vaga...</span>
             </div>
         );
     }
 
     if (error || !job) {
         return (
-            <div className="page-content">
-                <div className="feedback-banner feedback-error">{error ?? "Vaga não encontrada."}</div>
+            <div className={styles.centered}>
+                <div className={styles.errorIconWrap}>
+                    <Warning size={22} color="#ef4444" weight="duotone" />
+                </div>
+                <p className={styles.errorText}>
+                    {error ?? "Vaga não encontrada."}
+                </p>
+                <button className={styles.btnSecondary} onClick={() => navigate("/jobs")}>
+                    <ArrowLeft size={14} /> Voltar para vagas
+                </button>
             </div>
         );
     }
 
+    const isHired = job.status === "HIRED";
     const priorityStyle = PRIORITY_STYLE[job.priority] ?? PRIORITY_STYLE.MEDIUM;
 
     const fullAddress = job.workFormat === "REMOTE"
-        ? "Remoto"
+        ? "Trabalho remoto"
         : [job.address, job.number, job.complement, job.neighborhood, job.city, job.state, job.cep]
-            .filter(Boolean)
-            .join(", ");
+            .filter(Boolean).join(", ");
 
     const formattedSalary = job.salary
         ? `R$ ${Number(job.salary).toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`
@@ -164,91 +190,107 @@ export default function JobsDetail() {
         ? new Date(job.deadline).toLocaleDateString("pt-BR")
         : "Sem prazo";
 
-    const formattedCreatedAt = new Date(job.createdAt).toLocaleDateString("pt-BR", {
-        day: "2-digit", month: "long", year: "numeric",
-    });
+    const fmt = (d) =>
+        new Date(d).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" });
 
-    const formattedUpdatedAt = new Date(job.updatedAt).toLocaleDateString("pt-BR", {
-        day: "2-digit", month: "long", year: "numeric",
-    });
+    const hasBenefits =
+        (job.benefits?.length > 0) || (job.customBenefits?.length > 0);
 
     return (
         <PlanGate>
-            <div className="page-content">
-
+            <div className="page-content"><div className={styles.page}>
                 {statusSaved && (
-                    <div className="feedback-banner feedback-success mb-0" style={{ margin: 0 }}>
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                            <polyline points="20 6 9 17 4 12" />
-                        </svg>
+                    <div className={styles.toast}>
+                        <CheckCircle size={16} weight="fill" />
                         Status da vaga atualizado com sucesso!
                     </div>
                 )}
 
-                <div className={styles.pageHeader} style={{ flexWrap: 'nowrap', alignItems: 'center' }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                        <button className="btn-secondary" style={{ padding: "8px 12px" }} onClick={() => navigate("/jobs")}>
-                            <ArrowLeft size={16} weight="bold" />
+                <div className={styles.header}>
+                    <div className={styles.headerLeft_wrap}>
+                        <button
+                            className={styles.btnBack}
+                            onClick={() => navigate("/jobs")}
+                            title="Voltar"
+                        >
+                            <ArrowLeft size={15} weight="bold" />
                         </button>
-                        <div>
-                            <div style={{ display: "flex", alignItems: "center", gap: 12, flexWrap: "nowrap" }}>
-                                <h1 className={styles.pageTitle}>{job.title}</h1>
 
-                                {job.visible
-                                    ? <Eye size={16} color="var(--green)" title="Visível" />
-                                    : <EyeSlash size={16} color="var(--text-muted)" title="Oculta" />
-                                }
+                        <div className={styles.headerLeft}>
+                            <div className={styles.headerMeta}>
+                                <h1 className={styles.headerTitle}>{job.title}</h1>
 
-                                <Badge label={PRIORITY_MAP[job.priority]} color={priorityStyle.color} bg={priorityStyle.bg} />
+                                <span className={`${styles.visibilityChip} ${job.visible ? styles.visibilityChipVisible : styles.visibilityChipHidden}`}>
+                                    {job.visible
+                                        ? <Eye size={12} weight="fill" />
+                                        : <EyeSlash size={12} weight="fill" />
+                                    }
+                                    {job.visible ? "Visível" : "Oculta"}
+                                </span>
 
-                                <AsyncSelect
-                                    name="status"
-                                    value={{ value: job.status, label: STATUS_MAP[job.status] }}
-                                    fetchOptions={fetchStatusOptions}
-                                    onChange={handleStatusChange}
-                                    placeholder="Status da vaga"
-                                    colorMap={STATUS_STYLE}
-                                />
+                                <span
+                                    className={styles.badge}
+                                    style={{ color: priorityStyle.color, background: priorityStyle.bg }}
+                                >
+                                    <span
+                                        className={styles.priorityDot}
+                                        style={{ background: priorityStyle.dot }}
+                                    />
+                                    {PRIORITY_MAP[job.priority]}
+                                </span>
+
+                                {isHired ? (
+                                    <span className={styles.hiredBadge}>
+                                        <Trophy size={13} weight="fill" color="#059669" />
+                                        Contratada
+                                    </span>
+                                ) : (
+                                    <AsyncSelect
+                                        name="status"
+                                        value={{ value: job.status, label: STATUS_MAP[job.status] }}
+                                        fetchOptions={fetchStatusOptions}
+                                        onChange={handleStatusChange}
+                                        placeholder="Status"
+                                        colorMap={STATUS_STYLE}
+                                    />
+                                )}
                             </div>
-                            <p className={styles.pageSubtitle}>
-                                {sector} · {position}
+
+                            <p className={styles.headerSub}>
+                                <span className={styles.sectorAccent}>{sector}</span>
+                                <span className={styles.headerSubDivider}>·</span>
+                                {position}
                             </p>
                         </div>
                     </div>
 
-                    <div style={{ display: "flex", gap: 8 }}>
-                        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-                            <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
-                                Criada em {formattedCreatedAt}
-                            </span>
-                            <span style={{ fontSize: 12, color: "var(--text-muted)" }}>·</span>
-                            <span style={{ fontSize: 12, color: "var(--text-muted)" }}>
-                                Atualizada em {formattedUpdatedAt}
-                            </span>
+                    <div className={styles.headerActions}>
+                        <div className={styles.headerDates}>
+                            <span>Criada {fmt(job.createdAt)}</span>
+                            <span className={styles.headerDatesDivider}>·</span>
+                            <span>Atualizada {fmt(job.updatedAt)}</span>
                         </div>
 
-                        <button className="btn-secondary" onClick={() => navigate(`/jobs/${id}/edit`)}>
-                            <PencilSimple size={16} />
-                            Editar
+                        <div className={styles.divider} />
+
+                        {!isHired && (
+                            <button className={styles.btnEdit} onClick={() => navigate(`/jobs/${id}/edit`)}>
+                                <PencilSimple size={14} weight="bold" /> Editar
+                            </button>
+                        )}
+
+                        <button className={styles.btnCandidates} onClick={() => navigate(`/jobs/${id}/candidates`)}>
+                            <Users size={14} weight="bold" /> Candidatos
                         </button>
 
-                        <button className="btn-secondary" onClick={() => navigate(`/jobs/${id}/candidates`)}>
-                            <Users size={16} />
-                            Candidatos
-                        </button>
-
-                        <button
-                            className="btn-primary"
-                            style={{ background: "linear-gradient(135deg, #ef4444, #dc2626)" }}
-                            onClick={handleDelete}
-                        >
-                            <Trash size={16} />
-                            Desativar
-                        </button>
+                        {!isHired && (
+                            <button className={styles.btnDanger} onClick={handleDelete}>
+                                <Trash size={14} weight="bold" /> Desativar
+                            </button>
+                        )}
                     </div>
                 </div>
 
-                {/* ── Info cards ── */}
                 <div className={styles.infoGrid}>
                     <InfoCard label="Contrato" value={CONTRACT_MAP[job.contractType]} icon={Briefcase} />
                     <InfoCard label="Formato" value={FORMAT_MAP[job.workFormat]} icon={Buildings} />
@@ -257,94 +299,95 @@ export default function JobsDetail() {
                     <InfoCard label="Salário" value={formattedSalary} icon={CurrencyDollar} />
                     <InfoCard label="Prazo" value={formattedDeadline} icon={Calendar} />
                     <InfoCard label="Vaga afirmativa" value={AFFIRMATIVE_MAP[job.affirmative]} icon={Users} />
-                    <InfoCard label="Criada em" value={formattedCreatedAt} icon={Calendar} />
+                    <InfoCard label="Publicada em" value={fmt(job.createdAt)} icon={Calendar} />
                 </div>
 
-                <Section
-                    title="Perfil ideal da vaga"
-                    subtitle="Distribuição comportamental esperada para o candidato"
+                <SectionCard
+                    title="Perfil comportamental esperado"
+                    subtitle="Distribuição de competências para o candidato ideal"
+                    className={styles.sectionMb}
                 >
                     <div className={styles.profileGrid}>
-                        <InfoCard label="Analista" value={`${job.profile?.analyst ?? 0} pts.`} />
-                        <InfoCard label="Comunicador" value={`${job.profile?.communicator ?? 0} pts.`} />
-                        <InfoCard label="Executor" value={`${job.profile?.executor ?? 0} pts.`} />
-                        <InfoCard label="Planejador" value={`${job.profile?.planner ?? 0} pts.`} />
+                        {["analyst", "communicator", "executor", "planner"].map((f) => (
+                            <ProfileBar key={f} field={f} value={job.profile?.[f] ?? 0} />
+                        ))}
                     </div>
-                </Section>
+                </SectionCard>
 
-                <section className="flex gap-4">
-                    {/* ── Descrição ── */}
-                    <div className="w-3/4">
-                        <Section title="Descrição da vaga">
-                            <p className="text-sm text-[var(--text-2)] leading-7 whitespace-pre-wrap">
-                                {job.description}
-                            </p>
-                        </Section>
+                <div className={styles.twoCol}>
+                    <div className={styles.twoColMain}>
+                        <SectionCard title="Descrição da vaga">
+                            <p className={styles.descriptionText}>{job.description}</p>
+                        </SectionCard>
                     </div>
 
-                    {/* ── Localização ── */}
-                    {job.workFormat !== "REMOTE" && (
-                        <div className="w-1/4">
-                            <Section title="Localização" subtitle="Endereço onde a vaga será exercida">
-                                <div className="flex items-start gap-2.5">
+                    <div className={styles.twoColSide}>
+                        <SectionCard
+                            title="Localização"
+                            subtitle="Onde a vaga será exercida"
+                        >
+                            <div className={styles.locationWrap}>
+                                <div className={styles.locationAddress}>
                                     <MapPin
                                         size={16}
-                                        className="mt-[2px] shrink-0 text-[var(--orange)]"
+                                        color="var(--orange)"
                                         weight="duotone"
+                                        className={styles.locationAddressIcon}
                                     />
-                                    <p className="text-sm text-[var(--text-2)] leading-7">
-                                        {fullAddress}
-                                    </p>
+                                    <p className={styles.locationText}>{fullAddress}</p>
                                 </div>
-                            </Section>
-                        </div>
-                    )}
 
-                    {job.workFormat == "REMOTE" && (
-                        <div className="w-1/4">
-                            <Section title="Localização" subtitle="Endereço onde a vaga será exercida">
-                                <div className="flex items-start gap-2.5 align-center">
-                                    <MapPin
-                                        size={16}
-                                        className="mt-[2px] shrink-0 text-[var(--orange)]"
-                                        weight="duotone"
-                                    />
-                                    <p className="text-sm text-[var(--text-2)] leading-7">
-                                        Trabalho remoto.
-                                    </p>
+                                {job.workFormat === "REMOTE" && (
+                                    <div className={styles.remoteNote}>
+                                        <Buildings size={14} weight="duotone" />
+                                        Trabalho 100% remoto
+                                    </div>
+                                )}
+
+                                <div className={styles.locationMeta}>
+                                    {[
+                                        ["Formato", FORMAT_MAP[job.workFormat]],
+                                        ["Modalidade", TYPE_MAP[job.jobType]],
+                                        ["Contrato", CONTRACT_MAP[job.contractType]],
+                                    ].map(([lbl, val]) => (
+                                        <div key={lbl} className={styles.locationMetaRow}>
+                                            <span className={styles.locationMetaLabel}>{lbl}</span>
+                                            <span className={styles.locationMetaValue}>{val}</span>
+                                        </div>
+                                    ))}
                                 </div>
-                            </Section>
-                        </div>
-                    )}
-                </section>
+                            </div>
+                        </SectionCard>
+                    </div>
+                </div>
 
-                {/* ── Benefícios ── */}
-                {job.benefits?.length > 0 && (
-                    <Section title="Benefícios" subtitle="Benefícios oferecidos pela vaga">
-                        <div className={styles.benefitsList}>
-                            {job.benefits.map((b) => (
-                                <span key={b.benefitId} className={styles.benefitChip} style={{ cursor: "default" }}>
+                {hasBenefits && (
+                    <SectionCard
+                        title="Benefícios"
+                        subtitle="Benefícios oferecidos para esta vaga"
+                        extra={
+                            <span className={styles.benefitsCount}>
+                                {(job.benefits?.length ?? 0) + (job.customBenefits?.length ?? 0)} benefícios
+                            </span>
+                        }
+                    >
+                        <div className={styles.benefitsWrap}>
+                            {job.benefits?.map((b) => (
+                                <span key={b.benefitId} className={styles.chip}>
                                     {b.benefit?.name}
                                 </span>
                             ))}
-
-                            {/* ── Benefícios complementares ── */}
-                            {job.customBenefits?.length > 0 && (
-                                job.customBenefits.map((b) => (
-                                    <span key={b} className={styles.benefitChip} style={{ cursor: "default" }}>
-                                        {b}
-                                    </span>
-                                ))
-                            )}
+                            {job.customBenefits?.map((b) => (
+                                <span key={b} className={styles.chipCustom}>
+                                    {b}
+                                </span>
+                            ))}
                         </div>
-
-
-
-                    </Section>
+                    </SectionCard>
                 )}
 
-
             </div>
+        </div>
         </PlanGate>
     );
 }

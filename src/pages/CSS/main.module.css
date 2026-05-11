@@ -1,6 +1,4 @@
-/* ════════════════════════════════
-   SHELL
-   ════════════════════════════════ */
+
 .dashboard {
   display: flex;
   height: 100vh;
@@ -9,9 +7,6 @@
   color: var(--text);
 }
 
-/* ════════════════════════════════
-   SIDEBAR
-   ════════════════════════════════ */
 .sidebar {
   width: var(--sidebar-w);
   flex-shrink: 0;
@@ -49,11 +44,10 @@
   display: none;
 }
 
-/* ── Logo ── */
 .logo {
     height: 130px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    background: linear-gradient(135deg, var(--orange), #c2410c);
+    background: linear-gradient(135deg, #ff8d3e, #932b00);
     overflow: hidden;
     display: flex;
     justify-content: center;

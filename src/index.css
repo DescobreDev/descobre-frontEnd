@@ -1,9 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
-/* ══════════════════════════════════════════════════
-   VARIÁVEIS GLOBAIS
-   ══════════════════════════════════════════════════ */
 :root {
   /* Laranja — cor principal */
   --orange: #f97316;
@@ -61,9 +58,6 @@
   --r-lg: 16px;
 }
 
-/* ══════════════════════════════════════════════════
-   RESET E BASE
-   ══════════════════════════════════════════════════ */
 html,
 body,
 #root {
@@ -240,8 +234,6 @@ select {
   resize: none;
   line-height: 1.6;
 }
-
-
 
 /* ══════════════════════════════════════════════════
    FORMULÁRIOS GLOBAIS
@@ -569,7 +561,7 @@ select {
   min-height: calc(100vh - 80px);
   display: flex;
   flex-direction: column;
-  gap: 32px;
+  gap: 24px;
   animation: fadeSlideUp 0.35s ease both;
   background: #ffffff;
   margin: 15px;

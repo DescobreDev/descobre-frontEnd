@@ -201,7 +201,6 @@ export default function Payments() {
                     <p className="pageSubtitle">Histórico da sua assinatura</p>
                 </div>
 
-                {/* Card do plano */}
                 {subscription && (
                     <div className={styles.planCard}>
                         <div className={styles.planInfo}>
@@ -258,7 +257,6 @@ export default function Payments() {
                     </div>
                 )}
 
-                {/* Métricas */}
                 {!loading && data.length > 0 && (
                     <div className={styles.statsRow}>
                         <div className={styles.statCard}>

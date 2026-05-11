@@ -1,27 +1,27 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "@phosphor-icons/react";
+import { ArrowLeft, Trophy, SealCheck } from "@phosphor-icons/react";
 import { DataTable } from "../../components/dataTable";
 import { PlanGate } from "../../hooks/planGate";
 import AsyncSelect from "../../components/asyncSelect";
 import api from "../../services/api";
 
 const STATUS_LABELS = {
-    PENDING: "Aguardando",
-    IN_REVIEW: "Em triagem",
-    INTERVIEW: "Entrevista",
-    APPROVED: "Aprovado",
-    REJECTED: "Reprovado",
-    WITHDRAWN: "Desistiu",
+    RECEBIDA:    "Aguardando",
+    ANALISE:     "Análise",
+    ENTREVISTA:  "Entrevista",
+    APROVADO:    "Aprovado",
+    REPROVADO:   "Reprovado",
+    DESISTIU:    "Desistiu",
 };
 
 const STATUS_COLORS = {
-    PENDING: { color: "#f59e0b", bg: "#fef3c7" },
-    IN_REVIEW: { color: "#3b82f6", bg: "#dbeafe" },
-    INTERVIEW: { color: "#8b5cf6", bg: "#ede9fe" },
-    APPROVED: { color: "#10b981", bg: "#d1fae5" },
-    REJECTED: { color: "#ef4444", bg: "#fee2e2" },
-    WITHDRAWN: { color: "#6b7280", bg: "#f3f4f6" },
+    RECEBIDA:   { color: "#f59e0b", bg: "#fef3c7" },
+    ANALISE:    { color: "#3b82f6", bg: "#dbeafe" },
+    ENTREVISTA: { color: "#8b5cf6", bg: "#ede9fe" },
+    APROVADO:   { color: "#10b981", bg: "#d1fae5" },
+    REPROVADO:  { color: "#ef4444", bg: "#fee2e2" },
+    DESISTIU:   { color: "#6b7280", bg: "#f3f4f6" },
 };
 
 const columns = [
@@ -36,13 +36,12 @@ const columns = [
             const s = STATUS_COLORS[val] ?? { color: "#6b7280", bg: "#f3f4f6" };
             return (
                 <span style={{
-                    color: s.color,
-                    background: s.bg,
-                    fontWeight: 600,
-                    fontSize: 12,
-                    padding: "2px 10px",
-                    borderRadius: 20,
+                    color: s.color, background: s.bg,
+                    fontWeight: 600, fontSize: 12,
+                    padding: "2px 10px", borderRadius: 20,
+                    display: "inline-flex", alignItems: "center", gap: 4,
                 }}>
+                    {val === "APROVADO" && <SealCheck size={12} weight="fill" />}
                     {STATUS_LABELS[val] ?? val}
                 </span>
             );
@@ -53,29 +52,10 @@ const columns = [
         title: "Match",
         width: "10%",
         render: (val) => {
-            let color = "#6b7280";
-            let bg = "#f3f4f6";
-
-            if (val >= 80) {
-                color = "#16a34a";
-                bg = "#dcfce7";
-            } else if (val >= 60) {
-                color = "#ca8a04";
-                bg = "#fef9c3";
-            } else {
-                color = "#dc2626";
-                bg = "#fee2e2";
-            }
-
+            const color = val >= 80 ? "#16a34a" : val >= 60 ? "#ca8a04" : "#dc2626";
+            const bg = val >= 80 ? "#dcfce7" : val >= 60 ? "#fef9c3" : "#fee2e2";
             return (
-                <span style={{
-                    color,
-                    background: bg,
-                    fontWeight: 700,
-                    fontSize: 12,
-                    padding: "2px 10px",
-                    borderRadius: 20,
-                }}>
+                <span style={{ color, background: bg, fontWeight: 700, fontSize: 12, padding: "2px 10px", borderRadius: 20 }}>
                     {val}%
                 </span>
             );
@@ -96,6 +76,36 @@ async function fetchStatusOptions() {
     ];
 }
 
+function HiredBanner({ hired }) {
+    if (!hired) return null;
+    return (
+        <div style={{
+            display: "flex", alignItems: "center", gap: 14,
+            background: "linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)",
+            border: "1px solid #6ee7b7",
+            borderRadius: 12, padding: "14px 20px",
+        }}>
+            <div style={{
+                width: 44, height: 44, borderRadius: "50%",
+                background: "#fff", border: "2px solid #6ee7b7",
+                display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+            }}>
+                <Trophy size={22} weight="fill" color="#059669" />
+            </div>
+            <div>
+                <p style={{ margin: 0, fontWeight: 700, fontSize: 14, color: "#065f46" }}>
+                    Vaga encerrada por contratação
+                </p>
+                <p style={{ margin: "2px 0 0", fontSize: 13, color: "#047857" }}>
+                    <strong>{hired.name}</strong> foi contratado(a) em{" "}
+                    {new Date(hired.hiredAt).toLocaleDateString("pt-BR")}.
+                    A lista abaixo está em modo somente leitura.
+                </p>
+            </div>
+        </div>
+    );
+}
+
 export default function JobsCandidates() {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -106,6 +116,10 @@ export default function JobsCandidates() {
     const [page, setPage] = useState(1);
     const [statusFilter, setStatusFilter] = useState("");
     const [jobTitle, setJobTitle] = useState("");
+    const [jobStatus, setJobStatus] = useState(null);
+    const [hiredCandidate, setHiredCandidate] = useState(null);
+
+    const isHired = jobStatus === "HIRED";
 
     async function load(p = 1) {
         setLoading(true);
@@ -116,6 +130,11 @@ export default function JobsCandidates() {
             const res = await api.get(`/jobs/${id}/candidates`, { params });
 
             if (res.data.jobTitle) setJobTitle(res.data.jobTitle);
+            if (res.data.jobStatus) setJobStatus(res.data.jobStatus);
+
+            if (res.data.hiredCandidate) {
+                setHiredCandidate(res.data.hiredCandidate);
+            }
 
             const rows = res.data.data.map((app) => ({
                 id: app.id,
@@ -152,28 +171,38 @@ export default function JobsCandidates() {
                             <h1 className="pageTitle">Candidatos</h1>
                             <p className="pageSubtitle">
                                 {jobTitle ? `Vaga: ${jobTitle}` : "Lista de candidaturas"}
+                                {isHired && (
+                                    <span style={{
+                                        marginLeft: 8, fontSize: 11, fontWeight: 700,
+                                        color: "#065f46", background: "#d1fae5",
+                                        padding: "2px 8px", borderRadius: 20,
+                                        verticalAlign: "middle",
+                                    }}>
+                                        Contratada
+                                    </span>
+                                )}
                             </p>
                         </div>
                     </div>
 
-                    <div style={{ width: "300px" }}>
-                        <AsyncSelect
-                            name="statusFilter"
-                            value={
-                                statusFilter
-                                    ? { value: statusFilter, label: STATUS_LABELS[statusFilter] }
-                                    : { value: "", label: "Todos os status" }
-                            }
-                            fetchOptions={fetchStatusOptions}
-                            onChange={(opt) => {
-                                setStatusFilter(opt.value);
-                                setPage(1);
-                            }}
-                            placeholder="Todos os status"
-                            colorMap={STATUS_COLORS}
-                        />
-                    </div>
+                    {!isHired && (
+                        <div style={{ width: "300px" }}>
+                            <AsyncSelect
+                                name="statusFilter"
+                                value={
+                                    statusFilter
+                                        ? { value: statusFilter, label: STATUS_LABELS[statusFilter] }
+                                        : { value: "", label: "Todos os status" }
+                                }
+                                fetchOptions={fetchStatusOptions}
+                                onChange={(opt) => { setStatusFilter(opt.value); setPage(1); }}
+                                placeholder="Todos os status"
+                                colorMap={STATUS_COLORS}
+                            />
+                        </div>
+                    )}
                 </div>
+                <HiredBanner hired={isHired ? hiredCandidate : null} />
 
                 <DataTable
                     columns={columns}
@@ -184,7 +213,6 @@ export default function JobsCandidates() {
                     emptyMessage="Nenhum candidato encontrado."
                     onRowClick={(row) => navigate(`/jobs/${id}/candidates/${row.id}`)}
                 />
-
             </div>
         </PlanGate>
     );

@@ -14,9 +14,9 @@ const SpinnerIcon = () => (
 );
 
 const ANNUAL_PRICES = {
-    Bronze: 2500,
-    Prata: 6600,
-    Ouro: 15900,
+  Bronze: 2500,
+  Prata: 6600,
+  Ouro: 15900,
 };
 
 // ─── Steps ────────────────────────────────────────────────────────────────────
@@ -31,7 +31,6 @@ const PLAN_STYLE = {
   Ouro: { icon: CrownIcon, color: "#6366f1", colorSoft: "#eef2ff" },
 };
 
-// ─── Máscaras ─────────────────────────────────────────────────────────────────
 function maskCpfCnpj(value = "") {
   const n = value.replace(/\D/g, "");
   if (n.length <= 11)
@@ -42,6 +41,11 @@ function maskCpfCnpj(value = "") {
     .replace(/\.(\d{3})(\d)/, ".$1/$2")
     .replace(/(\d{4})(\d)/, "$1-$2");
 }
+
+function maskCEP(value) {
+  return value.replace(/\D/g, '').slice(0, 8).replace(/^(\d{5})(\d)/, '$1-$2');
+}
+
 function maskPhone(v = "") {
   return v.replace(/\D/g, "").slice(0, 11)
     .replace(/^(\d{2})(\d)/, "($1) $2")
@@ -54,7 +58,6 @@ function maskExpiry(v = "") {
   return v.replace(/\D/g, "").slice(0, 2);
 }
 
-// ─── Step Indicator ───────────────────────────────────────────────────────────
 function StepIndicator({ current }) {
   return (
     <div className={styles.stepIndicator}>
@@ -81,7 +84,6 @@ function StepIndicator({ current }) {
   );
 }
 
-// ─── Etapa 1: Confirmar empresa ───────────────────────────────────────────────
 function StepCompany({ form, onChange, onNext, loading, error }) {
   return (
     <div className={styles.stepContent}>
@@ -127,7 +129,7 @@ function StepCompany({ form, onChange, onNext, loading, error }) {
   );
 }
 
-function StepCard({ cardForm, onChange, onSubmit, loading, error, waitingActivation, plan, isAnnual  }) {
+function StepCard({ cardForm, onChange, onSubmit, loading, error, waitingActivation, plan, isAnnual }) {
   return (
     <div>
       <div className={styles.stepContent}>
@@ -272,7 +274,6 @@ function StepCard({ cardForm, onChange, onSubmit, loading, error, waitingActivat
             </div>
           </div>
 
-          {/* RESUMO DO PLANO */}
           {plan && (() => {
             const ps = PLAN_STYLE[plan.name] ?? { icon: Buildings, color: "#6366f1", colorSoft: "#eef2ff" };
             const PlanIcon = ps.icon;
@@ -356,7 +357,6 @@ function StepCard({ cardForm, onChange, onSubmit, loading, error, waitingActivat
   );
 }
 
-// ─── Wizard principal ─────────────────────────────────────────────────────────
 export default function AsaasPaymentWizard({ isOpen, onClose, onComplete, plan, isAnnual }) {
   const { user, setUser } = useContext(AuthContext);
   const company = user?.company;
@@ -365,7 +365,6 @@ export default function AsaasPaymentWizard({ isOpen, onClose, onComplete, plan, 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Guardamos customerId e token entre steps
   const [asaasCustomerId, setAsaasCustomerId] = useState(null);
   const [waitingActivation, setWaitingActivation] = useState(false);
 
@@ -378,7 +377,6 @@ export default function AsaasPaymentWizard({ isOpen, onClose, onComplete, plan, 
     holderCpfCnpj: "", holderPostalCode: "", holderEmail: "", holderPhone: "", holderAddressNumber: "",
   });
 
-  // Pré-popula com dados da empresa
   useEffect(() => {
     if (company) {
       setCompanyForm({
@@ -427,17 +425,19 @@ export default function AsaasPaymentWizard({ isOpen, onClose, onComplete, plan, 
 
   function handleCardChange(e) {
     const { name, value } = e.target;
+
     setCardForm((p) => ({
       ...p,
-      [name]: name === "number" ? maskCard(value)
-        : name === "expiryMonth" ? maskExpiry(value)
-          : name === "holderCpfCnpj" ? maskCpfCnpj(value)
-            : name === "holderPhone" ? maskPhone(value)
-              : value,
+      [name]:
+        name === "number" ? maskCard(value)
+          : name === "expiryMonth" ? maskExpiry(value)
+            : name === "holderCpfCnpj" ? maskCpfCnpj(value)
+              : name === "holderPhone" ? maskPhone(value)
+                : name === "holderPostalCode" ? maskCEP(value)
+                  : value,
     }));
   }
 
-  // ── Step 1: criar customer ────────────────────────────────────────────────
   async function handleCreateCustomer() {
     setError(null);
     setLoading(true);
@@ -452,12 +452,10 @@ export default function AsaasPaymentWizard({ isOpen, onClose, onComplete, plan, 
     }
   }
 
-  // ── Step 2: tokenizar + criar assinatura ─────────────────────────────────
   async function handleTokenizeAndSubscribe() {
     setError(null);
     setLoading(true);
     try {
-      // 2a. Tokeniza o cartão
       const { data: tokenData } = await api.post("/payments/asaas/tokenize", {
         customerId: asaasCustomerId,
         creditCard: {
@@ -479,7 +477,6 @@ export default function AsaasPaymentWizard({ isOpen, onClose, onComplete, plan, 
 
       const planId = plan.id;
 
-      // 2b. Cria a assinatura recorrente
       await api.post("/payments/asaas/subscribe", {
         planId,
         isAnnual,

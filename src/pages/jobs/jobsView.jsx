@@ -4,25 +4,24 @@ import { DataTable } from "../../components/dataTable";
 import { PlanGate } from "../../hooks/planGate";
 import api from "../../services/api";
 import AsyncSelect from "../../components/asyncSelect";
-import {
-  Plus, PencilSimple, Eye, MapPin,
-} from "@phosphor-icons/react";
+import { Plus, PencilSimple, Eye, MapPin, Trophy } from "@phosphor-icons/react";
 import styles from "./CSS/jobs.module.css";
 
 const STATUS_LABEL = {
-  ACTIVE: { label: "Ativa", color: "#10b981", bg: "#f0fdf4" },
-  INACTIVE: { label: "Inativa", color: "#94a3b8", bg: "#f1f5f9" },
+  ACTIVE:   { label: "Ativa",       color: "#10b981", bg: "#f0fdf4" },
+  INACTIVE: { label: "Inativa",     color: "#94a3b8", bg: "#f1f5f9" },
+  HIRED:    { label: "Contratada",  color: "#059669", bg: "#d1fae5" }, 
 };
 
 const PRIORITY_LABEL = {
-  LOW: { label: "Baixa", color: "#64748b", bg: "#f1f5f9" },
-  MEDIUM: { label: "Média", color: "#f97316", bg: "#fff7ed" },
-  HIGH: { label: "Alta", color: "#6366f1", bg: "#eef2ff" },
+  LOW:    { label: "Baixa",   color: "#64748b", bg: "#f1f5f9" },
+  MEDIUM: { label: "Média",   color: "#f97316", bg: "#fff7ed" },
+  HIGH:   { label: "Alta",    color: "#6366f1", bg: "#eef2ff" },
   URGENT: { label: "Urgente", color: "#ef4444", bg: "#fef2f2" },
 };
 
 const STATUS_OPTIONS = [
-  { value: "ACTIVE", label: "Ativa" },
+  { value: "ACTIVE",   label: "Ativa"   },
   { value: "INACTIVE", label: "Inativa" },
 ];
 
@@ -30,14 +29,11 @@ function Badge({ value, map }) {
   const config = map[value] ?? { label: value, color: "#64748b", bg: "#f1f5f9" };
   return (
     <span style={{
-      display: "inline-flex",
-      alignItems: "center",
-      padding: "3px 10px",
-      borderRadius: 99,
-      fontSize: 12,
-      fontWeight: 600,
-      color: config.color,
-      background: config.bg,
+      display: "inline-flex", alignItems: "center",
+      padding: "3px 10px", borderRadius: 99,
+      fontSize: 12, fontWeight: 600,
+      color: config.color, background: config.bg,
+      width: "100%", justifyContent: "center"
     }}>
       {config.label}
     </span>
@@ -52,9 +48,7 @@ export default function JobsView() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    fetchJobs(1);
-  }, []);
+  useEffect(() => { fetchJobs(1); }, []);
 
   async function fetchJobs(page = 1) {
     try {
@@ -75,9 +69,7 @@ export default function JobsView() {
     try {
       await api.post(`/jobs/${job.id}/status`, { status: option.value });
       setJobs((prev) =>
-        prev.map((j) =>
-          j.id === job.id ? { ...j, status: option.value } : j
-        )
+        prev.map((j) => j.id === job.id ? { ...j, status: option.value } : j)
       );
     } catch {
       alert("Erro ao atualizar status da vaga.");
@@ -90,9 +82,12 @@ export default function JobsView() {
       title: "Vaga",
       render: (value, row) => (
         <div>
-          <p style={{ margin: 0, fontWeight: 600, fontSize: 14, color: "var(--text)" }}>{value}</p>
-          <p style={{ margin: 0, fontSize: 12, color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4, marginTop: 2 }}>
-            <MapPin size={11} /> {row.city ? `${row.city} · ${row.state}` : 'Remoto'}
+          <p style={{ margin: 0, fontWeight: 600, fontSize: 14, color: "var(--text)" }}>
+            {value}
+          </p>
+          <p style={{ margin: "2px 0 0", fontSize: 12, color: "var(--text-muted)", display: "flex", alignItems: "center", gap: 4 }}>
+            <MapPin size={11} />
+            {row.city ? `${row.city} · ${row.state}` : "Remoto"}
           </p>
         </div>
       ),
@@ -120,25 +115,43 @@ export default function JobsView() {
     {
       key: "status",
       title: "Status",
-      render: (value, row) => (
-        <div onClick={(e) => e.stopPropagation()}>
-          <AsyncSelect
-            name="status"
-            value={{ value: row.status, label: STATUS_LABEL[row.status]?.label }}
-            fetchOptions={async (search = "") =>
-              STATUS_OPTIONS.filter((s) =>
-                s.label.toLowerCase().includes(search.toLowerCase())
-              )
-            }
-            onChange={(option) => handleStatusChange(row, option)}
-            placeholder="Status"
-            colorMap={{
-              ACTIVE: { color: STATUS_LABEL.ACTIVE.color, bg: STATUS_LABEL.ACTIVE.bg },
-              INACTIVE: { color: STATUS_LABEL.INACTIVE.color, bg: STATUS_LABEL.INACTIVE.bg },
-            }}
-          />
-        </div>
-      ),
+      render: (value, row) => {
+        if (value === "HIRED") {
+          return (
+            <span style={{
+              display: "inline-flex", alignItems: "center", gap: 5,
+              padding: "4px 10px", borderRadius: 99,
+              fontSize: 12, fontWeight: 700,
+              color: "#065f46", background: "#d1fae5",
+              border: "1px solid #6ee7b7",
+              whiteSpace: "nowrap", width: "100%", justifyContent: 'center'
+            }}>
+              <Trophy size={12} weight="fill" color="#059669" />
+              Contratada
+            </span>
+          );
+        }
+
+        return (
+          <div onClick={(e) => e.stopPropagation()}>
+            <AsyncSelect
+              name="status"
+              value={{ value: row.status, label: STATUS_LABEL[row.status]?.label }}
+              fetchOptions={async (search = "") =>
+                STATUS_OPTIONS.filter((s) =>
+                  s.label.toLowerCase().includes(search.toLowerCase())
+                )
+              }
+              onChange={(option) => handleStatusChange(row, option)}
+              placeholder="Status"
+              colorMap={{
+                ACTIVE:   { color: STATUS_LABEL.ACTIVE.color,   bg: STATUS_LABEL.ACTIVE.bg   },
+                INACTIVE: { color: STATUS_LABEL.INACTIVE.color, bg: STATUS_LABEL.INACTIVE.bg },
+              }}
+            />
+          </div>
+        );
+      },
     },
     {
       key: "deadline",
@@ -163,7 +176,6 @@ export default function JobsView() {
           </button>
         </div>
 
-
         <DataTable
           columns={columns}
           data={jobs}
@@ -182,13 +194,15 @@ export default function JobsView() {
                 <Eye size={15} />
               </button>
 
-              <button
-                className={styles.actionBtn}
-                onClick={() => navigate(`/jobs/${row.id}/edit`)}
-                title="Editar"
-              >
-                <PencilSimple size={15} />
-              </button>
+              {row.status !== "HIRED" && (
+                <button
+                  className={styles.actionBtn}
+                  onClick={() => navigate(`/jobs/${row.id}/edit`)}
+                  title="Editar"
+                >
+                  <PencilSimple size={15} />
+                </button>
+              )}
             </>
           )}
         />

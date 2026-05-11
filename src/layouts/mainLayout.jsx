@@ -46,6 +46,7 @@ function maskPhone(value) {
 function maskCEP(value) {
   return value.replace(/\D/g, '').slice(0, 8).replace(/^(\d{5})(\d)/, '$1-$2');
 }
+
 function rawCNPJ(value) { return value.replace(/\D/g, ''); }
 
 const NAV_ITEMS = [
@@ -58,7 +59,7 @@ const NAV_ITEMS = [
 
 function DashboardLayout() {
   const { user, logout, setUser } = useContext(AuthContext);
-  const { planName, hasActivePlan  } = usePlan();
+  const { planName, hasActivePlan } = usePlan();
   const [activeModal, setActiveModal] = useState(null);
   const [loading, setLoading] = useState(false);
   const [loadingCNPJ, setLoadingCNPJ] = useState(false);
@@ -73,6 +74,7 @@ function DashboardLayout() {
     cep: '',
     address: '',
     number: '',
+    district: '',
     complement: '',
     city: '',
     state: '',
@@ -120,9 +122,10 @@ function DashboardLayout() {
         phone: maskPhone((endereco?.ddd1 ?? '') + (endereco?.telefone1 ?? '')) || prev.phone,
         cep: maskCEP(endereco?.cep ?? '') || prev.cep,
         address: `${endereco?.tipo_logradouro ?? ''} ${endereco?.logradouro ?? ''}`.trim() || prev.address,
+        district: endereco?.bairro ?? '',
         number: endereco?.numero || prev.number,
         complement: endereco?.complemento || prev.complement,
-        city: endereco?.cidade?.ibge_nome || prev.city,
+        city: endereco?.cidade?.nome || prev.city,
         state: endereco?.estado?.sigla || prev.state,
       }));
     } catch (err) {
@@ -355,10 +358,16 @@ function DashboardLayout() {
                 placeholder="00000-000" className="input" required />
             </div>
 
-            <div className="form-field col-span-2">
+            <div className="form-field">
               <label className="form-label">Endereço</label>
               <input name="address" value={form.address} onChange={handleChange}
                 placeholder="Rua, Avenida..." className="input" required />
+            </div>
+
+            <div className="form-field">
+              <label className="form-label">Bairro</label>
+              <input name="address" value={form.district} onChange={handleChange}
+                placeholder="Vila..." className="input" required />
             </div>
 
             <div className="form-field">
