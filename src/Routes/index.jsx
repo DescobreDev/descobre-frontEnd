@@ -18,6 +18,7 @@ const JobsCandidateDetail = lazy(() => import("../pages/jobs/jobsCandidateDetail
 const MyCompany = lazy(() => import("../pages/myCompany.jsx"));
 const VerifyEmail = lazy(() => import("../pages/verifyEmail.jsx"));
 const Payments = lazy(() => import("../pages/payments.jsx"));
+const AddCandidate = lazy(() => import("../pages/addCadidate.jsx"));
 
 
 export default function AppRoutes() {
@@ -39,6 +40,7 @@ export default function AppRoutes() {
           <Route path="/jobs/:id/candidates/:applicationId" element={<JobsCandidateDetail />} />
           <Route path="/myCompany" element={<MyCompany />} />
           <Route path="/payments" element={<Payments />} />
+          <Route path="/AddCandidate" element={<AddCandidate />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

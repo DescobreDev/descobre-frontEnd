@@ -10,7 +10,8 @@ import { Modal } from '../components/modal';
 import {
   Buildings, ArrowRight, Sparkle, CheckCircle, WarningCircle,
   House, ChartBar, Gear, SignOut, Bell, MagnifyingGlass,
-  CaretRight, Shield, EnvelopeSimple, Phone, CreditCard, MoneyIcon
+  CaretRight, Shield, EnvelopeSimple, Phone, CreditCard, MoneyIcon,
+  GearIcon
 } from "@phosphor-icons/react";
 
 const ESTADOS = [
@@ -55,6 +56,7 @@ const NAV_ITEMS = [
   { to: '/myCompany', label: 'Minha Empresa', Icon: Buildings },
   { to: '/plans', label: 'Planos', Icon: CreditCard },
   { to: '/payments', label: 'Pagamentos', Icon: MoneyIcon },
+  { to: '/addCandidate', label: 'Adicionar Canidato a vaga (TESTE)', Icon: GearIcon },
 ];
 
 function DashboardLayout() {
