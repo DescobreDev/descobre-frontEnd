@@ -1,5 +1,6 @@
 import { useEffect, useState, useContext, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { createPortal } from "react-dom";
 import {
   VideoCamera,
   Buildings,
@@ -110,46 +111,86 @@ function fmtDateTime(val) {
 
 function InfoPopover({ text }) {
   const [open, setOpen] = useState(false);
-  const ref = useRef(null);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
+  const btnRef = useRef(null);
+
+  function updatePos() {
+    if (!btnRef.current) return;
+    const rect = btnRef.current.getBoundingClientRect();
+    setPos({
+      top: rect.top + window.scrollY - 8,
+      left: rect.left + window.scrollX + rect.width / 2,
+    });
+  }
 
   useEffect(() => {
+    if (!open) return;
+    updatePos();
+
     function handler(e) {
-      if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+      if (btnRef.current && !btnRef.current.contains(e.target)) setOpen(false);
     }
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
-  }, []);
+  }, [open]);
+
+  const popover = open && createPortal(
+    <div style={{
+      position: "absolute",
+      top: pos.top,
+      left: pos.left,
+      transform: "translate(-50%, -100%)",
+      width: 240,
+      background: "var(--surface)",
+      border: "1px solid var(--border)",
+      borderRadius: 8,
+      padding: "10px 12px",
+      fontSize: 12,
+      lineHeight: 1.6,
+      color: "var(--text-2)",
+      zIndex: 99999,
+      boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+      pointerEvents: "none",
+    }}>
+      <div style={{ display: "flex", gap: 6, alignItems: "flex-start" }}>
+        <Warning size={13} weight="fill" color="#f59e0b" style={{ flexShrink: 0, marginTop: 2 }} />
+        <span>{text}</span>
+      </div>
+      {/* setinha */}
+      <div style={{
+        position: "absolute",
+        bottom: -6,
+        left: "50%",
+        transform: "translateX(-50%) rotate(45deg)",
+        width: 10,
+        height: 10,
+        background: "var(--surface)",
+        borderRight: "1px solid var(--border)",
+        borderBottom: "1px solid var(--border)",
+      }} />
+    </div>,
+    document.body
+  );
 
   return (
-    <span ref={ref} style={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
-      <button
-        type="button"
-        onMouseEnter={() => setOpen(true)}
-        onMouseLeave={() => setOpen(false)}
-        onClick={() => setOpen((v) => !v)}
-        style={{
-          background: "none", border: "none", cursor: "pointer",
-          color: "var(--text-muted)", padding: 2, display: "flex",
-        }}
-      >
-        <Info size={15} weight="fill" />
-      </button>
-      {open && (
-        <div style={{
-          position: "absolute", bottom: "calc(100% + 8px)", left: "50%",
-          transform: "translateX(-50%)", width: 240, background: "var(--surface)",
-          border: "1px solid var(--border)", borderRadius: 8, padding: "10px 12px",
-          fontSize: 12, lineHeight: 1.6, color: "var(--text-2)", zIndex: 10000,
-          boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
-          pointerEvents: "none",
-        }}>
-          <div style={{ display: "flex", gap: 6, alignItems: "flex-start" }}>
-            <Warning size={13} weight="fill" color="#f59e0b" style={{ flexShrink: 0, marginTop: 2 }} />
-            <span>{text}</span>
-          </div>
-        </div>
-      )}
-    </span>
+    <>
+      <span style={{ position: "relative", display: "inline-flex", alignItems: "center" }}>
+        <button
+          ref={btnRef}
+          type="button"
+          onMouseEnter={() => setOpen(true)}
+          onMouseLeave={() => setOpen(false)}
+          onClick={() => setOpen(v => !v)}
+          style={{
+            background: "none", border: "none", cursor: "pointer",
+            color: "var(--text-muted)", padding: 2, display: "flex",
+          }}
+        >
+          <Info size={15} weight="fill" />
+        </button>
+      </span>
+      {popover}
+    </>
   );
 }
 
@@ -385,7 +426,6 @@ function PerfilTab({ candidate }) {
   );
 }
 
-// Constrói lista unificada de eventos de auditoria a partir de interviewEvents
 function buildAuditEvents(interviewEvents = []) {
   return interviewEvents.map((event) => {
     const meta = INTERVIEW_EVENT_LABELS[event.type] ?? { title: event.type, type: "status_change" };
@@ -528,6 +568,85 @@ function ModalConfirm({ open, onClose, onConfirm, loading, nextStatus }) {
         <button className={styles.btnSecondary} onClick={onClose} disabled={loading}>Cancelar</button>
         <button className={styles.btnAdvance} onClick={onConfirm} disabled={loading}>
           {loading ? "Aguarde..." : copy.btn}
+        </button>
+      </div>
+    </Modal>
+  );
+}
+
+function ModalReprovar({ open, onClose, onConfirm, loading, candidateName }) {
+  const [confirmed, setConfirmed] = useState(false);
+
+  useEffect(() => {
+    if (!open) setConfirmed(false);
+  }, [open]);
+
+  return (
+    <Modal isOpen={open} onClose={onClose} title="" canClose={!loading}>
+      <div className={styles.modalReprovarHeader}>
+        <div className={styles.modalReprovarHeaderLeft}>
+          <div className={styles.modalReprovarHeaderIcon}>
+            <XCircle size={18} weight="fill" color="#ef4444" />
+          </div>
+          <div>
+            <div className={styles.modalReprovarHeaderTitle}>Reprovar candidato</div>
+            <div className={styles.modalReprovarHeaderSub}>Esta ação não pode ser desfeita</div>
+          </div>
+        </div>
+        {!loading && (
+          <button className={styles.modalReprovarCloseBtn} onClick={onClose}>
+            <X size={16} />
+          </button>
+        )}
+      </div>
+
+      <div className={styles.modalReprovarBody}>
+        <div className={styles.modalReprovarCandidate}>
+          <div className={styles.modalReprovarAvatar}>
+            {initials(candidateName)}
+          </div>
+          <div>
+            <div className={styles.modalReprovarAvatarName}>{candidateName}</div>
+            <div className={styles.modalReprovarAvatarSub}>Candidato(a)</div>
+          </div>
+          <span className={styles.modalReprovarBadge}>
+            <span className={styles.modalReprovarBadgeDot} />
+            Reprovado
+          </span>
+        </div>
+
+        <div className={styles.modalReprovarWarning}>
+          <Warning size={15} weight="fill" color="#f97316" style={{ flexShrink: 0, marginTop: 1 }} />
+          <p className={styles.modalReprovarWarningText}>
+            Ao reprovar, o candidato será notificado e removido do processo seletivo.
+            Você não poderá reverter esta decisão posteriormente.
+          </p>
+        </div>
+
+        <label className={`${styles.modalReprovarCheckLabel} ${confirmed ? styles.modalReprovarCheckLabelActive : ""}`}>
+          <input
+            type="checkbox"
+            checked={confirmed}
+            onChange={(e) => setConfirmed(e.target.checked)}
+            style={{ width: 15, height: 15, accentColor: "#ef4444", cursor: "pointer", flexShrink: 0 }}
+          />
+          <span className={styles.modalReprovarCheckText}>
+            Entendo que esta ação é <strong>irreversível</strong> e desejo reprovar este candidato.
+          </span>
+        </label>
+      </div>
+
+      <div className={styles.modalReprovarFooter}>
+        <button className={styles.btnSecondary} onClick={onClose} disabled={loading}>
+          Cancelar
+        </button>
+        <button
+          className={styles.btnReprovarConfirm}
+          onClick={onConfirm}
+          disabled={loading || !confirmed}
+        >
+          <XCircle size={15} weight="bold" />
+          {loading ? "Aguarde..." : "Reprovar candidato"}
         </button>
       </div>
     </Modal>
@@ -816,9 +935,15 @@ export default function JobsCandidateDetail() {
   }, [id, applicationId]);
 
   useEffect(() => {
-    if (!application) return;
-    if (application.status === "RECEBIDA") setTab("curriculo");
-  }, [application?.status]);
+    if (!application?.status) return;
+
+    if (
+      application.status === "ANALISE" &&
+      tab !== "match"
+    ) {
+      setTab("match");
+    }
+  }, [application?.status, tab]);
 
   function handleAdvanceClick() {
     const next = NEXT_STATUS[application.status];
@@ -833,11 +958,20 @@ export default function JobsCandidateDetail() {
 
   async function handleConfirm() {
     setUpdating(true);
+
     try {
-      await api.patch(`/jobs/${id}/candidates/${applicationId}/status`, { status: pendingStatus });
-      setApplication((prev) => ({ ...prev, status: pendingStatus }));
+      await api.patch(
+        `/jobs/${id}/candidates/${applicationId}/status`,
+        { status: pendingStatus }
+      );
+      setApplication((prev) => ({
+        ...prev,
+        status: pendingStatus,
+      }));
       setConfirmModal(false);
-      if (pendingStatus === "APROVADO") setParabensModal(true);
+      if (pendingStatus === "APROVADO") {
+        setParabensModal(true);
+      }
     } finally {
       setUpdating(false);
     }
@@ -879,11 +1013,14 @@ export default function JobsCandidateDetail() {
     }
   }
 
+  const [reprovarModal, setReprovarModal] = useState(false);
+
   async function handleReject() {
     setUpdating(true);
     try {
       await api.patch(`/jobs/${id}/candidates/${applicationId}/status`, { status: "REPROVADO" });
       setApplication((prev) => ({ ...prev, status: "REPROVADO" }));
+      setReprovarModal(false);
     } finally {
       setUpdating(false);
     }
@@ -902,7 +1039,6 @@ export default function JobsCandidateDetail() {
   const showMatch = ["ANALISE", "ENTREVISTA", "APROVADO"].includes(application.status);
   const showPerfil = ["ANALISE", "ENTREVISTA", "APROVADO"].includes(application.status);
   const showInfoCandidato = application.status === "APROVADO";
-  // Mostra aba auditoria sempre que houver eventos de entrevista
   const showAuditoria = (application.interviewEvents?.length ?? 0) > 0;
 
   return (
@@ -947,7 +1083,7 @@ export default function JobsCandidateDetail() {
               <p className={styles.actionsHint}>Mover candidato para próxima etapa ou reprovar</p>
               <div className={styles.actionsGroup}>
                 {canReject && (
-                  <button className={styles.btnReject} onClick={handleReject} disabled={updating}>
+                  <button className={styles.btnReject} onClick={() => setReprovarModal(true)} disabled={updating}>
                     <X size={15} weight="bold" /> Reprovar
                   </button>
                 )}
@@ -1076,6 +1212,7 @@ export default function JobsCandidateDetail() {
         loading={updating}
         nextStatus={pendingStatus}
       />
+
       <ModalEntrevista
         open={entrevistaModal}
         onClose={() => setEntrevistaModal(false)}
@@ -1083,9 +1220,18 @@ export default function JobsCandidateDetail() {
         loading={updating}
         company={company}
       />
+
       <ModalParabens
         open={parabensModal}
         onClose={() => setParabensModal(false)}
+        candidateName={candidate?.name}
+      />
+
+      <ModalReprovar
+        open={reprovarModal}
+        onClose={() => setReprovarModal(false)}
+        onConfirm={handleReject}
+        loading={updating}
         candidateName={candidate?.name}
       />
     </PlanGate>

@@ -1010,6 +1010,11 @@
   font-style: italic;
 }
 
+.inputError {
+  border-color: #ef4444 !important;
+  background: #fff5f5;
+}
+
 .auditTimeline {
   display: flex;
   flex-direction: column;
@@ -1192,4 +1197,202 @@
 
 .auditDotMini.auditDot_rescheduled {
   background: #fcd34d;
+}
+
+.modalReprovarCandidate {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fafafa;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+}
+
+.modalReprovarAvatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.modalReprovarAvatarName {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.modalReprovarAvatarSub {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.modalReprovarBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+  font-size: 11px;
+  font-weight: 700;
+  margin-left: auto;
+}
+
+.modalReprovarBadgeDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #ef4444;
+  display: inline-block;
+}
+
+.modalReprovarWarning {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  border-left: 3px solid #f97316;
+  border-radius: 8px;
+  padding: 12px 14px;
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.modalReprovarWarningText {
+  margin: 0;
+  font-size: 12.5px;
+  color: #7c2d12;
+  line-height: 1.6;
+}
+
+.modalReprovarCheckLabel {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  transition: all 0.2s;
+}
+
+.modalReprovarCheckLabelActive {
+  background: #fef2f2;
+  border-color: #fca5a5;
+}
+
+.modalReprovarCheckText {
+  font-size: 12.5px;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+
+.modalReprovarCheckText strong {
+  color: var(--text);
+}
+
+.modalReprovarFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 24px;
+  margin: 0 -24px -24px;
+  background: var(--surface-2);
+  border-top: 1px solid var(--border);
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
+}
+
+.btnReprovarConfirm {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  border: none;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  box-shadow: 0 2px 8px rgba(239, 68, 68, 0.35);
+  transition: all 0.2s;
+}
+
+.btnReprovarConfirm:hover:not(:disabled) {
+  box-shadow: 0 4px 16px rgba(239, 68, 68, 0.45);
+  transform: translateY(-1px);
+}
+
+.btnReprovarConfirm:disabled {
+  background: #d1d5db;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.modalReprovarHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.modalReprovarHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modalReprovarHeaderIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #fee2e2;
+  border: 1px solid #fca5a5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.modalReprovarHeaderTitle {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.modalReprovarHeaderSub {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.modalReprovarCloseBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 4px;
+  border-radius: var(--r-sm);
+  display: flex;
+}
+
+.modalReprovarBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
 }
