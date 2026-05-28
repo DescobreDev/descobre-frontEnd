@@ -228,12 +228,11 @@ function DashboardLayout() {
           </div>
           <button className={styles.logoutBtn} onClick={handleLogout}>
             <SignOut size={16} weight="bold" />
-            <span>Sair</span>
+            <span>Sair com segurança</span>
           </button>
         </div>
       </aside>
 
-      {/* ── MAIN ── */}
       <main className={styles.main}>
 
         {!hasActivePlan && (
@@ -245,12 +244,10 @@ function DashboardLayout() {
           </div>
         )}
 
-        {/* Content area */}
         <section className={styles.content}>
           <Outlet />
         </section>
 
-        {/* ── FOOTER ── */}
         <footer className={styles.footer}>
           <div className={styles.footerLeft}>
             <span className={styles.footerCopy}>© {new Date().getFullYear()} Descobre. Todos os direitos reservados.</span>
@@ -263,7 +260,6 @@ function DashboardLayout() {
         </footer>
       </main>
 
-      {/* ── MODAL BOAS-VINDAS ── */}
       <Modal isOpen={activeModal === "welcome"} onClose={() => setActiveModal(null)} title="">
         <div className={styles.welcome_modal}>
           <div className={styles.welcome_modal_icon}>
@@ -289,7 +285,6 @@ function DashboardLayout() {
         </div>
       </Modal>
 
-      {/* MODAL EMPRESA */}
       <Modal isOpen={activeModal === "company"} onClose={() => setActiveModal(null)} title="Dados da empresa" bodyRef={modalBodyRef}>
         <form onSubmit={handleSubmit}>
 
