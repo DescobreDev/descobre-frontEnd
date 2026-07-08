@@ -302,7 +302,7 @@ export default function JobsDetail() {
                     <InfoCard label="Publicada em" value={fmt(job.createdAt)} icon={Calendar} />
                 </div>
 
-                <SectionCard
+                {/* <SectionCard
                     title="Perfil comportamental esperado"
                     subtitle="Distribuição de competências para o candidato ideal"
                     className={styles.sectionMb}
@@ -312,7 +312,7 @@ export default function JobsDetail() {
                             <ProfileBar key={f} field={f} value={job.profile?.[f] ?? 0} />
                         ))}
                     </div>
-                </SectionCard>
+                </SectionCard> */}
 
                 <div className={styles.twoCol}>
                     <div className={styles.twoColMain}>
