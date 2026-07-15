@@ -84,11 +84,11 @@ const CONFIRM_COPY = {
 };
 
 // ===== DISC =====
-const DISC_INFO = {
-  D: { label: "Dominância", color: "#b91c1c", bg: "#fee2e2", desc: "Direto, decidido, orientado a resultados." },
-  I: { label: "Influência", color: "#b45309", bg: "#fef3c7", desc: "Comunicativo, entusiasta, persuasivo." },
-  S: { label: "Estabilidade", color: "#047857", bg: "#d1fae5", desc: "Paciente, colaborativo, constante." },
-  C: { label: "Conformidade", color: "#1d4ed8", bg: "#dbeafe", desc: "Analítico, preciso, criterioso." },
+const PROFILE_TYPE_INFO = {
+  EXECUTOR: { label: "Dominância", color: "#b91c1c", bg: "#fee2e2", desc: "Direto, decidido, orientado a resultados." },
+  COMMUNICATOR: { label: "Influência", color: "#b45309", bg: "#fef3c7", desc: "Comunicativo, entusiasta, persuasivo." },
+  PLANNER: { label: "Estabilidade", color: "#047857", bg: "#d1fae5", desc: "Paciente, colaborativo, constante." },
+  ANALYST: { label: "Conformidade", color: "#1d4ed8", bg: "#dbeafe", desc: "Analítico, preciso, criterioso." },
 };
 
 const EXPERIENCE_LABELS = {
@@ -246,7 +246,7 @@ function MatchBadge({ score }) {
 }
 
 function DiscBadge({ type, size = 32 }) {
-  const info = DISC_INFO[type];
+  const info = PROFILE_TYPE_INFO[type];
   if (!info) return null;
   return (
     <span
@@ -264,7 +264,7 @@ function DiscBadge({ type, size = 32 }) {
 }
 
 function DiscRow({ type, tag }) {
-  const info = DISC_INFO[type];
+  const info = PROFILE_TYPE_INFO[type];
   if (!info) return null;
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
@@ -277,21 +277,52 @@ function DiscRow({ type, tag }) {
   );
 }
 
-function MatchTab({ candidate, jobProfile, score }) {
-  if (!jobProfile?.discPrimary) {
-    return (
-      <div className={styles.emptyState}>
-        <Brain size={40} />
-        <p>Esta vaga não possui perfil comportamental definido.</p>
-      </div>
-    );
-  }
+const CRITERIA_ICON_COLOR = "#d97706"; // reaproveita a cor laranja do tema
 
-  if (!candidate?.profileType) {
+function BreakdownGrid({ breakdown }) {
+  const order = ["disc", "cargo", "salario", "regime", "localizacao", "experiencia"];
+  return (
+    <div className={styles.profileGrid}>
+      {order.map((key) => {
+        const item = breakdown[key];
+        if (!item) return null;
+        const hasData = item.score !== null;
+        const pct = hasData ? Math.round(item.score * 100) : null;
+        return (
+          <div key={key} className={styles.profileCard}>
+            <div className={styles.profileCardTop}>
+              <div>
+                <p className={styles.profileLabel}>{item.label}</p>
+                <p className={styles.profileScore}>
+                  {hasData ? `${pct}%` : "—"}
+                  <span> peso {Math.round(item.weight * 100)}%</span>
+                </p>
+              </div>
+            </div>
+            <div className={styles.profileBarWrap}>
+              <div className={styles.profileBar}>
+                <div
+                  className={styles.profileFill}
+                  style={{ width: hasData ? `${pct}%` : "0%", opacity: hasData ? 1 : 0.3 }}
+                />
+              </div>
+              <span className={styles.profilePct}>{hasData ? `${pct}%` : "S/ dado"}</span>
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+function MatchTab({ candidate, jobProfile, score, breakdown, eligible, ineligibleReason }) {
+  if (!eligible) {
     return (
-      <div className={styles.emptyState}>
-        <Brain size={40} />
-        <p>Candidato ainda não respondeu o questionário comportamental.</p>
+      <div className={styles.tabContent}>
+        <div className={styles.profileWarning}>
+          <span>⚠️</span>
+          <p>{ineligibleReason || "Este candidato não atende aos critérios elegíveis desta vaga."}</p>
+        </div>
       </div>
     );
   }
@@ -301,39 +332,36 @@ function MatchTab({ candidate, jobProfile, score }) {
       <div className={styles.matchHero}>
         <MatchBadge score={score ?? 0} />
         <p className={styles.matchHint}>
-          O score compara o perfil comportamental (DISC) da vaga com o do candidato,
-          além de cargo, salário, regime, localização e experiência.
+          O score compara perfil comportamental, cargo, salário, regime, localização e experiência
+          entre a vaga e o candidato.
         </p>
       </div>
 
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "1fr auto 1fr",
-        gap: 16,
-        alignItems: "center",
-        border: "1px solid var(--border)",
-        borderRadius: 12,
-        padding: 18,
-        marginTop: 16,
-      }}>
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <p style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-muted)", margin: 0 }}>Vaga busca</p>
-          <DiscRow type={jobProfile.discPrimary} tag="1º perfil" />
-          <DiscRow type={jobProfile.discSecondary} tag="2º perfil" />
+      {jobProfile?.primaryProfile && candidate?.profileType && (
+        <div style={{
+          display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 16, alignItems: "center",
+          border: "1px solid var(--border)", borderRadius: 12, padding: 18,
+        }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <p style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-muted)", margin: 0 }}>Vaga busca</p>
+            <DiscRow type={jobProfile.primaryProfile} tag="1º perfil" />
+            {jobProfile.secondaryProfile && <DiscRow type={jobProfile.secondaryProfile} tag="2º perfil" />}
+          </div>
+          <div style={{ color: "var(--text-muted)" }}><ArrowsClockwise size={20} /></div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+            <p style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-muted)", margin: 0 }}>Candidato tem</p>
+            <DiscRow type={candidate.profileType} tag="1º perfil" />
+            {candidate.profileTypeSecondary && <DiscRow type={candidate.profileTypeSecondary} tag="2º perfil" />}
+          </div>
         </div>
+      )}
 
-        <div style={{ color: "var(--text-muted)" }}>
-          <ArrowsClockwise size={20} />
+      {breakdown && (
+        <div>
+          <p className={styles.sectionHeading} style={{ marginBottom: 12 }}>Detalhamento do score</p>
+          <BreakdownGrid breakdown={breakdown} />
         </div>
-
-        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-          <p style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-muted)", margin: 0 }}>Candidato tem</p>
-          <DiscRow type={candidate.profileType} tag="1º perfil" />
-          {candidate.profileTypeSecondary && (
-            <DiscRow type={candidate.profileTypeSecondary} tag="2º perfil" />
-          )}
-        </div>
-      </div>
+      )}
     </div>
   );
 }
@@ -522,10 +550,10 @@ function PerfilTab({ candidate }) {
           <div>
             <span style={{ fontSize: 11, color: "var(--text-muted)" }}>Perfil primário</span>
             <p style={{ margin: "2px 0 4px", fontSize: 15, fontWeight: 700, color: "var(--text)" }}>
-              {DISC_INFO[candidate.profileType]?.label}
+              {PROFILE_TYPE_INFO[candidate.profileType]?.label}
             </p>
             <p style={{ margin: 0, fontSize: 12.5, color: "var(--text-2)" }}>
-              {DISC_INFO[candidate.profileType]?.desc}
+              {PROFILE_TYPE_INFO[candidate.profileType]?.desc}
             </p>
           </div>
         </div>
@@ -539,10 +567,10 @@ function PerfilTab({ candidate }) {
             <div>
               <span style={{ fontSize: 11, color: "var(--text-muted)" }}>Perfil secundário</span>
               <p style={{ margin: "2px 0 4px", fontSize: 15, fontWeight: 700, color: "var(--text)" }}>
-                {DISC_INFO[candidate.profileTypeSecondary]?.label}
+                {PROFILE_TYPE_INFO[candidate.profileTypeSecondary]?.label}
               </p>
               <p style={{ margin: 0, fontSize: 12.5, color: "var(--text-2)" }}>
-                {DISC_INFO[candidate.profileTypeSecondary]?.desc}
+                {PROFILE_TYPE_INFO[candidate.profileTypeSecondary]?.desc}
               </p>
             </div>
           </div>
@@ -1155,7 +1183,7 @@ export default function JobsCandidateDetail() {
   if (loading) return <div className="page-content"><div className={styles.loadingState}>Carregando...</div></div>;
   if (!application) return <div className="page-content"><div className={styles.loadingState}>Candidatura não encontrada.</div></div>;
 
-  const { candidate, compatibility, jobProfile } = application;
+  const { candidate, compatibility, jobProfile, matchBreakdown, matchEligible, matchIneligibleReason } = application;
   const statusStyle = STATUS_COLORS[application.status] || STATUS_COLORS.RECEBIDA;
   const isHired = jobStatus === "HIRED";
   const canAdvance = !isHired && !!NEXT_STATUS[application.status];
@@ -1324,7 +1352,16 @@ export default function JobsCandidateDetail() {
             </div>
 
             <div className={styles.tabBody}>
-              {tab === "match" && <MatchTab candidate={candidate} jobProfile={jobProfile} score={compatibility ?? 0} />}
+              {tab === "match" && (
+                <MatchTab
+                  candidate={candidate}
+                  jobProfile={jobProfile}
+                  score={compatibility ?? 0}
+                  breakdown={matchBreakdown}
+                  eligible={matchEligible !== false}
+                  ineligibleReason={matchIneligibleReason}
+                />
+              )}
               {tab === "curriculo" && <CurriculoTab resume={candidate.resume} />}
               {tab === "perfil" && <PerfilTab candidate={candidate} />}
               {tab === "auditoria" && <AuditoriaTab interviewEvents={application.interviewEvents ?? []} />}
