@@ -19,6 +19,7 @@ const STATUS_MAP = {
     INACTIVE: "Inativa",
     HIRED: "Contratada",
 };
+
 const AFFIRMATIVE_MAP = {
     NOT_INFORMED: "Não informado", PCD: "PCD", WOMEN: "Mulheres",
     FIFTY_PLUS: "50+", LGBTQIAPN: "LGBTQIAPN+",

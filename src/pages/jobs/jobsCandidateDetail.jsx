@@ -22,6 +22,11 @@ import {
   EnvelopeSimple,
   SealCheck,
   Phone,
+  Briefcase,
+  MapPin,
+  CurrencyDollar,
+  GraduationCap,
+  Repeat,
 } from "@phosphor-icons/react";
 import { AuthContext } from "../../context/authContext";
 import { PlanGate } from "../../hooks/planGate";
@@ -78,12 +83,23 @@ const CONFIRM_COPY = {
   },
 };
 
-const PROFILE_ITEMS = [
-  { key: "profileAnalyst", jobKey: "analyst", label: "Analista", icon: "📊" },
-  { key: "profileCommunicator", jobKey: "communicator", label: "Comunicador", icon: "💬" },
-  { key: "profileExecutor", jobKey: "executor", label: "Executor", icon: "⚡" },
-  { key: "profilePlanner", jobKey: "planner", label: "Planejador", icon: "🗂️" },
-];
+// ===== DISC =====
+const DISC_INFO = {
+  D: { label: "Dominância", color: "#b91c1c", bg: "#fee2e2", desc: "Direto, decidido, orientado a resultados." },
+  I: { label: "Influência", color: "#b45309", bg: "#fef3c7", desc: "Comunicativo, entusiasta, persuasivo." },
+  S: { label: "Estabilidade", color: "#047857", bg: "#d1fae5", desc: "Paciente, colaborativo, constante." },
+  C: { label: "Conformidade", color: "#1d4ed8", bg: "#dbeafe", desc: "Analítico, preciso, criterioso." },
+};
+
+const EXPERIENCE_LABELS = {
+  ESTAGIO: "Estágio",
+  JUNIOR: "Júnior",
+  PLENO: "Pleno",
+  SENIOR: "Sênior",
+  ESPECIALISTA: "Especialista",
+};
+
+const CONTRACT_LABELS = { CLT: "CLT", PJ: "PJ", FREELANCER: "Freelancer" };
 
 const INTERVIEW_EVENT_LABELS = {
   INVITE_SENT: { title: "Convite enviado", type: "invite_sent" },
@@ -107,6 +123,11 @@ function fmtDateTime(val) {
     day: "2-digit", month: "2-digit", year: "numeric",
     hour: "2-digit", minute: "2-digit",
   });
+}
+
+function fmtMoney(val) {
+  if (val == null) return "—";
+  return Number(val).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
 }
 
 function InfoPopover({ text }) {
@@ -156,7 +177,6 @@ function InfoPopover({ text }) {
         <Warning size={13} weight="fill" color="#f59e0b" style={{ flexShrink: 0, marginTop: 2 }} />
         <span>{text}</span>
       </div>
-      {/* setinha */}
       <div style={{
         position: "absolute",
         bottom: -6,
@@ -225,58 +245,94 @@ function MatchBadge({ score }) {
   );
 }
 
-function MatchTab({ candidate, jobProfile, score }) {
-  if (!jobProfile) return (
-    <div className={styles.emptyState}>
-      <Brain size={40} />
-      <p>Esta vaga não possui perfil comportamental definido.</p>
+function DiscBadge({ type, size = 32 }) {
+  const info = DISC_INFO[type];
+  if (!info) return null;
+  return (
+    <span
+      style={{
+        width: size, height: size, borderRadius: "50%",
+        display: "inline-flex", alignItems: "center", justifyContent: "center",
+        background: info.bg, color: info.color,
+        fontWeight: 700, fontSize: size * 0.42, flexShrink: 0,
+        border: `1px solid ${info.color}33`,
+      }}
+    >
+      {type}
+    </span>
+  );
+}
+
+function DiscRow({ type, tag }) {
+  const info = DISC_INFO[type];
+  if (!info) return null;
+  return (
+    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+      <DiscBadge type={type} size={36} />
+      <div>
+        <p style={{ margin: 0, fontSize: 13.5, fontWeight: 600, color: "var(--text)" }}>{info.label}</p>
+        <span style={{ fontSize: 11, color: "var(--text-muted)" }}>{tag}</span>
+      </div>
     </div>
   );
+}
+
+function MatchTab({ candidate, jobProfile, score }) {
+  if (!jobProfile?.discPrimary) {
+    return (
+      <div className={styles.emptyState}>
+        <Brain size={40} />
+        <p>Esta vaga não possui perfil comportamental definido.</p>
+      </div>
+    );
+  }
+
+  if (!candidate?.profileType) {
+    return (
+      <div className={styles.emptyState}>
+        <Brain size={40} />
+        <p>Candidato ainda não respondeu o questionário comportamental.</p>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.tabContent}>
       <div className={styles.matchHero}>
-        <MatchBadge score={score} />
+        <MatchBadge score={score ?? 0} />
         <p className={styles.matchHint}>
-          O score leva em conta o peso de cada dimensão definido pela vaga.
-          Dimensões mais importantes para a vaga penalizam mais em caso de diferença.
+          O score compara o perfil comportamental (DISC) da vaga com o do candidato,
+          além de cargo, salário, regime, localização e experiência.
         </p>
       </div>
 
-      <div className={styles.matchGrid}>
-        {PROFILE_ITEMS.map((item) => {
-          const jobVal = jobProfile?.[item.jobKey] ?? 0;
-          const candVal = candidate?.[item.key] ?? 0;
-          const diff = Math.abs(jobVal - candVal);
-          const weight = jobVal / 10;
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "1fr auto 1fr",
+        gap: 16,
+        alignItems: "center",
+        border: "1px solid var(--border)",
+        borderRadius: 12,
+        padding: 18,
+        marginTop: 16,
+      }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <p style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-muted)", margin: 0 }}>Vaga busca</p>
+          <DiscRow type={jobProfile.discPrimary} tag="1º perfil" />
+          <DiscRow type={jobProfile.discSecondary} tag="2º perfil" />
+        </div>
 
-          return (
-            <div key={item.key} className={styles.matchCard}>
-              <div className={styles.matchCardHeader}>
-                <span className={styles.profileIcon}>{item.icon}</span>
-                <span className={styles.matchCardLabel}>{item.label}</span>
-                <span className={styles.matchCardWeight}>peso {Math.round(weight * 100)}%</span>
-              </div>
+        <div style={{ color: "var(--text-muted)" }}>
+          <ArrowsClockwise size={20} />
+        </div>
 
-              <div className={styles.matchRow}>
-                <div className={styles.matchSide}>
-                  <span className={styles.matchSideLabel}>Vaga</span>
-                  <div className={styles.profileBar}>
-                    <div className={styles.profileFill} style={{ width: `${(jobVal / 5) * 100}%`, background: "var(--orange)" }} />
-                  </div>
-                  <span className={styles.matchSideVal}>{jobVal}/5</span>
-                </div>
-                <div className={styles.matchSide}>
-                  <span className={styles.matchSideLabel}>Candidato</span>
-                  <div className={styles.profileBar}>
-                    <div className={styles.profileFill} style={{ width: `${(candVal / 5) * 100}%`, background: "#3b82f6" }} />
-                  </div>
-                  <span className={styles.matchSideVal}>{candVal}/5</span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+          <p style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-muted)", margin: 0 }}>Candidato tem</p>
+          <DiscRow type={candidate.profileType} tag="1º perfil" />
+          {candidate.profileTypeSecondary && (
+            <DiscRow type={candidate.profileTypeSecondary} tag="2º perfil" />
+          )}
+        </div>
       </div>
     </div>
   );
@@ -307,6 +363,58 @@ function TimelineBar({ status }) {
             </div>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+function CandidatePreferencesCard({ candidate }) {
+  const hasAny =
+    candidate.desiredPosition ||
+    candidate.desiredSalary ||
+    candidate.city ||
+    candidate.state ||
+    candidate.experienceLevel ||
+    (candidate.contractPreferences?.length > 0);
+
+  if (!hasAny) return null;
+
+  return (
+    <div className={styles.timelineCard}>
+      <p className={styles.sectionHeading}>Preferências do candidato</p>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 12 }}>
+        {candidate.desiredPosition && (
+          <span className={styles.chip}>
+            <Briefcase size={13} weight="bold" style={{ marginRight: 4 }} />
+            {candidate.desiredPosition.name}
+          </span>
+        )}
+        {candidate.desiredSalary != null && (
+          <span className={styles.chip}>
+            <CurrencyDollar size={13} weight="bold" style={{ marginRight: 4 }} />
+            Pretende {fmtMoney(candidate.desiredSalary)}
+          </span>
+        )}
+        {candidate.contractPreferences?.length > 0 && (
+          <span className={styles.chip}>
+            <Repeat size={13} weight="bold" style={{ marginRight: 4 }} />
+            {candidate.contractPreferences.map((c) => CONTRACT_LABELS[c] || c).join(" / ")}
+            {candidate.flexibleContract ? " (flexível)" : ""}
+          </span>
+        )}
+        {(candidate.city || candidate.state) && (
+          <span className={styles.chip}>
+            <MapPin size={13} weight="bold" style={{ marginRight: 4 }} />
+            {[candidate.city, candidate.state].filter(Boolean).join("/")}
+            {candidate.acceptsTravel ? " · aceita viajar" : ""}
+          </span>
+        )}
+        {candidate.experienceLevel && (
+          <span className={styles.chip}>
+            <GraduationCap size={13} weight="bold" style={{ marginRight: 4 }} />
+            {EXPERIENCE_LABELS[candidate.experienceLevel] || candidate.experienceLevel}
+          </span>
+        )}
       </div>
     </div>
   );
@@ -392,35 +500,53 @@ function CurriculoTab({ resume }) {
 }
 
 function PerfilTab({ candidate }) {
-  return (
-    <div className={styles.tabContent}>
-      {!candidate.profileCompleted && (
+  if (!candidate.profileCompleted || !candidate.profileType) {
+    return (
+      <div className={styles.tabContent}>
         <div className={styles.profileWarning}>
           <span>⚠️</span>
           <p>Este candidato ainda não respondeu o questionário comportamental.</p>
         </div>
-      )}
-      <div className={styles.profileGrid}>
-        {PROFILE_ITEMS.map((item) => {
-          const val = candidate[item.key] ?? 0;
-          const pct = (val / 5) * 100;
-          return (
-            <div key={item.key} className={styles.profileCard}>
-              <div className={styles.profileCardTop}>
-                <span className={styles.profileIcon}>{item.icon}</span>
-                <div>
-                  <p className={styles.profileLabel}>{item.label}</p>
-                  <p className={styles.profileScore}>{val} <span>/ 5</span></p>
-                </div>
-              </div>
-              <div className={styles.profileBarWrap}>
-                <div className={styles.profileBar}>
-                  <div className={styles.profileFill} style={{ width: `${pct}%` }} />
-                </div>
-              </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.tabContent}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+        <div style={{
+          display: "flex", alignItems: "center", gap: 12,
+          border: "1px solid var(--border)", borderRadius: 12, padding: 16, flex: "1 1 220px",
+        }}>
+          <DiscBadge type={candidate.profileType} size={44} />
+          <div>
+            <span style={{ fontSize: 11, color: "var(--text-muted)" }}>Perfil primário</span>
+            <p style={{ margin: "2px 0 4px", fontSize: 15, fontWeight: 700, color: "var(--text)" }}>
+              {DISC_INFO[candidate.profileType]?.label}
+            </p>
+            <p style={{ margin: 0, fontSize: 12.5, color: "var(--text-2)" }}>
+              {DISC_INFO[candidate.profileType]?.desc}
+            </p>
+          </div>
+        </div>
+
+        {candidate.profileTypeSecondary && (
+          <div style={{
+            display: "flex", alignItems: "center", gap: 12,
+            border: "1px solid var(--border)", borderRadius: 12, padding: 16, flex: "1 1 220px",
+          }}>
+            <DiscBadge type={candidate.profileTypeSecondary} size={44} />
+            <div>
+              <span style={{ fontSize: 11, color: "var(--text-muted)" }}>Perfil secundário</span>
+              <p style={{ margin: "2px 0 4px", fontSize: 15, fontWeight: 700, color: "var(--text)" }}>
+                {DISC_INFO[candidate.profileTypeSecondary]?.label}
+              </p>
+              <p style={{ margin: 0, fontSize: 12.5, color: "var(--text-2)" }}>
+                {DISC_INFO[candidate.profileTypeSecondary]?.desc}
+              </p>
             </div>
-          );
-        })}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -1156,6 +1282,8 @@ export default function JobsCandidateDetail() {
           {!["REPROVADO", "DESISTIU"].includes(application.status) && (
             <TimelineBar status={application.status} />
           )}
+
+          <CandidatePreferencesCard candidate={candidate} />
 
           <div className={styles.tabsCard}>
             <div className={styles.tabs}>
