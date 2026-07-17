@@ -27,6 +27,16 @@ import {
   CurrencyDollar,
   GraduationCap,
   Repeat,
+  Target,
+  ChatCircleDots,
+  HandHeart,
+  MagnifyingGlass,
+  Sparkle,
+  Globe,
+  ChartBar,
+  IdentificationBadge,
+  Medal,
+  ShieldCheck,
 } from "@phosphor-icons/react";
 import { AuthContext } from "../../context/authContext";
 import { PlanGate } from "../../hooks/planGate";
@@ -83,12 +93,40 @@ const CONFIRM_COPY = {
   },
 };
 
-// ===== DISC =====
 const PROFILE_TYPE_INFO = {
-  EXECUTOR: { label: "Dominância", color: "#b91c1c", bg: "#fee2e2", desc: "Direto, decidido, orientado a resultados." },
-  COMMUNICATOR: { label: "Influência", color: "#b45309", bg: "#fef3c7", desc: "Comunicativo, entusiasta, persuasivo." },
-  PLANNER: { label: "Estabilidade", color: "#047857", bg: "#d1fae5", desc: "Paciente, colaborativo, constante." },
-  ANALYST: { label: "Conformidade", color: "#1d4ed8", bg: "#dbeafe", desc: "Analítico, preciso, criterioso." },
+  EXECUTOR: {
+    label: "Dominância", short: "D", color: "#b91c1c", bg: "#fee2e2",
+    icon: Target,
+    desc: "Direto, decidido, orientado a resultados.",
+    traits: ["Objetivo e direto", "Gosta de desafios", "Decide rápido", "Foco em resultado"],
+  },
+  COMMUNICATOR: {
+    label: "Influência", short: "I", color: "#b45309", bg: "#fef3c7",
+    icon: ChatCircleDots,
+    desc: "Comunicativo, entusiasta, persuasivo.",
+    traits: ["Sociável e entusiasta", "Bom em persuadir", "Gosta de trabalhar com pessoas", "Otimista"],
+  },
+  PLANNER: {
+    label: "Estabilidade", short: "S", color: "#047857", bg: "#d1fae5",
+    icon: HandHeart,
+    desc: "Paciente, colaborativo, constante.",
+    traits: ["Paciente e leal", "Colaborativo", "Consistente", "Evita conflitos"],
+  },
+  ANALYST: {
+    label: "Conformidade", short: "C", color: "#1d4ed8", bg: "#dbeafe",
+    icon: MagnifyingGlass,
+    desc: "Analítico, preciso, criterioso.",
+    traits: ["Analítico e detalhista", "Preciso", "Segue processos", "Criterioso"],
+  },
+};
+
+const BREAKDOWN_ICONS = {
+  disc: Brain,
+  cargo: Briefcase,
+  salario: CurrencyDollar,
+  regime: Repeat,
+  localizacao: MapPin,
+  experiencia: GraduationCap,
 };
 
 const EXPERIENCE_LABELS = {
@@ -128,6 +166,19 @@ function fmtDateTime(val) {
 function fmtMoney(val) {
   if (val == null) return "—";
   return Number(val).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+function SectionHeading({ icon: Icon, children }) {
+  return (
+    <p className={styles.sectionHeading}>
+      {Icon && (
+        <span className={styles.sectionHeadingIcon}>
+          <Icon size={13} weight="bold" />
+        </span>
+      )}
+      {children}
+    </p>
+  );
 }
 
 function InfoPopover({ text }) {
@@ -170,7 +221,7 @@ function InfoPopover({ text }) {
       lineHeight: 1.6,
       color: "var(--text-2)",
       zIndex: 99999,
-      boxShadow: "0 4px 16px rgba(0,0,0,0.12)",
+      boxShadow: "0 8px 24px rgba(0,0,0,0.14)",
       pointerEvents: "none",
     }}>
       <div style={{ display: "flex", gap: 6, alignItems: "flex-start" }}>
@@ -215,10 +266,11 @@ function InfoPopover({ text }) {
 }
 
 function MatchBadge({ score }) {
-  const color =
-    score >= 80 ? { bg: "#d1fae5", color: "#065f46", label: "Recomendado" } :
-      score >= 50 ? { bg: "#dbeafe", color: "#1e40af", label: "Compatível" } :
-        { bg: "#fee2e2", color: "#991b1b", label: "Baixo match" };
+  const tier =
+    score >= 80 ? { bg: "#d1fae5", color: "#065f46", label: "Recomendado", icon: Medal } :
+      score >= 50 ? { bg: "#dbeafe", color: "#1e40af", label: "Compatível", icon: ShieldCheck } :
+        { bg: "#fee2e2", color: "#991b1b", label: "Baixo match", icon: Warning };
+  const TierIcon = tier.icon;
 
   return (
     <div className={styles.matchBadgeWrap}>
@@ -227,7 +279,7 @@ function MatchBadge({ score }) {
           <circle cx="18" cy="18" r="15.9" fill="none" stroke="var(--border)" strokeWidth="2.5" />
           <circle
             cx="18" cy="18" r="15.9" fill="none"
-            stroke={color.color} strokeWidth="2.5"
+            stroke={tier.color} strokeWidth="2.5"
             strokeDasharray={`${(score / 100) * 99.9} 99.9`}
             strokeLinecap="round"
             transform="rotate(-90 18 18)"
@@ -237,8 +289,9 @@ function MatchBadge({ score }) {
       </div>
       <div>
         <p className={styles.matchLabel}>Compatibilidade</p>
-        <span className={styles.matchTag} style={{ background: color.bg, color: color.color }}>
-          {color.label}
+        <span className={styles.matchTag} style={{ background: tier.bg, color: tier.color }}>
+          <TierIcon size={12} weight="fill" />
+          {tier.label}
         </span>
       </div>
     </div>
@@ -248,17 +301,18 @@ function MatchBadge({ score }) {
 function DiscBadge({ type, size = 32 }) {
   const info = PROFILE_TYPE_INFO[type];
   if (!info) return null;
+  const Icon = info.icon;
   return (
     <span
+      className={styles.discBadge}
       style={{
-        width: size, height: size, borderRadius: "50%",
-        display: "inline-flex", alignItems: "center", justifyContent: "center",
-        background: info.bg, color: info.color,
-        fontWeight: 700, fontSize: size * 0.42, flexShrink: 0,
-        border: `1px solid ${info.color}33`,
+        width: size, height: size,
+        background: `linear-gradient(135deg, ${info.color}, ${info.color}cc)`,
+        boxShadow: `0 3px 10px ${info.color}40`,
       }}
     >
-      {type}
+      <Icon size={size * 0.52} weight="bold" color="#fff" />
+      <span className={styles.discBadgeTag} style={{ color: info.color }}>{info.short}</span>
     </span>
   );
 }
@@ -268,7 +322,7 @@ function DiscRow({ type, tag }) {
   if (!info) return null;
   return (
     <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-      <DiscBadge type={type} size={36} />
+      <DiscBadge type={type} size={38} />
       <div>
         <p style={{ margin: 0, fontSize: 13.5, fontWeight: 600, color: "var(--text)" }}>{info.label}</p>
         <span style={{ fontSize: 11, color: "var(--text-muted)" }}>{tag}</span>
@@ -276,8 +330,6 @@ function DiscRow({ type, tag }) {
     </div>
   );
 }
-
-const CRITERIA_ICON_COLOR = "#d97706"; // reaproveita a cor laranja do tema
 
 function BreakdownGrid({ breakdown }) {
   const order = ["disc", "cargo", "salario", "regime", "localizacao", "experiencia"];
@@ -288,9 +340,15 @@ function BreakdownGrid({ breakdown }) {
         if (!item) return null;
         const hasData = item.score !== null;
         const pct = hasData ? Math.round(item.score * 100) : null;
+        const Icon = BREAKDOWN_ICONS[key];
         return (
           <div key={key} className={styles.profileCard}>
             <div className={styles.profileCardTop}>
+              {Icon && (
+                <span className={styles.profileCardIconWrap}>
+                  <Icon size={16} weight="bold" />
+                </span>
+              )}
               <div>
                 <p className={styles.profileLabel}>{item.label}</p>
                 <p className={styles.profileScore}>
@@ -320,7 +378,7 @@ function MatchTab({ candidate, jobProfile, score, breakdown, eligible, ineligibl
     return (
       <div className={styles.tabContent}>
         <div className={styles.profileWarning}>
-          <span>⚠️</span>
+          <Warning size={18} weight="fill" color="#d97706" style={{ flexShrink: 0 }} />
           <p>{ineligibleReason || "Este candidato não atende aos critérios elegíveis desta vaga."}</p>
         </div>
       </div>
@@ -338,18 +396,19 @@ function MatchTab({ candidate, jobProfile, score, breakdown, eligible, ineligibl
       </div>
 
       {jobProfile?.primaryProfile && candidate?.profileType && (
-        <div style={{
-          display: "grid", gridTemplateColumns: "1fr auto 1fr", gap: 16, alignItems: "center",
-          border: "1px solid var(--border)", borderRadius: 12, padding: 18,
-        }}>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <p style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-muted)", margin: 0 }}>Vaga busca</p>
+        <div className={styles.matchCompareCard}>
+          <div className={styles.matchCompareCol}>
+            <p className={styles.matchCompareLabel}>
+              <Briefcase size={12} weight="bold" /> Vaga busca
+            </p>
             <DiscRow type={jobProfile.primaryProfile} tag="1º perfil" />
             {jobProfile.secondaryProfile && <DiscRow type={jobProfile.secondaryProfile} tag="2º perfil" />}
           </div>
-          <div style={{ color: "var(--text-muted)" }}><ArrowsClockwise size={20} /></div>
-          <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-            <p style={{ fontSize: 11, textTransform: "uppercase", letterSpacing: 0.4, color: "var(--text-muted)", margin: 0 }}>Candidato tem</p>
+          <div className={styles.matchCompareDivider}><ArrowsClockwise size={20} /></div>
+          <div className={styles.matchCompareCol}>
+            <p className={styles.matchCompareLabel}>
+              <IdentificationBadge size={12} weight="bold" /> Candidato tem
+            </p>
             <DiscRow type={candidate.profileType} tag="1º perfil" />
             {candidate.profileTypeSecondary && <DiscRow type={candidate.profileTypeSecondary} tag="2º perfil" />}
           </div>
@@ -358,19 +417,26 @@ function MatchTab({ candidate, jobProfile, score, breakdown, eligible, ineligibl
 
       {breakdown && (
         <div>
-          <p className={styles.sectionHeading} style={{ marginBottom: 12 }}>Detalhamento do score</p>
-          <BreakdownGrid breakdown={breakdown} />
+          <SectionHeading icon={ChartBar}>Detalhamento do score</SectionHeading>
+          <div style={{ marginTop: 12 }}>
+            <BreakdownGrid breakdown={breakdown} />
+          </div>
         </div>
       )}
     </div>
   );
 }
 
-function TimelineBar({ status }) {
+/* ------------------------------------------------------------------ */
+/* Card unificado: etapa da candidatura + preferências do candidato   */
+/* ------------------------------------------------------------------ */
+
+function TimelineBar({ status, embedded = false }) {
   const currentIdx = TIMELINE_STEPS.findIndex((s) => s.key === status);
-  return (
-    <div className={styles.timelineCard}>
-      <p className={styles.sectionHeading}>Etapa da candidatura</p>
+
+  const content = (
+    <>
+      <SectionHeading icon={ClipboardText}>Etapa da candidatura</SectionHeading>
       <div className={styles.timeline}>
         {TIMELINE_STEPS.map((step, idx) => {
           const done = idx < currentIdx;
@@ -392,24 +458,38 @@ function TimelineBar({ status }) {
           );
         })}
       </div>
-    </div>
+    </>
   );
+
+  if (embedded) return content;
+  return <div className={styles.timelineCard}>{content}</div>;
 }
 
-function CandidatePreferencesCard({ candidate }) {
+function CandidatePreferencesCard({ candidate, embedded = false }) {
   const hasAny =
     candidate.desiredPosition ||
-    candidate.desiredSalary ||
+    candidate.desiredSalaryMin != null ||
+    candidate.desiredSalaryMax != null ||
     candidate.city ||
     candidate.state ||
     candidate.experienceLevel ||
-    (candidate.contractPreferences?.length > 0);
+    (candidate.contractTypes?.length > 0);
 
   if (!hasAny) return null;
 
-  return (
-    <div className={styles.timelineCard}>
-      <p className={styles.sectionHeading}>Preferências do candidato</p>
+  const isFlexibleContract = (candidate.contractTypes?.length ?? 0) > 1;
+
+  function salaryLabel() {
+    const { desiredSalaryMin: min, desiredSalaryMax: max } = candidate;
+    if (min != null && max != null) return `${fmtMoney(min)} — ${fmtMoney(max)}`;
+    if (min != null) return `A partir de ${fmtMoney(min)}`;
+    if (max != null) return `Até ${fmtMoney(max)}`;
+    return null;
+  }
+
+  const content = (
+    <>
+      <SectionHeading icon={Sparkle}>Preferências do candidato</SectionHeading>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 10, marginTop: 12 }}>
         {candidate.desiredPosition && (
           <span className={styles.chip}>
@@ -417,17 +497,18 @@ function CandidatePreferencesCard({ candidate }) {
             {candidate.desiredPosition.name}
           </span>
         )}
-        {candidate.desiredSalary != null && (
+        {salaryLabel() && (
           <span className={styles.chip}>
             <CurrencyDollar size={13} weight="bold" style={{ marginRight: 4 }} />
-            Pretende {fmtMoney(candidate.desiredSalary)}
+            Pretende {salaryLabel()}
+            {candidate.salaryNegotiable ? " (negociável)" : ""}
           </span>
         )}
-        {candidate.contractPreferences?.length > 0 && (
+        {candidate.contractTypes?.length > 0 && (
           <span className={styles.chip}>
             <Repeat size={13} weight="bold" style={{ marginRight: 4 }} />
-            {candidate.contractPreferences.map((c) => CONTRACT_LABELS[c] || c).join(" / ")}
-            {candidate.flexibleContract ? " (flexível)" : ""}
+            {candidate.contractTypes.map((c) => CONTRACT_LABELS[c] || c).join(" / ")}
+            {isFlexibleContract ? " (flexível)" : ""}
           </span>
         )}
         {(candidate.city || candidate.state) && (
@@ -444,6 +525,41 @@ function CandidatePreferencesCard({ candidate }) {
           </span>
         )}
       </div>
+    </>
+  );
+
+  if (embedded) return content;
+  return <div className={styles.timelineCard}>{content}</div>;
+}
+
+// Junta timeline + preferências num único card quando ambos existem,
+// evitando dois blocos separados empilhados no layout.
+function ApplicationOverviewCard({ status, candidate }) {
+  const showTimeline = !["REPROVADO", "DESISTIU"].includes(status);
+
+  const hasPreferences =
+    candidate.desiredPosition ||
+    candidate.desiredSalaryMin != null ||
+    candidate.desiredSalaryMax != null ||
+    candidate.city ||
+    candidate.state ||
+    candidate.experienceLevel ||
+    (candidate.contractTypes?.length > 0);
+
+  if (!showTimeline) {
+    // Sem etapa (reprovado/desistiu): mostra só preferências, se houver.
+    return <CandidatePreferencesCard candidate={candidate} />;
+  }
+
+  return (
+    <div className={styles.timelineCard}>
+      <TimelineBar status={status} embedded />
+      {hasPreferences && (
+        <>
+          <hr className="divider" style={{ margin: "20px 0" }} />
+          <CandidatePreferencesCard candidate={candidate} embedded />
+        </>
+      )}
     </div>
   );
 }
@@ -451,7 +567,7 @@ function CandidatePreferencesCard({ candidate }) {
 function CurriculoTab({ resume }) {
   if (!resume) return (
     <div className={styles.emptyState}>
-      <FileText size={40} />
+      <span className={styles.emptyIconWrap}><FileText size={30} weight="duotone" /></span>
       <p>Candidato não possui currículo cadastrado.</p>
     </div>
   );
@@ -460,7 +576,7 @@ function CurriculoTab({ resume }) {
     <div className={styles.tabContent}>
       {resume.experiences?.length > 0 && (
         <div className={styles.section}>
-          <p className={styles.sectionHeading}>Experiências</p>
+          <SectionHeading icon={Briefcase}>Experiências</SectionHeading>
           <div className={styles.itemList}>
             {resume.experiences.map((exp) => (
               <div key={exp.id} className={styles.itemCard}>
@@ -478,7 +594,7 @@ function CurriculoTab({ resume }) {
 
       {resume.educations?.length > 0 && (
         <div className={styles.section}>
-          <p className={styles.sectionHeading}>Formação</p>
+          <SectionHeading icon={GraduationCap}>Formação</SectionHeading>
           <div className={styles.itemList}>
             {resume.educations.map((edu) => (
               <div key={edu.id} className={styles.itemCard}>
@@ -495,7 +611,7 @@ function CurriculoTab({ resume }) {
 
       {resume.skills?.length > 0 && (
         <div className={styles.section}>
-          <p className={styles.sectionHeading}>Habilidades</p>
+          <SectionHeading icon={Sparkle}>Habilidades</SectionHeading>
           <div className={styles.chipList}>
             {resume.skills.map((s) => (
               <span key={s.id} className={styles.chip}>{s.name}{s.level ? ` · ${s.level}` : ""}</span>
@@ -506,7 +622,7 @@ function CurriculoTab({ resume }) {
 
       {resume.languages?.length > 0 && (
         <div className={styles.section}>
-          <p className={styles.sectionHeading}>Idiomas</p>
+          <SectionHeading icon={Globe}>Idiomas</SectionHeading>
           <div className={styles.chipList}>
             {resume.languages.map((l) => (
               <span key={l.id} className={`${styles.chip} ${styles.chipLang}`}>{l.language} · {l.level}</span>
@@ -517,7 +633,7 @@ function CurriculoTab({ resume }) {
 
       {resume.cvFileUrl && (
         <div className={styles.section}>
-          <p className={styles.sectionHeading}>Currículo em PDF</p>
+          <SectionHeading icon={FileText}>Currículo em PDF</SectionHeading>
           <div className={styles.pdfWrap}>
             <iframe src={resume.cvFileUrl} title="Currículo PDF" />
           </div>
@@ -527,12 +643,66 @@ function CurriculoTab({ resume }) {
   );
 }
 
+function ProfileHeroCard({ type, tag, big }) {
+  const info = PROFILE_TYPE_INFO[type];
+  if (!info) return null;
+  const Icon = info.icon;
+
+  return (
+    <div
+      className={styles.profileHeroCard}
+      style={{
+        padding: big ? 24 : 18, flex: big ? "1 1 320px" : "1 1 240px",
+        background: `linear-gradient(135deg, ${info.bg}, var(--surface))`,
+        borderColor: `${info.color}2b`,
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
+        <span style={{
+          width: big ? 64 : 48, height: big ? 64 : 48, borderRadius: "18px",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          background: `linear-gradient(135deg, ${info.color}, ${info.color}cc)`, color: "#fff",
+          flexShrink: 0,
+          boxShadow: `0 6px 16px ${info.color}45`,
+        }}>
+          <Icon size={big ? 30 : 24} weight="bold" />
+        </span>
+        <div>
+          <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5, color: "var(--text-muted)", fontWeight: 700 }}>
+            {tag}
+            <span style={{
+              fontSize: 10, fontWeight: 800, color: info.color, background: "var(--surface)",
+              border: `1px solid ${info.color}55`, borderRadius: 5, padding: "1px 5px", letterSpacing: 0,
+            }}>{info.short}</span>
+          </span>
+          <p style={{ margin: "2px 0 0", fontSize: big ? 19 : 16, fontWeight: 700, color: "var(--text)" }}>
+            {info.label}
+          </p>
+          <p style={{ margin: "2px 0 0", fontSize: 13, color: "var(--text-2)" }}>{info.desc}</p>
+        </div>
+      </div>
+
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+        {info.traits.map((trait) => (
+          <span key={trait} style={{
+            fontSize: 12, padding: "4px 10px", borderRadius: 999,
+            background: "var(--surface)", border: `1px solid ${info.color}33`,
+            color: info.color, fontWeight: 600,
+          }}>
+            {trait}
+          </span>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function PerfilTab({ candidate }) {
   if (!candidate.profileCompleted || !candidate.profileType) {
     return (
       <div className={styles.tabContent}>
         <div className={styles.profileWarning}>
-          <span>⚠️</span>
+          <Warning size={18} weight="fill" color="#d97706" style={{ flexShrink: 0 }} />
           <p>Este candidato ainda não respondeu o questionário comportamental.</p>
         </div>
       </div>
@@ -542,38 +712,9 @@ function PerfilTab({ candidate }) {
   return (
     <div className={styles.tabContent}>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
-        <div style={{
-          display: "flex", alignItems: "center", gap: 12,
-          border: "1px solid var(--border)", borderRadius: 12, padding: 16, flex: "1 1 220px",
-        }}>
-          <DiscBadge type={candidate.profileType} size={44} />
-          <div>
-            <span style={{ fontSize: 11, color: "var(--text-muted)" }}>Perfil primário</span>
-            <p style={{ margin: "2px 0 4px", fontSize: 15, fontWeight: 700, color: "var(--text)" }}>
-              {PROFILE_TYPE_INFO[candidate.profileType]?.label}
-            </p>
-            <p style={{ margin: 0, fontSize: 12.5, color: "var(--text-2)" }}>
-              {PROFILE_TYPE_INFO[candidate.profileType]?.desc}
-            </p>
-          </div>
-        </div>
-
+        <ProfileHeroCard type={candidate.profileType} tag="Perfil primário" big />
         {candidate.profileTypeSecondary && (
-          <div style={{
-            display: "flex", alignItems: "center", gap: 12,
-            border: "1px solid var(--border)", borderRadius: 12, padding: 16, flex: "1 1 220px",
-          }}>
-            <DiscBadge type={candidate.profileTypeSecondary} size={44} />
-            <div>
-              <span style={{ fontSize: 11, color: "var(--text-muted)" }}>Perfil secundário</span>
-              <p style={{ margin: "2px 0 4px", fontSize: 15, fontWeight: 700, color: "var(--text)" }}>
-                {PROFILE_TYPE_INFO[candidate.profileTypeSecondary]?.label}
-              </p>
-              <p style={{ margin: 0, fontSize: 12.5, color: "var(--text-2)" }}>
-                {PROFILE_TYPE_INFO[candidate.profileTypeSecondary]?.desc}
-              </p>
-            </div>
-          </div>
+          <ProfileHeroCard type={candidate.profileTypeSecondary} tag="Perfil secundário" />
         )}
       </div>
     </div>
@@ -614,7 +755,7 @@ function AuditoriaTab({ interviewEvents = [] }) {
   if (auditEvents.length === 0) {
     return (
       <div className={styles.emptyState}>
-        <ClipboardText size={40} />
+        <span className={styles.emptyIconWrap}><ClipboardText size={30} weight="duotone" /></span>
         <p>Nenhum evento de auditoria registrado ainda.</p>
       </div>
     );
@@ -623,7 +764,7 @@ function AuditoriaTab({ interviewEvents = [] }) {
   return (
     <div className={styles.tabContent}>
       <div style={{ marginBottom: 12 }}>
-        <p className={styles.sectionHeading}>Linha do tempo da entrevista</p>
+        <SectionHeading icon={ClipboardText}>Linha do tempo da entrevista</SectionHeading>
         <p style={{ fontSize: 13, color: "var(--text-muted)", margin: "4px 0 0" }}>
           Registro automático de todos os eventos relacionados à entrevista.
         </p>
@@ -645,7 +786,10 @@ function AuditoriaTab({ interviewEvents = [] }) {
             <div className={styles.auditContent}>
               <div className={styles.auditHeader}>
                 <span className={styles.auditTitle}>{event.title}</span>
-                <span className={styles.auditTime}>{fmtDateTime(event.date)}</span>
+                <span className={styles.auditTime}>
+                  <Clock size={11} weight="bold" style={{ marginRight: 3, verticalAlign: -1 }} />
+                  {fmtDateTime(event.date)}
+                </span>
               </div>
               {event.description && <p className={styles.auditDescription}>{event.description}</p>}
               {event.note && (
@@ -678,35 +822,62 @@ function AuditoriaTab({ interviewEvents = [] }) {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/* Cabeçalho compartilhado entre os modais de ação                    */
+/* ------------------------------------------------------------------ */
+
+function ModalHeader({ icon, title, subtitle, onClose, loading, tone = "default" }) {
+  const toneColors = {
+    default: { bg: "var(--orange-light)", border: "var(--orange-border)" },
+    danger: { bg: "#fee2e2", border: "#fecaca" },
+  };
+  const c = toneColors[tone] || toneColors.default;
+
+  return (
+    <div style={{
+      display: "flex", alignItems: "center", justifyContent: "space-between",
+      marginBottom: 20, paddingBottom: 16, borderBottom: "1px solid var(--border)",
+    }}>
+      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+        <div style={{
+          width: 34, height: 34, borderRadius: "50%",
+          background: c.bg, border: `1px solid ${c.border}`,
+          display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
+        }}>
+          {icon}
+        </div>
+        <div>
+          <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text)" }}>{title}</div>
+          {subtitle && (
+            <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 1 }}>{subtitle}</div>
+          )}
+        </div>
+      </div>
+      {!loading && onClose && (
+        <button
+          onClick={onClose}
+          style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: 4, borderRadius: "var(--r-sm)", display: "flex" }}
+        >
+          <X size={16} weight="bold" />
+        </button>
+      )}
+    </div>
+  );
+}
+
 function ModalConfirm({ open, onClose, onConfirm, loading, nextStatus }) {
   const copy = CONFIRM_COPY[nextStatus];
   if (!copy || copy.body === null) return null;
 
   return (
     <Modal isOpen={open} onClose={onClose} title="" canClose={!loading} maxWidth="max-w-xl">
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 20, paddingBottom: 16, borderBottom: "1px solid var(--border)" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 34, height: 34, borderRadius: "50%", background: "var(--orange-light)", border: "1px solid var(--orange-border)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-              <path d="M8 2L2 13h12L8 2z" stroke="var(--orange)" strokeWidth="1.5" strokeLinejoin="round" />
-              <line x1="8" y1="7" x2="8" y2="10" stroke="var(--orange)" strokeWidth="1.5" strokeLinecap="round" />
-              <circle cx="8" cy="11.5" r="0.75" fill="var(--orange)" />
-            </svg>
-          </div>
-          <div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text)" }}>{copy.title}</div>
-            <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 1 }}>Esta operação não pode ser desfeita</div>
-          </div>
-        </div>
-        {!loading && (
-          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: 4, borderRadius: "var(--r-sm)", display: "flex" }}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <line x1="1" y1="1" x2="13" y2="13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-              <line x1="13" y1="1" x2="1" y2="13" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-            </svg>
-          </button>
-        )}
-      </div>
+      <ModalHeader
+        icon={<Warning size={16} weight="fill" color="var(--orange)" />}
+        title={copy.title}
+        subtitle="Esta operação não pode ser desfeita"
+        onClose={onClose}
+        loading={loading}
+      />
 
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14, textAlign: "center", marginBottom: 20 }}>
         <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 12px", borderRadius: 999, background: "var(--orange-light)", border: "1px solid var(--orange-border)", fontSize: 12, fontWeight: 500, color: "var(--orange-dark)" }}>
@@ -737,22 +908,14 @@ function ModalReprovar({ open, onClose, onConfirm, loading, candidateName }) {
 
   return (
     <Modal isOpen={open} onClose={onClose} title="" canClose={!loading}>
-      <div className={styles.modalReprovarHeader}>
-        <div className={styles.modalReprovarHeaderLeft}>
-          <div className={styles.modalReprovarHeaderIcon}>
-            <XCircle size={18} weight="fill" color="#ef4444" />
-          </div>
-          <div>
-            <div className={styles.modalReprovarHeaderTitle}>Reprovar candidato</div>
-            <div className={styles.modalReprovarHeaderSub}>Esta ação não pode ser desfeita</div>
-          </div>
-        </div>
-        {!loading && (
-          <button className={styles.modalReprovarCloseBtn} onClick={onClose}>
-            <X size={16} />
-          </button>
-        )}
-      </div>
+      <ModalHeader
+        icon={<XCircle size={16} weight="fill" color="#ef4444" />}
+        title="Reprovar candidato"
+        subtitle="Esta ação não pode ser desfeita"
+        onClose={onClose}
+        loading={loading}
+        tone="danger"
+      />
 
       <div className={styles.modalReprovarBody}>
         <div className={styles.modalReprovarCandidate}>
@@ -899,7 +1062,15 @@ function ModalEntrevista({ open, onClose, onConfirm, loading, company }) {
   const isPresencial = form.interviewType === "presencial";
 
   return (
-    <Modal isOpen={open} onClose={onClose} title="Convidar para entrevista" canClose={!loading}>
+    <Modal isOpen={open} onClose={onClose} title="" canClose={!loading}>
+      <ModalHeader
+        icon={<VideoCamera size={16} weight="fill" color="var(--orange)" />}
+        title="Convidar para entrevista"
+        subtitle="Defina o formato, data e local da conversa"
+        onClose={onClose}
+        loading={loading}
+      />
+
       <div className={styles.switchWrapper}>
         <button
           type="button"
@@ -1088,16 +1259,21 @@ export default function JobsCandidateDetail() {
     load();
   }, [id, applicationId]);
 
+  // Correção do bug: antes esse efeito tinha `tab` como dependência, então
+  // toda troca manual de aba disparava o próprio efeito de novo e forçava
+  // voltar pra "match" sempre que status === "ANALISE". Agora ele só troca
+  // a aba UMA vez, no momento em que a candidatura entra em "ANALISE",
+  // controlado por um ref — depois disso o usuário navega livremente.
+  const autoSwitchedToMatchRef = useRef(false);
+
   useEffect(() => {
     if (!application?.status) return;
 
-    if (
-      application.status === "ANALISE" &&
-      tab !== "match"
-    ) {
+    if (application.status === "ANALISE" && !autoSwitchedToMatchRef.current) {
       setTab("match");
+      autoSwitchedToMatchRef.current = true;
     }
-  }, [application?.status, tab]);
+  }, [application?.status]);
 
   function handleAdvanceClick() {
     const next = NEXT_STATUS[application.status];
@@ -1180,8 +1356,23 @@ export default function JobsCandidateDetail() {
     }
   }
 
-  if (loading) return <div className="page-content"><div className={styles.loadingState}>Carregando...</div></div>;
-  if (!application) return <div className="page-content"><div className={styles.loadingState}>Candidatura não encontrada.</div></div>;
+  if (loading) {
+    return (
+      <div className="page-content">
+        <div className={styles.loadingState}>
+          <span className={styles.loadingSpinner} />
+          Carregando...
+        </div>
+      </div>
+    );
+  }
+  if (!application) {
+    return (
+      <div className="page-content">
+        <div className={styles.loadingState}>Candidatura não encontrada.</div>
+      </div>
+    );
+  }
 
   const { candidate, compatibility, jobProfile, matchBreakdown, matchEligible, matchIneligibleReason } = application;
   const statusStyle = STATUS_COLORS[application.status] || STATUS_COLORS.RECEBIDA;
@@ -1208,22 +1399,20 @@ export default function JobsCandidateDetail() {
             <div className={styles.headerDivider} />
             <div>
               <h1 className={styles.pageTitle}>Informações do Candidato</h1>
-              <p className={styles.pageSubtitle}>Candidatura #{applicationId}</p>
+              <p className={styles.pageSubtitle}>
+                <IdentificationBadge size={13} weight="bold" style={{ marginRight: 4, verticalAlign: -2 }} />
+                Candidatura #{applicationId}
+              </p>
             </div>
           </div>
 
           {isHired && (
-            <div style={{
-              display: "flex", alignItems: "center", gap: 12,
-              background: isTheHire ? "linear-gradient(135deg,#d1fae5,#a7f3d0)" : "#f9fafb",
-              border: `1px solid ${isTheHire ? "#6ee7b7" : "var(--border)"}`,
-              borderRadius: 12, padding: "12px 18px", marginBottom: 4,
-            }}>
+            <div className={`${styles.hiredBanner} ${isTheHire ? styles.hiredBannerSuccess : ""}`}>
               {isTheHire
                 ? <Trophy size={20} weight="fill" color="#059669" />
                 : <SealCheck size={20} weight="regular" color="var(--text-muted)" />
               }
-              <p style={{ margin: 0, fontSize: 13, color: isTheHire ? "#065f46" : "var(--text-muted)" }}>
+              <p>
                 {isTheHire
                   ? "Este candidato foi contratado. A vaga está encerrada."
                   : "Esta vaga foi encerrada por contratação. Visualização somente leitura."
@@ -1302,16 +1491,13 @@ export default function JobsCandidateDetail() {
                 {isTheHire ? "Contratado" : STATUS_LABELS[application.status]}
               </span>
               <span className={styles.appliedAt}>
+                <CalendarBlank size={12} weight="bold" style={{ marginRight: 4, verticalAlign: -1 }} />
                 Candidatou-se em <strong>{fmtDate(application.appliedAt)}</strong>
               </span>
             </div>
           </div>
 
-          {!["REPROVADO", "DESISTIU"].includes(application.status) && (
-            <TimelineBar status={application.status} />
-          )}
-
-          <CandidatePreferencesCard candidate={candidate} />
+          <ApplicationOverviewCard status={application.status} candidate={candidate} />
 
           <div className={styles.tabsCard}>
             <div className={styles.tabs}>
@@ -1336,7 +1522,7 @@ export default function JobsCandidateDetail() {
                   className={`${styles.tab} ${tab === "perfil" ? styles.tabActive : ""}`}
                   onClick={() => setTab("perfil")}
                 >
-                  <Brain size={15} weight={tab === "perfil" ? "fill" : "regular"} />
+                  <IdentificationBadge size={15} weight={tab === "perfil" ? "fill" : "regular"} />
                   Perfil Comportamental
                 </button>
               )}
