@@ -448,7 +448,7 @@ export default function AsaasPaymentWizard({ isOpen, onClose, onComplete, plan, 
       console.log("Asaas customer created:", data);
 
       setAsaasCustomerId(data.customerId);
-      
+
       console.log("Asaas customer ID set:", data.customerId);
       console.log("Proceeding to next step...", asaasCustomerId);
       setStep(1);
@@ -463,31 +463,41 @@ export default function AsaasPaymentWizard({ isOpen, onClose, onComplete, plan, 
     setError(null);
     setLoading(true);
     try {
-      const { data: tokenData } = await api.post("/payments/asaas/tokenize", {
-        customerId: asaasCustomerId,
-        creditCard: {
-          holderName: cardForm.holderName,
-          number: cardForm.number.replace(/\s/g, ""),
-          expiryMonth: cardForm.expiryMonth,
-          expiryYear: cardForm.expiryYear,
-          ccv: cardForm.ccv,
-        },
-        creditCardHolderInfo: {
-          name: cardForm.holderName,
-          cpfCnpj: cardForm.holderCpfCnpj,
-          email: cardForm.holderEmail,
-          postalCode: cardForm.holderPostalCode,
-          addressNumber: cardForm.holderAddressNumber,
-          phone: cardForm.holderPhone,
-        },
-      });
+      let creditCardToken;
+
+      const { data: existingToken } = await api.get("/payments/asaas/token");
+
+      if (existingToken?.creditCardToken) {
+        creditCardToken = existingToken.creditCardToken;
+      } else {
+        const { data: tokenData } = await api.post("/payments/asaas/tokenize", {
+          customerId: asaasCustomerId,
+          creditCard: {
+            holderName: cardForm.holderName,
+            number: cardForm.number.replace(/\s/g, ""),
+            expiryMonth: cardForm.expiryMonth,
+            expiryYear: cardForm.expiryYear,
+            ccv: cardForm.ccv,
+          },
+          creditCardHolderInfo: {
+            name: cardForm.holderName,
+            cpfCnpj: cardForm.holderCpfCnpj,
+            email: cardForm.holderEmail,
+            postalCode: cardForm.holderPostalCode,
+            addressNumber: cardForm.holderAddressNumber,
+            phone: cardForm.holderPhone,
+          },
+        });
+
+        creditCardToken = tokenData.creditCardToken;
+      }
 
       const planId = plan.id;
 
       await api.post("/payments/asaas/subscribe", {
         planId,
         isAnnual,
-        creditCardToken: tokenData.creditCardToken,
+        creditCardToken,
       });
 
       setWaitingActivation(true);
