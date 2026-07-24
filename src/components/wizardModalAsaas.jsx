@@ -329,7 +329,6 @@ function StepCard({ cardForm, onChange, onSubmit, loading, error, waitingActivat
         </div>
       </div>
 
-      {/* BOTÃO */}
       <button
         className="btn-primary"
         onClick={onSubmit}
@@ -442,8 +441,16 @@ export default function AsaasPaymentWizard({ isOpen, onClose, onComplete, plan, 
     setError(null);
     setLoading(true);
     try {
+      console.log("Creating Asaas customer with data:", companyForm);
+
       const { data } = await api.post("/payments/asaas/customer", companyForm);
+
+      console.log("Asaas customer created:", data);
+
       setAsaasCustomerId(data.customerId);
+      
+      console.log("Asaas customer ID set:", data.customerId);
+      console.log("Proceeding to next step...", asaasCustomerId);
       setStep(1);
     } catch (err) {
       setError(err.response?.data?.message || "Erro ao criar perfil de cobrança.");

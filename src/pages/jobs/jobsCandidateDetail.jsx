@@ -969,6 +969,77 @@ function ModalReprovar({ open, onClose, onConfirm, loading, candidateName }) {
     </Modal>
   );
 }
+function toDateInputValue(d) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+}
+
+function toTimeInputValue(d) {
+  const pad = (n) => String(n).padStart(2, "0");
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+function findLastInviteEvent(events = []) {
+  for (let i = events.length - 1; i >= 0; i--) {
+    if (events[i].type === "INVITE_SENT") return events[i];
+  }
+  return null;
+}
+
+const RESCHEDULE_DEFAULT_MESSAGE = `Olá!
+
+Recebemos sua sugestão de novo horário e confirmamos a entrevista para a data abaixo.
+
+Qualquer dúvida, estamos à disposição.
+
+Atenciosamente,
+Equipe de Recrutamento`;
+
+function RescheduleBanner({ event, onRespond }) {
+  return (
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 12,
+        padding: "14px 16px",
+        borderRadius: "var(--r-lg)",
+        background: "#ede9fe",
+        border: "1px solid #ddd6fe",
+        marginBottom: 16,
+      }}
+    >
+      <div
+        style={{
+          width: 34,
+          height: 34,
+          borderRadius: "50%",
+          background: "#fff",
+          border: "1px solid #ddd6fe",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          flexShrink: 0,
+        }}
+      >
+        <ArrowsClockwise size={16} weight="bold" color="#8b5cf6" />
+      </div>
+      <div style={{ flex: 1 }}>
+        <p style={{ margin: 0, fontSize: 13.5, fontWeight: 600, color: "#5b21b6" }}>
+          Candidato sugeriu um novo horário
+        </p>
+        <p style={{ margin: "2px 0 0", fontSize: 13, color: "var(--text-2)" }}>
+          Nova data proposta: <strong>{fmtDateTime(event.proposedAt)}</strong>
+          {event.note && <> — <em>"{event.note}"</em></>}
+        </p>
+      </div>
+      <button className="btnAdvance" style={{ flexShrink: 0 }} onClick={onRespond}>
+        Responder
+        <ArrowRight size={14} weight="bold" />
+      </button>
+    </div>
+  );
+}
 
 const DEFAULT_INTERVIEW_MESSAGE = `Olá!
 
@@ -981,7 +1052,17 @@ Por favor, confirme sua disponibilidade respondendo esta mensagem.
 Atenciosamente,
 Equipe de Recrutamento`;
 
-function ModalEntrevista({ open, onClose, onConfirm, loading, company }) {
+function ModalEntrevista({
+  open,
+  onClose,
+  onConfirm,
+  loading,
+  company,
+  initialValues,
+  title,
+  subtitle,
+  submitLabel,
+}) {
   const [form, setForm] = useState({
     interviewType: "presencial",
     cep: "",
@@ -1002,19 +1083,19 @@ function ModalEntrevista({ open, onClose, onConfirm, loading, company }) {
     if (!open) return;
     setErrors({});
     setForm({
-      interviewType: "presencial",
+      interviewType: initialValues?.interviewType || "presencial",
       cep: company?.cep || "",
       address: company?.address || "",
       number: company?.number || "",
       complement: company?.complement || "",
       city: company?.city || "",
       state: company?.state || "",
-      meetingLink: "",
-      date: "",
-      time: "",
-      message: DEFAULT_INTERVIEW_MESSAGE,
+      meetingLink: initialValues?.meetingLink || "",
+      date: initialValues?.date || "",
+      time: initialValues?.time || "",
+      message: initialValues?.message || DEFAULT_INTERVIEW_MESSAGE,
     });
-  }, [open, company]);
+  }, [open, company, initialValues]);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -1058,15 +1139,14 @@ function ModalEntrevista({ open, onClose, onConfirm, loading, company }) {
 
     onConfirm({ ...form, fullAddress });
   }
-
   const isPresencial = form.interviewType === "presencial";
 
   return (
     <Modal isOpen={open} onClose={onClose} title="" canClose={!loading}>
       <ModalHeader
         icon={<VideoCamera size={16} weight="fill" color="var(--orange)" />}
-        title="Convidar para entrevista"
-        subtitle="Defina o formato, data e local da conversa"
+        title={title || "Convidar para entrevista"}
+        subtitle={subtitle || "Defina o formato, data e local da conversa"}
         onClose={onClose}
         loading={loading}
       />
@@ -1199,7 +1279,7 @@ function ModalEntrevista({ open, onClose, onConfirm, loading, company }) {
           Cancelar
         </button>
         <button type="button" className={styles.btnAdvance} onClick={handleSubmit} disabled={loading}>
-          {loading ? "Aguarde..." : "Enviar convite"}
+          {loading ? "Aguarde..." : (submitLabel || "Enviar convite")}
         </button>
       </div>
     </Modal>
@@ -1240,8 +1320,16 @@ export default function JobsCandidateDetail() {
 
   const [confirmModal, setConfirmModal] = useState(false);
   const [entrevistaModal, setEntrevistaModal] = useState(false);
+  const [entrevistaMode, setEntrevistaMode] = useState("invite");
   const [parabensModal, setParabensModal] = useState(false);
   const [pendingStatus, setPendingStatus] = useState(null);
+
+  const interviewEvents = application?.interviewEvents ?? [];
+  const lastInterviewEvent = interviewEvents[interviewEvents.length - 1];
+
+  const awaitingRescheduleResponse =
+    application?.status === "ENTREVISTA" &&
+    lastInterviewEvent?.type === "RESCHEDULED";
 
   const { user } = useContext(AuthContext);
   const company = user?.company;
@@ -1259,11 +1347,6 @@ export default function JobsCandidateDetail() {
     load();
   }, [id, applicationId]);
 
-  // Correção do bug: antes esse efeito tinha `tab` como dependência, então
-  // toda troca manual de aba disparava o próprio efeito de novo e forçava
-  // voltar pra "match" sempre que status === "ANALISE". Agora ele só troca
-  // a aba UMA vez, no momento em que a candidatura entra em "ANALISE",
-  // controlado por um ref — depois disso o usuário navega livremente.
   const autoSwitchedToMatchRef = useRef(false);
 
   useEffect(() => {
@@ -1280,10 +1363,29 @@ export default function JobsCandidateDetail() {
     if (!next) return;
     setPendingStatus(next);
     if (next === "ENTREVISTA") {
+      setEntrevistaMode("invite");
       setEntrevistaModal(true);
     } else {
       setConfirmModal(true);
     }
+  }
+
+  function handleRespondReschedule() {
+    setEntrevistaMode("reschedule");
+    setEntrevistaModal(true);
+  }
+
+  function buildRescheduleInitialValues() {
+    const lastInvite = findLastInviteEvent(interviewEvents);
+    const proposed = lastInterviewEvent?.proposedAt ? new Date(lastInterviewEvent.proposedAt) : null;
+
+    return {
+      interviewType: lastInvite?.interviewType ? lastInvite.interviewType.toLowerCase() : "presencial",
+      meetingLink: lastInvite?.meetingLink || "",
+      date: proposed ? toDateInputValue(proposed) : "",
+      time: proposed ? toTimeInputValue(proposed) : "",
+      message: RESCHEDULE_DEFAULT_MESSAGE,
+    };
   }
 
   async function handleConfirm() {
@@ -1419,6 +1521,10 @@ export default function JobsCandidateDetail() {
                 }
               </p>
             </div>
+          )}
+
+          {!isHired && awaitingRescheduleResponse && (
+            <RescheduleBanner event={lastInterviewEvent} onRespond={handleRespondReschedule} />
           )}
 
           {!isHired && (canAdvance || canReject) && (
@@ -1570,6 +1676,14 @@ export default function JobsCandidateDetail() {
         onConfirm={handleEntrevistaConfirm}
         loading={updating}
         company={company}
+        initialValues={entrevistaMode === "reschedule" ? buildRescheduleInitialValues() : undefined}
+        title={entrevistaMode === "reschedule" ? "Responder à remarcação" : undefined}
+        subtitle={
+          entrevistaMode === "reschedule"
+            ? "Confirme a data sugerida pelo candidato ou proponha outro horário"
+            : undefined
+        }
+        submitLabel={entrevistaMode === "reschedule" ? "Confirmar e enviar" : undefined}
       />
 
       <ModalParabens
