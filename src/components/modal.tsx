@@ -40,6 +40,7 @@ export function Modal({ isOpen, onClose, title, children, canClose, bodyRef, max
           opacity: visible ? 1 : 0,
           transform: visible ? 'scale(1)' : 'scale(0.95)',
           transition: 'opacity 0.3s ease, transform 0.3s ease',
+          borderRadius: 'var(--r-lg)'
         }}
         className={`bg-white rounded-lg shadow-lg w-full ${maxWidth} flex flex-col max-h-[90vh]`}
       >

@@ -1,0 +1,120 @@
+.container {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.panel {
+  flex: 0 0 45%;
+  max-width: 560px;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 48px;
+  background: linear-gradient(190deg, #1c1712 0%, #14100c 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.panelContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+  max-width: 380px;
+  position: relative;
+  z-index: 1;
+}
+
+.panelLogo {
+  align-self: center;
+}
+
+.panelLogoImg {
+  height: 150px;
+  transform: scale(2);
+  width: auto;
+}
+
+.panelArt {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.panelHeadline {
+  text-align: center;
+}
+
+.panelHeadline h2 {
+  margin: 0 0 10px;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #f6f0e8;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+
+.panelHeadline p {
+  margin: 0;
+  font-size: 13.5px;
+  color: #8f8177;
+  line-height: 1.6;
+}
+
+.panelBadges {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 600;
+  color: #cbb9a8;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 5px 11px;
+  border-radius: 100px;
+}
+
+/* ── Right side ── */
+.side {
+  flex: 1;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 24px;
+  background: var(--surface);
+}
+
+.card {
+  width: 100%;
+  max-width: 380px;
+}
+
+@media (max-width: 900px) {
+  .container {
+    flex-direction: column;
+  }
+
+  .panel {
+    flex: none;
+    max-width: none;
+    min-height: auto;
+    padding: 32px 24px;
+  }
+
+  .panelArt {
+    display: none;
+  }
+
+  .side {
+    min-height: auto;
+    padding: 32px 24px 48px;
+  }
+}

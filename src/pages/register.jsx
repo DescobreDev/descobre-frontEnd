@@ -50,7 +50,6 @@ function Register() {
   return (
     <div className={styles.authContainer}>
 
-      {/* ── LEFT PANEL 70% ── */}
       <aside className={styles.authPanel}>
         <div className={styles.panelContent}>
 
@@ -87,7 +86,6 @@ function Register() {
         </div>
       </aside>
 
-      {/* ── RIGHT PANEL 30% ── */}
       <main className={styles.authSide}>
         <div className={styles.authCard}>
 
