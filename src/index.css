@@ -565,7 +565,7 @@ select {
 
 .page-content {
   padding: 28px 32px;
-  min-height: calc(100vh - 80px);
+  min-height: calc(100vh - 170px);
   display: flex;
   flex-direction: column;
   gap: 24px;
