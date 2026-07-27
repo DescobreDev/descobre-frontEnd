@@ -439,35 +439,20 @@
 }
 
 .hero {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 32px 36px;
-  margin-bottom: 24px;
-  border-radius: var(--r-lg, 16px);
-
-  /* Laranja como protagonista, com profundidade escura só nas bordas */
-  background: linear-gradient(
-    135deg,
-    #ff8a3d 0%,
-    #f9701a 30%,
-    #e35d0f 55%,
-    #b8420a 80%,
-    #7a2b08 100%
-  );
-
-  border: 1px solid rgba(255, 180, 100, 0.3);
-  overflow: hidden;
-
-  box-shadow:
-    0 16px 40px -12px rgba(120, 40, 0, 0.5),
-    0 1px 0 0 rgba(255, 255, 255, 0.15) inset,
-    0 8px 24px -10px rgba(255, 100, 0, 0.35);
+      position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 32px 36px;
+    margin-bottom: 24px;
+    border-radius: var(--r-lg, 16px);
+    background: linear-gradient(#bc4d19 80%, #ce5b28);
+    border: 1px solid rgba(255, 180, 100, .3);
+    overflow: hidden;
+    box-shadow: 0 16px 40px -12px #78280080, 0 1px #ffffff26 inset, 0 8px 24px -10px #ff640059;
 }
 
-/* Glow de luz quente, reforçando o laranja em vez de escondê-lo */
 .hero::before {
   content: "";
   position: absolute;
