@@ -1,3 +1,7 @@
+// Configuração visual compartilhada entre JobCard e StatusMenu.
+// Usa direto as CSS custom properties do seu tema (globals.css) — nada de
+// cor "chutada" aqui. Se um dia vocês trocarem a paleta, isso atualiza sozinho.
+
 export const STATUS_CONFIG = {
   ACTIVE: {
     label: "Ativa",
@@ -13,6 +17,8 @@ export const STATUS_CONFIG = {
   },
 };
 
+// Cores escolhidas pra criar hierarquia visual, não só "bonitinho":
+// cinza (neutro) → índigo (informativo) → laranja de marca (chama atenção) → vermelho (alerta real)
 export const PRIORITY_CONFIG = {
   LOW: {
     label: "Baixa",

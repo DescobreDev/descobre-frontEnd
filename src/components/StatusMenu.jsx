@@ -2,14 +2,27 @@ import { useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { CaretDown, Check } from "@phosphor-icons/react";
 
-export default function StatusMenu({ value, options, onChange, disabled = false }) {
+/**
+ * StatusMenu
+ * Popover em formato de card pra trocar o status de uma vaga — bolinha de
+ * cor, rótulo e check no item selecionado. Usa os tokens do tema (var(--*))
+ * em vez de hex fixo, então acompanha o sistema de design automaticamente.
+ */
+export default function StatusMenu({ value, options, onChange, disabled = false, variant = "default" }) {
   const [open, setOpen] = useState(false);
   const [menuStyle, setMenuStyle] = useState({});
 
   const triggerRef = useRef(null);
   const menuRef = useRef(null);
 
-  const current = options[value] ?? { label: value, color: "#64748b", bg: "#f1f5f9", dot: "#94a3b8" };
+  const onGradient = variant === "onGradient";
+
+  const current = options[value] ?? {
+    label: value,
+    color: "var(--text-muted)",
+    bg: "var(--surface-2)",
+    dot: "var(--text-muted)",
+  };
 
   function handleToggle() {
     if (disabled) return;
@@ -60,13 +73,14 @@ export default function StatusMenu({ value, options, onChange, disabled = false 
           width: "100%",
           border: "none",
           cursor: disabled ? "default" : "pointer",
-          padding: "5px 12px",
+          padding: "6px 12px",
           borderRadius: 99,
           fontSize: 12,
           fontWeight: 600,
           color: current.color,
           background: current.bg,
           opacity: disabled ? 0.6 : 1,
+          fontFamily: "inherit",
         }}
       >
         <span style={{ width: 6, height: 6, borderRadius: 99, background: current.dot, flexShrink: 0 }} />
@@ -79,17 +93,17 @@ export default function StatusMenu({ value, options, onChange, disabled = false 
           ref={menuRef}
           style={{
             ...menuStyle,
-            background: "#ffffff",
-            borderRadius: 14,
-            border: "1px solid #eef1f6",
-            boxShadow: "0 16px 40px rgba(15,23,42,0.16), 0 2px 8px rgba(15,23,42,0.06)",
+            background: "var(--surface)",
+            borderRadius: "var(--r-md)",
+            border: "1px solid var(--border)",
+            boxShadow: "var(--shadow-md)",
             padding: 6,
           }}
         >
           <p style={{
             margin: 0, padding: "6px 10px 8px",
             fontSize: 10.5, fontWeight: 700, letterSpacing: "0.05em",
-            textTransform: "uppercase", color: "#94a3b8",
+            textTransform: "uppercase", color: "var(--text-muted)",
           }}>
             Alterar status
           </p>
@@ -101,7 +115,7 @@ export default function StatusMenu({ value, options, onChange, disabled = false 
                 key={key}
                 type="button"
                 onClick={() => { onChange(key); setOpen(false); }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = "#f8fafc")}
+                onMouseEnter={(e) => (e.currentTarget.style.background = "var(--surface-2)")}
                 onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
                 style={{
                   display: "flex",
@@ -112,16 +126,17 @@ export default function StatusMenu({ value, options, onChange, disabled = false 
                   border: "none",
                   background: "transparent",
                   padding: "9px 10px",
-                  borderRadius: 9,
+                  borderRadius: "var(--r-sm)",
                   cursor: "pointer",
                   fontSize: 13.5,
                   fontWeight: 500,
-                  color: "#1e293b",
+                  color: "var(--text)",
+                  fontFamily: "inherit",
                 }}
               >
                 <span style={{ width: 8, height: 8, borderRadius: 99, background: cfg.dot, flexShrink: 0 }} />
                 <span style={{ flex: 1 }}>{cfg.label}</span>
-                {selected && <Check size={15} weight="bold" color="#059669" />}
+                {selected && <Check size={15} weight="bold" color="var(--green)" />}
               </button>
             );
           })}
