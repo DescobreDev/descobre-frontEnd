@@ -2,18 +2,15 @@
 @import "tailwindcss";
 
 :root {
-  /* Laranja — cor principal */
   --orange: #f97316;
   --orange-dark: #ea580c;
   --orange-light: #fff7ed;
   --orange-glow: rgba(249, 115, 22, 0.18);
   --orange-border: rgba(249, 115, 22, 0.3);
 
-  /* Aliases para compatibilidade */
   --color-primary: #f97316;
   --color-primary-dark: #ea580c;
 
-  /* Outros tons */
   --color-secondary: #ec4899;
   --color-tertiary: #9333ea;
   --indigo: #6366f1;
@@ -22,23 +19,19 @@
   --red: #ef4444;
   --color-error: #ef4444;
 
-  /* Superfícies */
   --surface: #ffffff;
   --surface-2: #f8fafc;
   --color-input-bg: #f9fafb;
 
-  /* Bordas */
   --border: #e9ecf2;
   --color-border: #e5e7eb;
 
-  /* Texto */
   --text: #0d1829;
   --color-text: #1f2937;
   --text-2: #5a6a82;
   --color-text-muted: #6b7280;
   --text-muted: #9aaabb;
 
-  /* Sidebar */
   --sidebar-bg: #1c1c1d;
   --sidebar-hover: rgba(255, 255, 255, 0.05);
   --sidebar-active-bg: rgba(249, 115, 22, 0.12);
@@ -46,13 +39,11 @@
   --sidebar-text-active: #f1f5f9;
   --sidebar-w: 350px;
 
-  /* Sombras */
   --shadow-xs: 0 1px 2px rgba(13, 24, 41, 0.06);
   --shadow-sm: 0 2px 8px rgba(13, 24, 41, 0.07), 0 1px 3px rgba(13, 24, 41, 0.05);
   --shadow-md: 12px 10px 20px 2px rgb(0 0 0 / 0.12), 6px 4px 8px -2px rgb(0 0 0 / 0.08);
   ;
-
-  /* Border radius */
+  
   --r-sm: 8px;
   --r-md: 12px;
   --r-lg: 16px;
@@ -572,11 +563,9 @@ select {
   animation: fadeSlideUp 0.35s ease both;
   background: #ffffff;
   margin: 15px;
-  /* box-shadow: var(--shadow-lg); */
   border-radius: var(--r-sm);
 }
 
-/* Campo de salário com sugestão de IA */
 .salary-field {
   display: flex;
   flex-direction: column;
@@ -653,7 +642,6 @@ select {
   to { transform: rotate(360deg); }
 }
 
-/* Card de sugestão */
 .salary-suggestion-card {
   background: var(--orange-light);
   border: 1px solid var(--orange-border);
@@ -732,9 +720,6 @@ select {
   gap: 4px;
 }
 
-/* ══════════════════════════════════════════════════
-   ANIMAÇÕES GLOBAIS
-   ══════════════════════════════════════════════════ */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -797,9 +782,6 @@ select {
   animation: fadeIn 0.4s ease;
 }
 
-/* ══════════════════════════════════════════════════
-   LIGHT MODE
-   ══════════════════════════════════════════════════ */
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
