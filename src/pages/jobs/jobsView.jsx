@@ -9,26 +9,24 @@ import {
 } from "@phosphor-icons/react";
 import styles from "./CSS/jobs.module.css";
 
-function SkeletonCard() {
+function SkeletonRow() {
   return (
     <div style={{
-      background: "#fff", borderRadius: 16, padding: 18,
-      border: "1px solid #eef1f6", display: "flex", flexDirection: "column", gap: 14,
+      display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap",
+      background: "var(--surface)", border: "1px solid var(--border)",
+      borderRadius: "var(--r-lg)", padding: "16px 20px", boxShadow: "var(--shadow-xs)",
     }}>
-      <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
-        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
-          <div style={{ height: 15, width: "70%", background: "#eef1f6", borderRadius: 6 }} />
-          <div style={{ height: 12, width: "45%", background: "#eef1f6", borderRadius: 6 }} />
-        </div>
-        <div style={{ height: 26, width: 80, background: "#eef1f6", borderRadius: 99 }} />
+      <div style={{ flex: "1 1 240px", minWidth: 200, display: "flex", flexDirection: "column", gap: 6 }}>
+        <div style={{ height: 14, width: "55%", background: "var(--surface-2)", borderRadius: 6 }} />
+        <div style={{ height: 11, width: "35%", background: "var(--surface-2)", borderRadius: 6 }} />
       </div>
-      <div style={{ display: "flex", gap: 6 }}>
-        <div style={{ height: 22, width: 60, background: "#eef1f6", borderRadius: 8 }} />
-        <div style={{ height: 22, width: 70, background: "#eef1f6", borderRadius: 8 }} />
-        <div style={{ height: 22, width: 55, background: "#eef1f6", borderRadius: 8 }} />
+      <div style={{ display: "flex", gap: 6, flex: "1 1 220px" }}>
+        <div style={{ height: 22, width: 64, background: "var(--surface-2)", borderRadius: "var(--r-sm)" }} />
+        <div style={{ height: 22, width: 74, background: "var(--surface-2)", borderRadius: "var(--r-sm)" }} />
+        <div style={{ height: 22, width: 58, background: "var(--surface-2)", borderRadius: "var(--r-sm)" }} />
       </div>
-      <div style={{ height: 1, background: "#f1f5f9" }} />
-      <div style={{ height: 12, width: "40%", background: "#eef1f6", borderRadius: 6 }} />
+      <div style={{ height: 24, width: 90, background: "var(--surface-2)", borderRadius: 99 }} />
+      <div style={{ height: 12, width: 70, background: "var(--surface-2)", borderRadius: 6 }} />
     </div>
   );
 }
@@ -36,28 +34,25 @@ function SkeletonCard() {
 function EmptyState({ hasFilters, onClear, onCreate }) {
   return (
     <div style={{
-      gridColumn: "1 / -1", display: "flex", flexDirection: "column", alignItems: "center",
+      display: "flex", flexDirection: "column", alignItems: "center",
       gap: 8, padding: "56px 24px", textAlign: "center",
+      background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--r-lg)",
     }}>
       <div style={{
-        width: 56, height: 56, borderRadius: 16, background: "#f8fafc",
+        width: 56, height: 56, borderRadius: "var(--r-lg)", background: "var(--surface-2)",
         display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4,
       }}>
-        <Briefcase size={26} color="#94a3b8" />
+        <Briefcase size={26} color="var(--text-muted)" />
       </div>
-      <p style={{ margin: 0, fontSize: 15.5, fontWeight: 600, color: "#0f172a" }}>
+      <p style={{ margin: 0, fontSize: 15.5, fontWeight: 600, color: "var(--text)" }}>
         {hasFilters ? "Nenhuma vaga encontrada" : "Nenhuma vaga cadastrada ainda"}
       </p>
-      <p style={{ margin: 0, fontSize: 13.5, color: "#64748b", maxWidth: 320 }}>
+      <p style={{ margin: 0, fontSize: 13.5, color: "var(--text-2)", maxWidth: 320 }}>
         {hasFilters
           ? "Tente buscar por outro termo ou limpar a busca."
           : "Crie a primeira vaga da sua empresa para começar a receber candidaturas."}
       </p>
-      <button
-        className="btn-primary"
-        onClick={hasFilters ? onClear : onCreate}
-        style={{ marginTop: 10 }}
-      >
+      <button className="btn-primary" onClick={hasFilters ? onClear : onCreate} style={{ marginTop: 10 }}>
         {hasFilters ? "Limpar busca" : "Criar vaga"}
       </button>
     </div>
@@ -67,17 +62,18 @@ function EmptyState({ hasFilters, onClear, onCreate }) {
 function ErrorState({ message, onRetry }) {
   return (
     <div style={{
-      gridColumn: "1 / -1", display: "flex", flexDirection: "column", alignItems: "center",
+      display: "flex", flexDirection: "column", alignItems: "center",
       gap: 8, padding: "56px 24px", textAlign: "center",
+      background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--r-lg)",
     }}>
       <div style={{
-        width: 56, height: 56, borderRadius: 16, background: "#fef2f2",
+        width: 56, height: 56, borderRadius: "var(--r-lg)", background: "rgba(239, 68, 68, 0.1)",
         display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4,
       }}>
-        <CloudWarning size={26} color="#dc2626" />
+        <CloudWarning size={26} color="var(--red)" />
       </div>
-      <p style={{ margin: 0, fontSize: 15.5, fontWeight: 600, color: "#0f172a" }}>Não foi possível carregar</p>
-      <p style={{ margin: 0, fontSize: 13.5, color: "#64748b" }}>{message}</p>
+      <p style={{ margin: 0, fontSize: 15.5, fontWeight: 600, color: "var(--text)" }}>Não foi possível carregar</p>
+      <p style={{ margin: 0, fontSize: 13.5, color: "var(--text-2)" }}>{message}</p>
       <button className="btn-primary" onClick={onRetry} style={{ marginTop: 10 }}>
         Tentar de novo
       </button>
@@ -93,29 +89,21 @@ function Pagination({ pagination, currentPage, onPageChange }) {
 
   const btnStyle = (disabled) => ({
     display: "flex", alignItems: "center", gap: 6,
-    padding: "8px 14px", borderRadius: 10,
-    border: "1px solid #e4e9f0", background: "#fff",
-    fontSize: 13, fontWeight: 500, color: disabled ? "#cbd5e1" : "#334155",
+    padding: "8px 14px", borderRadius: "var(--r-sm)",
+    border: "1px solid var(--border)", background: "var(--surface)",
+    fontSize: 13, fontWeight: 500, color: disabled ? "var(--text-muted)" : "var(--text-2)",
     cursor: disabled ? "default" : "pointer",
   });
 
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginTop: 28 }}>
-      <button
-        style={btnStyle(currentPage <= 1)}
-        disabled={currentPage <= 1}
-        onClick={() => onPageChange(currentPage - 1)}
-      >
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginTop: 24 }}>
+      <button style={btnStyle(currentPage <= 1)} disabled={currentPage <= 1} onClick={() => onPageChange(currentPage - 1)}>
         <CaretLeft size={13} weight="bold" /> Anterior
       </button>
-      <span style={{ fontSize: 13, fontWeight: 500, color: "#64748b" }}>
+      <span style={{ fontSize: 13, fontWeight: 500, color: "var(--text-2)" }}>
         Página {currentPage} de {totalPages}
       </span>
-      <button
-        style={btnStyle(currentPage >= totalPages)}
-        disabled={currentPage >= totalPages}
-        onClick={() => onPageChange(currentPage + 1)}
-      >
+      <button style={btnStyle(currentPage >= totalPages)} disabled={currentPage >= totalPages} onClick={() => onPageChange(currentPage + 1)}>
         Próxima <CaretRight size={13} weight="bold" />
       </button>
     </div>
@@ -161,8 +149,6 @@ export default function JobsView() {
     }
   }
 
-  // Filtro simples no client, sobre a página já carregada — cobre o caso comum
-  // de achar rápido uma vaga na página atual sem precisar de uma rota nova na API.
   const visibleJobs = search.trim()
     ? jobs.filter((j) => j.title.toLowerCase().includes(search.trim().toLowerCase()))
     : jobs;
@@ -183,24 +169,24 @@ export default function JobsView() {
 
         <div style={{
           display: "flex", alignItems: "center", gap: 8,
-          background: "#fff", border: "1px solid #eef1f6", borderRadius: 12,
-          padding: "10px 14px", marginBottom: 20, maxWidth: 360,
+          background: "var(--surface)", border: "1px solid var(--border)",
+          borderRadius: "var(--r-md)", padding: "10px 14px",
+          margin: "20px 0", maxWidth: 340,
         }}>
-          <MagnifyingGlass size={16} color="#94a3b8" />
+          <MagnifyingGlass size={16} color="var(--text-muted)" />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar vaga por título"
-            style={{ border: "none", outline: "none", fontSize: 13.5, width: "100%", color: "#0f172a" }}
+            style={{
+              border: "none", outline: "none", fontSize: 13.5, width: "100%",
+              color: "var(--text)", background: "transparent", fontFamily: "inherit",
+            }}
           />
         </div>
 
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))",
-          gap: 16,
-        }}>
-          {loading && Array.from({ length: 6 }).map((_, i) => <SkeletonCard key={i} />)}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {loading && Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)}
 
           {!loading && error && <ErrorState message={error} onRetry={() => fetchJobs(currentPage)} />}
 
