@@ -9,24 +9,26 @@ import {
 } from "@phosphor-icons/react";
 import styles from "./CSS/jobs.module.css";
 
-function SkeletonRow() {
+function SkeletonCard() {
   return (
     <div style={{
-      display: "flex", alignItems: "center", gap: 20, flexWrap: "wrap",
-      background: "var(--surface)", border: "1px solid var(--border)",
-      borderRadius: "var(--r-lg)", padding: "16px 20px", boxShadow: "var(--shadow-xs)",
+      background: "var(--surface)", borderRadius: 18, padding: 20,
+      border: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: 14,
     }}>
-      <div style={{ flex: "1 1 240px", minWidth: 200, display: "flex", flexDirection: "column", gap: 6 }}>
-        <div style={{ height: 14, width: "55%", background: "var(--surface-2)", borderRadius: 6 }} />
-        <div style={{ height: 11, width: "35%", background: "var(--surface-2)", borderRadius: 6 }} />
+      <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ height: 15, width: "70%", background: "var(--surface-2)", borderRadius: 6 }} />
+          <div style={{ height: 12, width: "45%", background: "var(--surface-2)", borderRadius: 6 }} />
+        </div>
+        <div style={{ height: 26, width: 80, background: "var(--surface-2)", borderRadius: 99 }} />
       </div>
-      <div style={{ display: "flex", gap: 6, flex: "1 1 220px" }}>
-        <div style={{ height: 22, width: 64, background: "var(--surface-2)", borderRadius: "var(--r-sm)" }} />
-        <div style={{ height: 22, width: 74, background: "var(--surface-2)", borderRadius: "var(--r-sm)" }} />
-        <div style={{ height: 22, width: 58, background: "var(--surface-2)", borderRadius: "var(--r-sm)" }} />
+      <div style={{ display: "flex", gap: 6 }}>
+        <div style={{ height: 22, width: 60, background: "var(--surface-2)", borderRadius: 8 }} />
+        <div style={{ height: 22, width: 70, background: "var(--surface-2)", borderRadius: 8 }} />
+        <div style={{ height: 22, width: 55, background: "var(--surface-2)", borderRadius: 8 }} />
       </div>
-      <div style={{ height: 24, width: 90, background: "var(--surface-2)", borderRadius: 99 }} />
-      <div style={{ height: 12, width: 70, background: "var(--surface-2)", borderRadius: 6 }} />
+      <div style={{ height: 1, background: "var(--border)" }} />
+      <div style={{ height: 12, width: "40%", background: "var(--surface-2)", borderRadius: 6 }} />
     </div>
   );
 }
@@ -34,12 +36,11 @@ function SkeletonRow() {
 function EmptyState({ hasFilters, onClear, onCreate }) {
   return (
     <div style={{
-      display: "flex", flexDirection: "column", alignItems: "center",
+      gridColumn: "1 / -1", display: "flex", flexDirection: "column", alignItems: "center",
       gap: 8, padding: "56px 24px", textAlign: "center",
-      background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--r-lg)",
     }}>
       <div style={{
-        width: 56, height: 56, borderRadius: "var(--r-lg)", background: "var(--surface-2)",
+        width: 56, height: 56, borderRadius: 16, background: "var(--surface-2)",
         display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4,
       }}>
         <Briefcase size={26} color="var(--text-muted)" />
@@ -52,7 +53,11 @@ function EmptyState({ hasFilters, onClear, onCreate }) {
           ? "Tente buscar por outro termo ou limpar a busca."
           : "Crie a primeira vaga da sua empresa para começar a receber candidaturas."}
       </p>
-      <button className="btn-primary" onClick={hasFilters ? onClear : onCreate} style={{ marginTop: 10 }}>
+      <button
+        className="btn-primary"
+        onClick={hasFilters ? onClear : onCreate}
+        style={{ marginTop: 10 }}
+      >
         {hasFilters ? "Limpar busca" : "Criar vaga"}
       </button>
     </div>
@@ -62,12 +67,11 @@ function EmptyState({ hasFilters, onClear, onCreate }) {
 function ErrorState({ message, onRetry }) {
   return (
     <div style={{
-      display: "flex", flexDirection: "column", alignItems: "center",
+      gridColumn: "1 / -1", display: "flex", flexDirection: "column", alignItems: "center",
       gap: 8, padding: "56px 24px", textAlign: "center",
-      background: "var(--surface)", border: "1px solid var(--border)", borderRadius: "var(--r-lg)",
     }}>
       <div style={{
-        width: 56, height: 56, borderRadius: "var(--r-lg)", background: "rgba(239, 68, 68, 0.1)",
+        width: 56, height: 56, borderRadius: 16, background: "#fef2f2",
         display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4,
       }}>
         <CloudWarning size={26} color="var(--red)" />
@@ -89,21 +93,29 @@ function Pagination({ pagination, currentPage, onPageChange }) {
 
   const btnStyle = (disabled) => ({
     display: "flex", alignItems: "center", gap: 6,
-    padding: "8px 14px", borderRadius: "var(--r-sm)",
+    padding: "8px 14px", borderRadius: 10,
     border: "1px solid var(--border)", background: "var(--surface)",
     fontSize: 13, fontWeight: 500, color: disabled ? "var(--text-muted)" : "var(--text-2)",
     cursor: disabled ? "default" : "pointer",
   });
 
   return (
-    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginTop: 24 }}>
-      <button style={btnStyle(currentPage <= 1)} disabled={currentPage <= 1} onClick={() => onPageChange(currentPage - 1)}>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginTop: 28 }}>
+      <button
+        style={btnStyle(currentPage <= 1)}
+        disabled={currentPage <= 1}
+        onClick={() => onPageChange(currentPage - 1)}
+      >
         <CaretLeft size={13} weight="bold" /> Anterior
       </button>
       <span style={{ fontSize: 13, fontWeight: 500, color: "var(--text-2)" }}>
         Página {currentPage} de {totalPages}
       </span>
-      <button style={btnStyle(currentPage >= totalPages)} disabled={currentPage >= totalPages} onClick={() => onPageChange(currentPage + 1)}>
+      <button
+        style={btnStyle(currentPage >= totalPages)}
+        disabled={currentPage >= totalPages}
+        onClick={() => onPageChange(currentPage + 1)}
+      >
         Próxima <CaretRight size={13} weight="bold" />
       </button>
     </div>
@@ -153,40 +165,58 @@ export default function JobsView() {
     ? jobs.filter((j) => j.title.toLowerCase().includes(search.trim().toLowerCase()))
     : jobs;
 
+  const totalVagas = pagination?.total ?? jobs.length;
+  const vagasAtivas = jobs.filter((j) => j.status === "ACTIVE").length;
+
   return (
     <PlanGate>
       <div className="page-content">
-        <div className={styles.pageHeader}>
-          <div>
-            <h1 className={styles.pageTitle}>Vagas</h1>
-            <p className={styles.pageSubtitle}>Gerencie todas as vagas abertas da sua empresa</p>
+        <div className={styles.hero}>
+          <div className={styles.heroMain}>
+            <div className={styles.heroIcon}>
+              <Briefcase size={22} weight="fill" />
+            </div>
+            <div>
+              <h1 className={styles.heroTitle}>Vagas</h1>
+              <p className={styles.heroSubtitle}>Gerencie todas as vagas abertas da sua empresa</p>
+              <div className={styles.heroStats}>
+                <div className={styles.statPill}>
+                  <span className={styles.statValue}>{totalVagas}</span>
+                  <span className={styles.statLabel}>{totalVagas === 1 ? "vaga cadastrada" : "vagas cadastradas"}</span>
+                </div>
+                <div className={styles.statPill}>
+                  <span className={styles.statValue}>{vagasAtivas}</span>
+                  <span className={styles.statLabel}>ativas</span>
+                </div>
+              </div>
+            </div>
           </div>
-          <button className="btn-primary" onClick={() => navigate("/jobs/new")}>
+
+          <button className={styles.heroCta} onClick={() => navigate("/jobs/new")}>
             <Plus size={16} weight="bold" />
             Nova vaga
           </button>
         </div>
 
-        <div style={{
-          display: "flex", alignItems: "center", gap: 8,
-          background: "var(--surface)", border: "1px solid var(--border)",
-          borderRadius: "var(--r-md)", padding: "10px 14px",
-          margin: "20px 0", maxWidth: 340,
-        }}>
-          <MagnifyingGlass size={16} color="var(--text-muted)" />
-          <input
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Buscar vaga por título"
-            style={{
-              border: "none", outline: "none", fontSize: 13.5, width: "100%",
-              color: "var(--text)", background: "transparent", fontFamily: "inherit",
-            }}
-          />
+        <div className={styles.toolbar}>
+          <div className={styles.searchBox}>
+            <MagnifyingGlass size={16} />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar vaga por título"
+              className={styles.searchInput}
+            />
+          </div>
+          {search && (
+            <span className={styles.resultsCount}>
+              {visibleJobs.length} {visibleJobs.length === 1 ? "resultado" : "resultados"}
+            </span>
+          )}
         </div>
 
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {loading && Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)}
+        <div className={styles.grid}>
+          {loading && Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
 
           {!loading && error && <ErrorState message={error} onRetry={() => fetchJobs(currentPage)} />}
 
