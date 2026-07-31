@@ -386,7 +386,6 @@
   border-radius: 16px;
   padding: 22px 24px;
   box-shadow: var(--shadow-xs);
-  height: 100%;
 }
 
 .cardHeader {
