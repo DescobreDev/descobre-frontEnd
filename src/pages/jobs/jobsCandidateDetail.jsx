@@ -225,7 +225,7 @@ function InfoPopover({ text }) {
       pointerEvents: "none",
     }}>
       <div style={{ display: "flex", gap: 6, alignItems: "flex-start" }}>
-        <Warning size={13} weight="fill" color="#f59e0b" style={{ flexShrink: 0, marginTop: 2 }} />
+        <Warning size={13} weight="fill" color="var(--orange)" style={{ flexShrink: 0, marginTop: 2 }} />
         <span>{text}</span>
       </div>
       <div style={{
@@ -252,10 +252,7 @@ function InfoPopover({ text }) {
           onMouseEnter={() => setOpen(true)}
           onMouseLeave={() => setOpen(false)}
           onClick={() => setOpen(v => !v)}
-          style={{
-            background: "none", border: "none", cursor: "pointer",
-            color: "var(--text-muted)", padding: 2, display: "flex",
-          }}
+          className={styles.infoPopoverBtn}
         >
           <Info size={15} weight="fill" />
         </button>
@@ -321,11 +318,11 @@ function DiscRow({ type, tag }) {
   const info = PROFILE_TYPE_INFO[type];
   if (!info) return null;
   return (
-    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+    <div className={styles.discRow}>
       <DiscBadge type={type} size={38} />
       <div>
-        <p style={{ margin: 0, fontSize: 13.5, fontWeight: 600, color: "var(--text)" }}>{info.label}</p>
-        <span style={{ fontSize: 11, color: "var(--text-muted)" }}>{tag}</span>
+        <p className={styles.discRowName}>{info.label}</p>
+        <span className={styles.discRowTag}>{tag}</span>
       </div>
     </div>
   );
@@ -650,45 +647,48 @@ function ProfileHeroCard({ type, tag, big }) {
 
   return (
     <div
-      className={styles.profileHeroCard}
+      className={styles.discHeroCard}
       style={{
         padding: big ? 24 : 18, flex: big ? "1 1 320px" : "1 1 240px",
         background: `linear-gradient(135deg, ${info.bg}, var(--surface))`,
         borderColor: `${info.color}2b`,
       }}
     >
-      <div style={{ display: "flex", alignItems: "center", gap: 14, marginBottom: 14 }}>
-        <span style={{
-          width: big ? 64 : 48, height: big ? 64 : 48, borderRadius: "18px",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          background: `linear-gradient(135deg, ${info.color}, ${info.color}cc)`, color: "#fff",
-          flexShrink: 0,
-          boxShadow: `0 6px 16px ${info.color}45`,
-        }}>
+      <div className={styles.discHeroTop}>
+        <span
+          className={styles.discHeroIconWrap}
+          style={{
+            width: big ? 64 : 48, height: big ? 64 : 48,
+            background: `linear-gradient(135deg, ${info.color}, ${info.color}cc)`,
+            boxShadow: `0 6px 16px ${info.color}45`,
+          }}
+        >
           <Icon size={big ? 30 : 24} weight="bold" />
         </span>
         <div>
-          <span style={{ display: "inline-flex", alignItems: "center", gap: 5, fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5, color: "var(--text-muted)", fontWeight: 700 }}>
+          <span className={styles.discHeroTagRow}>
             {tag}
-            <span style={{
-              fontSize: 10, fontWeight: 800, color: info.color, background: "var(--surface)",
-              border: `1px solid ${info.color}55`, borderRadius: 5, padding: "1px 5px", letterSpacing: 0,
-            }}>{info.short}</span>
+            <span
+              className={styles.discHeroShort}
+              style={{ color: info.color, border: `1px solid ${info.color}55` }}
+            >
+              {info.short}
+            </span>
           </span>
-          <p style={{ margin: "2px 0 0", fontSize: big ? 19 : 16, fontWeight: 700, color: "var(--text)" }}>
+          <p className={styles.discHeroTitle} style={{ fontSize: big ? 19 : 16 }}>
             {info.label}
           </p>
-          <p style={{ margin: "2px 0 0", fontSize: 13, color: "var(--text-2)" }}>{info.desc}</p>
+          <p className={styles.discHeroDesc}>{info.desc}</p>
         </div>
       </div>
 
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+      <div className={styles.discHeroTraits}>
         {info.traits.map((trait) => (
-          <span key={trait} style={{
-            fontSize: 12, padding: "4px 10px", borderRadius: 999,
-            background: "var(--surface)", border: `1px solid ${info.color}33`,
-            color: info.color, fontWeight: 600,
-          }}>
+          <span
+            key={trait}
+            className={styles.discHeroTraitChip}
+            style={{ border: `1px solid ${info.color}33`, color: info.color }}
+          >
             {trait}
           </span>
         ))}
@@ -711,7 +711,7 @@ function PerfilTab({ candidate }) {
 
   return (
     <div className={styles.tabContent}>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: 16 }}>
+      <div className={styles.discHeroGroup}>
         <ProfileHeroCard type={candidate.profileType} tag="Perfil primário" big />
         {candidate.profileTypeSecondary && (
           <ProfileHeroCard type={candidate.profileTypeSecondary} tag="Perfil secundário" />
@@ -827,37 +827,19 @@ function AuditoriaTab({ interviewEvents = [] }) {
 /* ------------------------------------------------------------------ */
 
 function ModalHeader({ icon, title, subtitle, onClose, loading, tone = "default" }) {
-  const toneColors = {
-    default: { bg: "var(--orange-light)", border: "var(--orange-border)" },
-    danger: { bg: "#fee2e2", border: "#fecaca" },
-  };
-  const c = toneColors[tone] || toneColors.default;
-
   return (
-    <div style={{
-      display: "flex", alignItems: "center", justifyContent: "space-between",
-      marginBottom: 20, paddingBottom: 16, borderBottom: "1px solid var(--border)",
-    }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-        <div style={{
-          width: 34, height: 34, borderRadius: "50%",
-          background: c.bg, border: `1px solid ${c.border}`,
-          display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0,
-        }}>
+    <div className={styles.modalHeader}>
+      <div className={styles.modalHeaderLeft}>
+        <div className={`${styles.modalHeaderIconWrap} ${tone === "danger" ? styles.modalHeaderIconWrapDanger : ""}`}>
           {icon}
         </div>
         <div>
-          <div style={{ fontSize: 14, fontWeight: 600, color: "var(--text)" }}>{title}</div>
-          {subtitle && (
-            <div style={{ fontSize: 12, color: "var(--text-muted)", marginTop: 1 }}>{subtitle}</div>
-          )}
+          <div className={styles.modalHeaderTitle}>{title}</div>
+          {subtitle && <div className={styles.modalHeaderSubtitle}>{subtitle}</div>}
         </div>
       </div>
       {!loading && onClose && (
-        <button
-          onClick={onClose}
-          style={{ background: "none", border: "none", cursor: "pointer", color: "var(--text-muted)", padding: 4, borderRadius: "var(--r-sm)", display: "flex" }}
-        >
+        <button onClick={onClose} className={styles.modalCloseBtn}>
           <X size={16} weight="bold" />
         </button>
       )}
@@ -879,19 +861,19 @@ function ModalConfirm({ open, onClose, onConfirm, loading, nextStatus }) {
         loading={loading}
       />
 
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 14, textAlign: "center", marginBottom: 20 }}>
-        <div style={{ display: "inline-flex", alignItems: "center", gap: 6, padding: "4px 12px", borderRadius: 999, background: "var(--orange-light)", border: "1px solid var(--orange-border)", fontSize: 12, fontWeight: 500, color: "var(--orange-dark)" }}>
-          <span style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--orange)", display: "inline-block" }} />
+      <div className={styles.modalConfirmBody}>
+        <div className={styles.modalConfirmChip}>
+          <span className={styles.modalConfirmChipDot} />
           {copy.title}
         </div>
-        <p style={{ fontSize: 13.5, color: "var(--text-2)", lineHeight: 1.7, margin: 0 }}>
+        <p className={styles.modalConfirmText}>
           {copy.body}
         </p>
       </div>
 
-      <div style={{ display: "flex", justifyContent: "flex-end", gap: 8, paddingTop: 16, borderTop: "1px solid var(--border)", margin: "0 -24px -24px", padding: "14px 24px", background: "var(--surface-2)", borderRadius: "0 0 var(--r-lg) var(--r-lg)" }}>
+      <div className={styles.modalFooter}>
         <button className={styles.btnSecondary} onClick={onClose} disabled={loading}>Cancelar</button>
-        <button className={styles.btnAdvance} onClick={onConfirm} disabled={loading}>
+        <button className={styles.btnModalPrimary} onClick={onConfirm} disabled={loading}>
           {loading ? "Aguarde..." : copy.btn}
         </button>
       </div>
@@ -995,45 +977,22 @@ Qualquer dúvida, estamos à disposição.
 Atenciosamente,
 Equipe de Recrutamento`;
 
-function RescheduleBanner({ event, onRespond }) {
+/* Vive dentro do rodapé do hero — por isso é só a linha (ícone + texto +
+   botão), sem card/borda próprios. */
+function RescheduleRow({ event, onRespond }) {
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        padding: "14px 16px",
-        borderRadius: "var(--r-lg)",
-        background: "#ede9fe",
-        border: "1px solid #ddd6fe",
-        marginBottom: 16,
-      }}
-    >
-      <div
-        style={{
-          width: 34,
-          height: 34,
-          borderRadius: "50%",
-          background: "#fff",
-          border: "1px solid #ddd6fe",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          flexShrink: 0,
-        }}
-      >
-        <ArrowsClockwise size={16} weight="bold" color="#8b5cf6" />
+    <div className={styles.rescheduleRow}>
+      <div className={styles.rescheduleIconWrap}>
+        <ArrowsClockwise size={16} weight="bold" color="#2b1608" />
       </div>
-      <div style={{ flex: 1 }}>
-        <p style={{ margin: 0, fontSize: 13.5, fontWeight: 600, color: "#5b21b6" }}>
-          Candidato sugeriu um novo horário
-        </p>
-        <p style={{ margin: "2px 0 0", fontSize: 13, color: "var(--text-2)" }}>
+      <div className={styles.rescheduleText}>
+        <p className={styles.rescheduleTitle}>Candidato sugeriu um novo horário</p>
+        <p className={styles.rescheduleSub}>
           Nova data proposta: <strong>{fmtDateTime(event.proposedAt)}</strong>
           {event.note && <> — <em>"{event.note}"</em></>}
         </p>
       </div>
-      <button className="btnAdvance" style={{ flexShrink: 0 }} onClick={onRespond}>
+      <button className={styles.btnRespond} onClick={onRespond}>
         Responder
         <ArrowRight size={14} weight="bold" />
       </button>
@@ -1278,7 +1237,7 @@ function ModalEntrevista({
         <button type="button" className={styles.btnSecondary} onClick={onClose} disabled={loading}>
           Cancelar
         </button>
-        <button type="button" className={styles.btnAdvance} onClick={handleSubmit} disabled={loading}>
+        <button type="button" className={styles.btnModalPrimary} onClick={handleSubmit} disabled={loading}>
           {loading ? "Aguarde..." : (submitLabel || "Enviar convite")}
         </button>
       </div>
@@ -1299,7 +1258,7 @@ function ModalParabens({ open, onClose, candidateName }) {
           <strong>{candidateName}</strong> foi contratado com sucesso.<br />
           A vaga foi encerrada automaticamente.
         </p>
-        <button className={styles.btnAdvance} onClick={() => { onClose(); navigate("/jobs"); }}>
+        <button className={styles.btnModalPrimary} onClick={() => { onClose(); navigate("/jobs"); }}>
           Ir para minhas vagas
           <ArrowRight size={15} weight="bold" />
         </button>
@@ -1482,6 +1441,7 @@ export default function JobsCandidateDetail() {
   const canAdvance = !isHired && !!NEXT_STATUS[application.status];
   const canReject = !isHired && !["REPROVADO", "APROVADO", "DESISTIU"].includes(application.status);
   const isTheHire = isHired && application.status === "APROVADO";
+  const hasHeroFooter = !isHired && (awaitingRescheduleResponse || canAdvance || canReject);
 
   const showMatch = ["ANALISE", "ENTREVISTA", "APROVADO"].includes(application.status);
   const showPerfil = ["ANALISE", "ENTREVISTA", "APROVADO"].includes(application.status);
@@ -1523,84 +1483,93 @@ export default function JobsCandidateDetail() {
             </div>
           )}
 
-          {!isHired && awaitingRescheduleResponse && (
-            <RescheduleBanner event={lastInterviewEvent} onRespond={handleRespondReschedule} />
-          )}
-
-          {!isHired && (canAdvance || canReject) && (
-            <div className={styles.actionsBar}>
-              <p className={styles.actionsHint}>Mover candidato para próxima etapa ou reprovar</p>
-              <div className={styles.actionsGroup}>
-                {canReject && (
-                  <button className={styles.btnReject} onClick={() => setReprovarModal(true)} disabled={updating}>
-                    <X size={15} weight="bold" /> Reprovar
-                  </button>
-                )}
-                {canAdvance && (
-                  <button className={styles.btnAdvance} onClick={handleAdvanceClick} disabled={updating}>
-                    {updating ? "Aguarde..." : (
-                      <>
-                        {application.status === "ENTREVISTA"
-                          ? "Contratar"
-                          : `Avançar para ${STATUS_LABELS[NEXT_STATUS[application.status]]}`}
-                        <ArrowRight size={15} weight="bold" />
-                      </>
-                    )}
-                  </button>
-                )}
-              </div>
-            </div>
-          )}
-
           <div className={styles.heroCard}>
-            <div className={styles.heroGlow} />
-            <div className={styles.heroLeft}>
-              <div className={styles.avatarWrap}>
-                <div className={styles.avatar}>{initials(candidate.name)}</div>
-                <span className={styles.statusDot} style={{ background: statusStyle.dot }} />
-              </div>
-              <div>
-                <p className="subtitle">Candidato(a):</p>
-                <h2 className={styles.heroName}>{candidate.name}</h2>
-                {showInfoCandidato ? (
-                  <div className={styles.heroMeta}>
-                    <span className={styles.contactBadge}>
-                      <EnvelopeSimple size={13} weight="bold" />
-                      {candidate.email}
-                    </span>
-                    {candidate.phone && (
+            <div className={styles.heroTop}>
+              <div className={styles.heroLeft}>
+                <div className={styles.avatarWrap}>
+                  <div className={styles.avatar}>{initials(candidate.name)}</div>
+                  <span className={styles.statusDot} style={{ background: statusStyle.dot }} />
+                </div>
+                <div>
+                  <p className={styles.candidateLabel}>Candidato(a)</p>
+                  <h2 className={styles.heroName}>{candidate.name}</h2>
+                  {showInfoCandidato ? (
+                    <div className={styles.heroMeta}>
                       <span className={styles.contactBadge}>
-                        <Phone size={13} weight="bold" />
-                        {candidate.phone}
+                        <EnvelopeSimple size={13} weight="bold" />
+                        {candidate.email}
                       </span>
-                    )}
-                  </div>
-                ) : (
-                  <span className={styles.contactHidden}>
-                    <EnvelopeSimple size={13} weight="regular" />
-                    Contato liberado após aprovação
-                  </span>
-                )}
+                      {candidate.phone && (
+                        <span className={styles.contactBadge}>
+                          <Phone size={13} weight="bold" />
+                          {candidate.phone}
+                        </span>
+                      )}
+                    </div>
+                  ) : (
+                    <span className={styles.contactHidden}>
+                      <EnvelopeSimple size={13} weight="regular" />
+                      Contato liberado após aprovação
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <div className={styles.heroRight}>
+                <span
+                  className={styles.statusBadge}
+                  style={{
+                    color: statusStyle.color,
+                    background: statusStyle.bg,
+                    ...(isTheHire && { outline: "2px solid #059669", outlineOffset: 2 }),
+                  }}
+                >
+                  {isTheHire && <Trophy size={13} weight="fill" style={{ marginRight: 4 }} />}
+                  <span className={styles.statusBadgeDot} style={{ background: statusStyle.dot }} />
+                  {isTheHire ? "Contratado" : STATUS_LABELS[application.status]}
+                </span>
+                <span className={styles.appliedAt}>
+                  <CalendarBlank size={12} weight="bold" style={{ marginRight: 4, verticalAlign: -1 }} />
+                  Candidatou-se em <strong>{fmtDate(application.appliedAt)}</strong>
+                </span>
               </div>
             </div>
-            <div className={styles.heroRight}>
-              <span
-                className={styles.statusBadge}
-                style={{
-                  color: statusStyle.color,
-                  background: statusStyle.bg,
-                  ...(isTheHire && { outline: "2px solid #059669", outlineOffset: 2 }),
-                }}
-              >
-                {isTheHire && <Trophy size={13} weight="fill" style={{ marginRight: 4 }} />}
-                <span className={styles.statusBadgeDot} style={{ background: statusStyle.dot }} />
-                {isTheHire ? "Contratado" : STATUS_LABELS[application.status]}
-              </span>
-              <span className={styles.appliedAt}>
-                <CalendarBlank size={12} weight="bold" style={{ marginRight: 4, verticalAlign: -1 }} />
-                Candidatou-se em <strong>{fmtDate(application.appliedAt)}</strong>
-              </span>
-            </div>
+
+            {hasHeroFooter && (
+              <>
+                <div className={styles.heroDivider} />
+                <div className={styles.heroFooter}>
+                  {awaitingRescheduleResponse && (
+                    <RescheduleRow event={lastInterviewEvent} onRespond={handleRespondReschedule} />
+                  )}
+
+                  {(canAdvance || canReject) && (
+                    <div className={styles.actionsRow}>
+                      <p className={styles.heroFooterHint}>Mover candidato para próxima etapa ou reprovar</p>
+                      <div className={styles.heroActions}>
+                        {canReject && (
+                          <button className={styles.btnReject} onClick={() => setReprovarModal(true)} disabled={updating}>
+                            <X size={15} weight="bold" /> Reprovar
+                          </button>
+                        )}
+                        {canAdvance && (
+                          <button className={styles.btnAdvance} onClick={handleAdvanceClick} disabled={updating}>
+                            {updating ? "Aguarde..." : (
+                              <>
+                                {application.status === "ENTREVISTA"
+                                  ? "Contratar"
+                                  : `Avançar para ${STATUS_LABELS[NEXT_STATUS[application.status]]}`}
+                                <ArrowRight size={15} weight="bold" />
+                              </>
+                            )}
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
           </div>
 
           <ApplicationOverviewCard status={application.status} candidate={candidate} />
