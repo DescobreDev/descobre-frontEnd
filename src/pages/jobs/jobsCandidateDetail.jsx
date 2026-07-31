@@ -329,7 +329,7 @@ function DiscRow({ type, tag }) {
 }
 
 function BreakdownGrid({ breakdown }) {
-  const order = ["disc", "cargo", "salario", "regime", "localizacao", "experiencia"];
+  const order = ["cargo", "salario", "regime", "localizacao"];
   return (
     <div className={styles.profileGrid}>
       {order.map((key) => {
@@ -598,7 +598,7 @@ function CurriculoTab({ resume }) {
                 <div className={styles.itemAccent} style={{ background: "#8b5cf6" }} />
                 <div className={styles.itemBody}>
                   <p className={styles.itemTitle}>{edu.course}</p>
-                  <p className={styles.itemSub}>{edu.institution} · {fmtDate(edu.startDate)} — {edu.current ? "Atual" : fmtDate(edu.endDate)}</p>
+                  <p className={styles.itemSub}>{edu.institution}</p>
                 </div>
               </div>
             ))}
