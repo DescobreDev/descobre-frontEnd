@@ -1,398 +1,702 @@
 /* ════════════════════════════════
-   PAGE
-   Mesmos tokens e escala de 8px
-   usados em JobsDetail.module.css,
-   para as duas telas lerem como
-   parte do mesmo produto.
+   TOKENS — tudo derivado de var(--orange)
+   pra ficar em sync com o tema global.
 ════════════════════════════════ */
 .page {
+  --char-950: #140e0b;
+  --char-900: #1c1410;
+  --char-800: #241a15;
+  --cream: #fff7ed;
+  --cream-dim: rgba(255, 247, 237, 0.62);
+
   --o-050: color-mix(in srgb, var(--orange) 8%, white);
   --o-100: color-mix(in srgb, var(--orange) 16%, white);
-  --o-600: color-mix(in srgb, var(--orange) 78%, black);
+  --o-200: color-mix(in srgb, var(--orange) 30%, white);
+  --o-700: color-mix(in srgb, var(--orange) 68%, black);
+  --o-800: color-mix(in srgb, var(--orange) 48%, black);
 
   display: flex;
   flex-direction: column;
-  gap: 24px;
-  max-width: 1080px;
-  margin: 0 auto;
-  padding-bottom: 48px;
 }
 
-/* ════════════════════════════════
-   HEADER
-════════════════════════════════ */
-.header {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.headerTop {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 24px;
-}
-
-.headerTitleBlock {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 0;
-}
-
-.title {
-  font-size: 26px;
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  color: var(--text);
-  margin: 0;
-  line-height: 1.25;
-}
-
-.subtitle {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-muted);
-  margin: 0;
-}
-
-.metaLine {
+.toast {
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
+  gap: 10px;
+  padding: 12px 18px;
+  border-radius: 12px;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  color: #16a34a;
   font-size: 13px;
-  color: var(--text-muted);
-  font-weight: 500;
-}
-
-.metaItem {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.metaValue {
-  color: var(--text);
-  font-weight: 700;
-}
-
-.metaDivider {
-  color: var(--border);
-}
-
-/* ── botões (mesmo padrão de JobsDetail) ── */
-.btnPrimary,
-.btnSecondary {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  height: 38px;
-  padding: 0 16px;
-  border-radius: 10px;
-  font-size: 13.5px;
   font-weight: 600;
-  cursor: pointer;
-  border: 1px solid transparent;
-  transition: background 0.15s, border-color 0.15s, filter 0.15s, transform 0.1s;
-  flex-shrink: 0;
-}
-
-.btnPrimary {
-  background: var(--orange);
-  color: white;
-}
-
-.btnPrimary:hover {
-  filter: brightness(1.06);
-}
-
-.btnPrimary:active {
-  transform: translateY(1px);
-}
-
-.btnSecondary {
-  background: var(--surface);
-  border-color: var(--border);
-  color: var(--text-2);
-}
-
-.btnSecondary:hover {
-  background: var(--surface-2);
-  border-color: var(--text-muted);
-}
-
-.btnPrimary:focus-visible,
-.btnSecondary:focus-visible {
-  outline: 2px solid var(--orange);
-  outline-offset: 2px;
+  margin-bottom: 16px;
+  animation: slideDown 0.3s ease;
 }
 
 /* ════════════════════════════════
-   TOOLBAR / BUSCA
+   BREADCRUMB
 ════════════════════════════════ */
-.toolbar {
+.breadcrumb {
   display: flex;
   align-items: center;
-  gap: 12px;
-}
-
-.searchBox {
-  flex: 1 1 360px;
-  max-width: 420px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 40px;
-  padding: 0 14px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-muted);
-  transition: border-color 0.15s;
-}
-
-.searchBox:focus-within {
-  border-color: var(--orange);
-}
-
-.searchInput {
-  flex: 1;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-size: 13.5px;
-  color: var(--text);
-}
-
-.searchInput::placeholder {
-  color: var(--text-muted);
-}
-
-.resultsCount {
+  gap: 6px;
   font-size: 12.5px;
   font-weight: 600;
   color: var(--text-muted);
+  margin-bottom: 14px;
+}
+
+.breadcrumbLink {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.15s;
+}
+
+.breadcrumbLink:hover {
+  color: var(--orange);
+}
+
+.breadcrumbSep {
+  color: var(--border);
+}
+
+.breadcrumbCurrent {
+  color: var(--text-2);
 }
 
 /* ════════════════════════════════
-   GRID DE VAGAS
+   HERO
 ════════════════════════════════ */
-.grid {
+.heroWrap {
+  position: relative;
+  margin-bottom: 40px;
+}
+
+.heroCard {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  padding: 26px 28px 68px;
+  background: linear-gradient(to bottom, #6f2d00 6%, #ffba89);
+  box-shadow: 0 16px 32px -20px #00000080;
+}
+
+.heroTopRow {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.heroTitleRow {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  min-width: 0;
+}
+
+.heroBackBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 247, 237, 0.2);
+  background: rgba(28, 20, 16, 0.28);
+  color: var(--cream);
+  cursor: pointer;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all 0.15s;
+}
+
+.heroBackBtn:hover {
+  background: rgba(28, 20, 16, 0.44);
+}
+
+.heroTitleBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.heroTitle {
+  font-size: 1.7rem;
+  font-weight: 800;
+  color: var(--cream);
+  letter-spacing: -0.03em;
+  margin: 0;
+  line-height: 1.2;
+}
+
+.heroSubtitle {
+  font-size: 13px;
+  color: var(--cream-dim);
+  font-weight: 600;
+  margin: 0;
+}
+
+.heroSubtitleAccent {
+  font-weight: 700;
+  color: white;
+  background: rgba(28, 20, 16, 0.2);
+  padding: 1px 7px;
+  border-radius: 5px;
+}
+
+.heroSubtitleDivider {
+  margin: 0 6px;
+  color: rgba(255, 247, 237, 0.35);
+}
+
+/* ── badge da direita ── */
+.heroStatusZone {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.heroStatusLabel {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: rgba(255, 247, 237, 0.55);
+}
+
+.hiredBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 8px 16px;
+  border-radius: 99px;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--cream);
+  background: var(--char-900);
+  box-shadow: 0 0 0 1px rgba(255, 247, 237, 0.1), 0 8px 20px -8px rgba(0, 0, 0, 0.6);
+}
+
+/* linha secundária: prioridade + visibilidade */
+.heroChipRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.heroChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 6px 12px;
+  border-radius: 99px;
+  background: rgba(28, 20, 16, 0.26);
+  border: 1px solid rgba(255, 247, 237, 0.16);
+  color: var(--cream);
+}
+
+.heroChipDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* ── rodapé do hero: datas + ações ── */
+.heroDivider {
+  height: 1px;
+  background: rgba(255, 247, 237, 0.16);
+  margin: 20px 0 16px;
+}
+
+.heroFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.heroMeta {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  font-size: 12px;
+  color: var(--cream-dim);
+  font-weight: 500;
+}
+
+.heroMetaDivider {
+  color: rgba(255, 247, 237, 0.3);
+}
+
+.heroActions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.btnGhostOnDark {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 247, 237, 0.22);
+  background: rgba(28, 20, 16, 0.16);
+  color: var(--cream);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btnGhostOnDark:hover {
+  background: rgba(28, 20, 16, 0.3);
+}
+
+.btnPrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: var(--char-900);
+  color: var(--cream);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 8px 18px -8px rgba(0, 0, 0, 0.65);
+  transition: filter 0.15s, transform 0.15s;
+}
+
+.btnPrimary:hover {
+  filter: brightness(1.3);
+  transform: translateY(-1px);
+}
+
+.btnDangerGhost {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid rgba(127, 29, 29, 0.4);
+  background: rgba(127, 29, 29, 0.28);
+  color: #fecaca;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btnDangerGhost:hover {
+  background: rgba(127, 29, 29, 0.42);
+}
+
+.btnSecondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-2);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+/* ════════════════════════════════
+   STATS BAR — flutua sobre o hero
+════════════════════════════════ */
+.statsBar {
+  position: relative;
+  z-index: 2;
+  margin: -48px 20px 0;
+  background: var(--surface);
+  border-radius: 16px;
+  box-shadow: 0 18px 34px -18px rgba(28, 20, 16, 0.35), 0 0 0 1px var(--border);
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.statTile {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 20px;
+  border-right: 1px solid var(--border);
+}
+
+.statTile:last-child {
+  border-right: none;
+}
+
+.statIconWrap {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--o-100);
+  border: 1px solid var(--o-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.statBody {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.statLabel {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted);
+}
+
+.statValue {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ════════════════════════════════
+   CARDS
+════════════════════════════════ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 22px 24px;
+  box-shadow: var(--shadow-xs);
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.cardTitle {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0 0 2px;
+  letter-spacing: -0.02em;
+}
+
+.cardSub {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin: 0;
+}
+
+/* ════════════════════════════════
+   GRID PRINCIPAL: descrição + sidebar
+════════════════════════════════ */
+.twoCol {
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+}
+
+.twoColMain {
+  flex: 1 1 0;
+}
+
+.twoColSide {
+  width: 300px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
   gap: 16px;
 }
 
-/* ════════════════════════════════
-   ESTADOS — vazio / erro
-   (mesmo padrão visual de JobsDetail:
-   ícone em caixa neutra, título, texto, CTA)
-════════════════════════════════ */
-.stateWrap {
-  grid-column: 1 / -1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  text-align: center;
-  padding: 56px 24px;
+.descriptionText {
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.8;
+  white-space: pre-wrap;
+  margin: 0;
 }
 
-.stateIcon {
+/* localização */
+.locationWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.locationAddress {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  border-radius: 10px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.locationAddressIcon {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.locationText {
+  font-size: 13.5px;
+  color: var(--text-2);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.remoteNote {
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: var(--o-050);
+  border: 1px solid var(--o-200);
+  font-size: 12.5px;
+  color: var(--o-700);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* lista de detalhes (definition list) */
+.detailsList {
+  display: flex;
+  flex-direction: column;
+}
+
+.detailsRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px dashed var(--border);
+}
+
+.detailsRow:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.detailsLabel {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  color: var(--text-muted);
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.detailsIcon {
+  color: var(--orange);
+  flex-shrink: 0;
+}
+
+.detailsValue {
+  font-size: 12.5px;
+  color: var(--text);
+  font-weight: 700;
+  text-align: right;
+}
+
+/* ════════════════════════════════
+   BENEFÍCIOS
+════════════════════════════════ */
+.benefitsWrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 12.5px;
+  font-weight: 600;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  cursor: default;
+}
+
+.chipCustom {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 99px;
+  font-size: 12.5px;
+  font-weight: 700;
+  background: var(--o-100);
+  border: 1px solid var(--o-200);
+  color: var(--o-800);
+  cursor: default;
+}
+
+.benefitsCount {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--o-700);
+  background: var(--o-100);
+  padding: 3px 10px;
+  border-radius: 99px;
+  border: 1px solid var(--o-200);
+}
+
+/* ════════════════════════════════
+   LOADING / ERROR
+════════════════════════════════ */
+.centered {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid var(--border);
+  border-top-color: var(--orange);
+  animation: spin 0.7s linear infinite;
+}
+
+.spinnerLabel {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.errorIconWrap {
   width: 48px;
   height: 48px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--surface-2);
-  color: var(--text-muted);
-  margin-bottom: 4px;
 }
 
-.stateIcon[data-tone="error"] {
-  background: #fef2f2;
-  color: #d92d20;
-}
-
-.stateTitle {
-  margin: 0;
-  font-size: 15.5px;
-  font-weight: 700;
-  color: var(--text);
-}
-
-.stateText {
-  margin: 0;
-  font-size: 13.5px;
-  color: var(--text-muted);
-  max-width: 320px;
-}
-
-.stateWrap .btnPrimary {
-  margin-top: 10px;
-}
-
-/* ════════════════════════════════
-   SKELETON
-════════════════════════════════ */
-.skeletonCard {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 14px;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-
-.skeletonRow {
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
-}
-
-.skeletonCol {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.skeletonBlock {
-  background: var(--surface-2);
-  border-radius: 6px;
-  animation: pulse 1.4s ease-in-out infinite;
-}
-
-.skeletonTitle {
-  height: 15px;
-  width: 70%;
-}
-
-.skeletonSubtitle {
-  height: 12px;
-  width: 45%;
-}
-
-.skeletonBadge {
-  height: 26px;
-  width: 80px;
-  border-radius: 999px;
-  flex-shrink: 0;
-}
-
-.skeletonTags {
-  display: flex;
-  gap: 6px;
-}
-
-.skeletonTag {
-  height: 22px;
-  width: 64px;
-  border-radius: 8px;
-}
-
-.skeletonTagSm {
-  height: 22px;
-  width: 52px;
-  border-radius: 8px;
-}
-
-.skeletonDivider {
-  height: 1px;
-  background: var(--border);
-}
-
-.skeletonFooter {
-  height: 12px;
-  width: 40%;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .skeletonBlock { animation: none; }
-}
-
-/* ════════════════════════════════
-   PAGINAÇÃO
-════════════════════════════════ */
-.pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.pageBtn {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  height: 36px;
-  padding: 0 14px;
-  border-radius: 10px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  font-size: 13px;
-  font-weight: 600;
+.errorText {
+  font-size: 14px;
   color: var(--text-2);
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+  font-weight: 600;
+  margin: 0;
 }
 
-.pageBtn:hover:not(:disabled) {
-  background: var(--surface-2);
-  border-color: var(--text-muted);
+/* ════════════════════════════════
+   ANIMAÇÕES
+════════════════════════════════ */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.pageBtn:disabled {
-  color: var(--text-muted);
-  cursor: default;
-  opacity: 0.6;
-}
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
 
-.pageBtn:focus-visible {
-  outline: 2px solid var(--orange);
-  outline-offset: 2px;
-}
-
-.pageLabel {
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--text-muted);
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ════════════════════════════════
    RESPONSIVO
 ════════════════════════════════ */
-@media (max-width: 640px) {
-  .headerTop {
+@media (max-width: 900px) {
+  .statsBar {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .statTile:nth-child(2) {
+    border-right: none;
+  }
+
+  .statTile:nth-child(1),
+  .statTile:nth-child(2) {
+    border-bottom: 1px solid var(--border);
+  }
+}
+
+@media (max-width: 700px) {
+  .heroTopRow {
+    flex-direction: column;
+  }
+
+  .heroStatusZone {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .heroFooter {
     flex-direction: column;
     align-items: flex-start;
   }
 
-  .headerTop .btnPrimary {
+  .heroActions {
     width: 100%;
-    justify-content: center;
+    flex-wrap: wrap;
   }
 
-  .toolbar {
+  .statsBar {
+    margin: -32px 12px 0;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .twoCol {
     flex-direction: column;
-    align-items: stretch;
   }
 
-  .searchBox {
-    max-width: none;
-  }
-
-  .grid {
-    grid-template-columns: 1fr;
+  .twoColSide {
+    width: 100%;
   }
 }
