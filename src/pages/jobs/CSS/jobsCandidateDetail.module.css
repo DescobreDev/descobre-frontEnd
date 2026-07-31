@@ -98,11 +98,6 @@
   color: #065f46;
 }
 
-/* ════════════════════════════════
-   HERO — identidade do candidato
-   (mesma técnica de "pequeno gradiente
-   no topo" usada no header de Vagas)
-════════════════════════════════ */
 .heroCard {
   position: relative;
   overflow: hidden;
@@ -111,10 +106,7 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
-  background:
-    linear-gradient(to bottom, var(--hero-dark) 0%, transparent 90px),
-    var(--hero-light);
-  border: 1px solid color-mix(in srgb, var(--hero-dark) 30%, transparent);
+  background: linear-gradient(to bottom, #ce5400 10% 16%, #fbbd91);
   box-shadow: 0 14px 30px -20px rgba(0, 0, 0, 0.35);
 }
 
@@ -167,14 +159,14 @@
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: color-mix(in srgb, var(--hero-dark) 75%, black);
+  color: color-mix(in srgb, #873700 75%, black);
   margin: 0 0 2px;
 }
 
 .heroName {
   font-size: 19px;
   font-weight: 800;
-  color: #2b1608;
+  color: white;
   margin: 0 0 8px;
   line-height: 1.2;
 }
@@ -503,8 +495,17 @@
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 0.7; }
-  50% { transform: scale(1.9); opacity: 0; }
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.7;
+  }
+
+  50% {
+    transform: scale(1.9);
+    opacity: 0;
+  }
 }
 
 /* ════════════════════════════════
@@ -738,7 +739,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ════════════════════════════════
