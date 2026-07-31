@@ -7,26 +7,26 @@ import AsyncSelect from "../../components/asyncSelect";
 import api from "../../services/api";
 
 const STATUS_LABELS = {
-    RECEBIDA:    "Aguardando",
-    ANALISE:     "Análise",
-    ENTREVISTA:  "Entrevista",
-    APROVADO:    "Aprovado",
-    REPROVADO:   "Reprovado",
-    DESISTIU:    "Desistiu",
+    RECEBIDA: "Aguardando",
+    ANALISE: "Análise",
+    ENTREVISTA: "Entrevista",
+    APROVADO: "Aprovado",
+    REPROVADO: "Reprovado",
+    DESISTIU: "Desistiu",
 };
 
 const STATUS_COLORS = {
-    RECEBIDA:   { color: "#f59e0b", bg: "#fef3c7" },
-    ANALISE:    { color: "#3b82f6", bg: "#dbeafe" },
+    RECEBIDA: { color: "#f59e0b", bg: "#fef3c7" },
+    ANALISE: { color: "#3b82f6", bg: "#dbeafe" },
     ENTREVISTA: { color: "#8b5cf6", bg: "#ede9fe" },
-    APROVADO:   { color: "#10b981", bg: "#d1fae5" },
-    REPROVADO:  { color: "#ef4444", bg: "#fee2e2" },
-    DESISTIU:   { color: "#6b7280", bg: "#f3f4f6" },
+    APROVADO: { color: "#10b981", bg: "#d1fae5" },
+    REPROVADO: { color: "#ef4444", bg: "#fee2e2" },
+    DESISTIU: { color: "#6b7280", bg: "#f3f4f6" },
 };
 
 const columns = [
     { key: "candidateName", title: "Candidato", width: "25%" },
-    { key: "candidateEmail", title: "E-mail", width: "25%" },
+    // { key: "candidateEmail", title: "E-mail", width: "25%" },
     { key: "candidatePhone", title: "Telefone", width: "15%" },
     {
         key: "status",
@@ -139,7 +139,6 @@ export default function JobsCandidates() {
             const rows = res.data.data.map((app) => ({
                 id: app.id,
                 candidateName: app.candidate.name,
-                candidateEmail: app.candidate.email,
                 candidatePhone: app.candidate.phone ?? "—",
                 status: app.status,
                 appliedAt: app.appliedAt,

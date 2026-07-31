@@ -1,9 +1,24 @@
+/* ════════════════════════════════════════════════════════
+   CANDIDATE DETAIL — tela mais complexa do sistema.
+   Paleta: laranja é a cor de identidade (header, CTAs, tabs,
+   timeline, match, avatar) — usada com intenção, não decoração.
+   Vermelho = reprovar/perigo. Verde = aprovado/confirmado.
+   Roxo = remarcação (evento neutro que pede atenção).
+   Espaçamento em múltiplos de 8px, radius 12-16px, sombras suaves.
+════════════════════════════════════════════════════════ */
+
 .container {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding-bottom: 48px;
 }
 
+/* ════════════════════════════════
+   HEADER
+════════════════════════════════ */
 .header {
   display: flex;
   align-items: center;
@@ -14,7 +29,7 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 7px 14px;
+  padding: 8px 14px;
   font-size: 13px;
   font-weight: 600;
   color: var(--text-2);
@@ -29,8 +44,13 @@
 
 .backBtn:hover {
   color: var(--text);
-  border-color: #c9d1db;
-  background: var(--surface-2);
+  border-color: var(--orange-border);
+  background: var(--orange-light);
+}
+
+.backBtn:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
 }
 
 .headerDivider {
@@ -52,9 +72,183 @@
   font-size: 12px;
   color: var(--text-muted);
   margin: 0;
+  display: flex;
+  align-items: center;
 }
 
-/* ── Hero card ── */
+/* ════════════════════════════════
+   HIRED BANNER — vaga encerrada
+════════════════════════════════ */
+.hiredBanner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  font-size: 13.5px;
+  font-weight: 500;
+}
+
+.hiredBanner p {
+  margin: 0;
+}
+
+.hiredBannerSuccess {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #065f46;
+  font-weight: 600;
+}
+
+/* ════════════════════════════════
+   RESCHEDULE BANNER — candidato sugeriu novo horário
+════════════════════════════════ */
+.rescheduleBanner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: var(--r-lg);
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+}
+
+.rescheduleIconWrap {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #fff;
+  border: 1px solid #ddd6fe;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.rescheduleBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.rescheduleTitle {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: #5b21b6;
+}
+
+.rescheduleText {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.rescheduleText em {
+  font-style: italic;
+  color: var(--text-muted);
+}
+
+/* ════════════════════════════════
+   ACTIONS BAR — sticky-feel, principal CTA da tela
+════════════════════════════════ */
+.actionsBar {
+  background: linear-gradient(135deg, var(--orange) 0%, var(--orange-dark) 100%);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  box-shadow: 0 8px 20px -10px var(--orange-glow);
+}
+
+.actionsHint {
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+  margin: 0;
+}
+
+.actionsGroup {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.btnReject {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 18px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #b91c1c;
+  background: #fff;
+  border: none;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.btnReject:hover:not(:disabled) {
+  background: #fee2e2;
+}
+
+.btnReject:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btnAdvance {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 20px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--orange-dark);
+  background: #fff;
+  border: none;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  transition: all 0.15s;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.btnAdvance:hover:not(:disabled) {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.18);
+  transform: translateY(-1px);
+}
+
+.btnAdvance:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btnAdvance:focus-visible,
+.btnReject:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* Fora da actionsBar (dentro de modais brancos) o CTA precisa
+   voltar a ter fundo laranja — variante local. */
+.tabsCard .btnAdvance,
+.modalReprovarFooter ~ .btnAdvance {
+  color: #fff;
+  background: linear-gradient(135deg, var(--orange) 0%, var(--orange-dark) 100%);
+  box-shadow: 0 2px 8px var(--orange-glow);
+}
+
+/* ════════════════════════════════
+   HERO CARD — identidade do candidato
+════════════════════════════════ */
 .heroCard {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -74,11 +268,12 @@
   position: absolute;
   top: -60px;
   right: -40px;
-  width: 200px;
-  height: 200px;
+  width: 220px;
+  height: 220px;
   border-radius: 50%;
   background: hsl(25, 92%, 77%);
-  filter: blur(60px);
+  filter: blur(64px);
+  opacity: 0.55;
   pointer-events: none;
 }
 
@@ -107,7 +302,7 @@
   font-weight: 800;
   color: #fff;
   letter-spacing: -0.5px;
-  box-shadow: 0 4px 12px var(--orange-glow);
+  box-shadow: 0 4px 14px var(--orange-glow);
 }
 
 .statusDot {
@@ -131,17 +326,8 @@
 .heroMeta {
   display: flex;
   align-items: center;
-  gap: 14px;
+  gap: 8px;
   flex-wrap: wrap;
-}
-
-.heroBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 12.5px;
-  color: var(--text-2);
-  font-weight: 500;
 }
 
 .heroRight {
@@ -184,7 +370,36 @@
   font-weight: 600;
 }
 
-/* ── Timeline ── */
+.contactBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #6ee7b7;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+}
+
+.contactHidden {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  border: 1px dashed var(--border);
+  border-radius: 999px;
+  font-size: 12px;
+  font-style: italic;
+}
+
+/* ════════════════════════════════
+   TIMELINE (etapa da candidatura)
+════════════════════════════════ */
 .timelineCard {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -289,20 +504,13 @@
 }
 
 @keyframes pulse {
-
-  0%,
-  100% {
-    transform: scale(1);
-    opacity: 0.7;
-  }
-
-  50% {
-    transform: scale(1.9);
-    opacity: 0;
-  }
+  0%, 100% { transform: scale(1); opacity: 0.7; }
+  50% { transform: scale(1.9); opacity: 0; }
 }
 
-/* ── Tabs card ── */
+/* ════════════════════════════════
+   TABS CARD
+════════════════════════════════ */
 .tabsCard {
   background: var(--surface);
   border: 1px solid var(--border);
@@ -317,6 +525,7 @@
   background: var(--surface-2);
   padding: 0 4px;
   gap: 2px;
+  overflow-x: auto;
 }
 
 .tab {
@@ -333,10 +542,16 @@
   cursor: pointer;
   transition: all 0.15s;
   margin-bottom: -1px;
+  white-space: nowrap;
 }
 
 .tab:hover {
   color: var(--text-2);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: -2px;
 }
 
 .tabActive {
@@ -349,7 +564,6 @@
   padding: 0;
 }
 
-/* ── Tab content ── */
 .tabContent {
   display: flex;
   flex-direction: column;
@@ -371,10 +585,23 @@
   letter-spacing: 0.8px;
   margin: 0;
   display: flex;
-  gap: 10px;
+  align-items: center;
+  gap: 8px;
 }
 
-/* Items */
+.sectionHeadingIcon {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  background: var(--orange-light);
+  color: var(--orange-dark);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Items (experiência / formação) */
 .itemList {
   display: flex;
   flex-direction: column;
@@ -437,16 +664,16 @@
 
 .chip {
   font-size: 12px;
-    font-weight: 500;
-    padding: 5px 13px;
-    border-radius: 99px;
-    background: var(--surface-2);
-    border: 1px solid var(--border);
-    color: var(--text-2);
-    transition: border-color 0.15s;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+  font-weight: 500;
+  padding: 5px 13px;
+  border-radius: 99px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text-2);
+  transition: border-color 0.15s;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .chip:hover {
@@ -474,26 +701,59 @@
   border: none;
 }
 
-/* Empty / loading */
+/* ════════════════════════════════
+   EMPTY / LOADING
+════════════════════════════════ */
 .emptyState {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 10px;
   padding: 60px 24px;
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: 13.5px;
+  text-align: center;
+}
+
+.emptyIconWrap {
+  width: 56px;
+  height: 56px;
+  border-radius: 16px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .loadingState {
-  padding: 48px;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 64px 24px;
   color: var(--text-muted);
   font-size: 14px;
+  font-weight: 500;
 }
 
-/* ── Perfil comportamental ── */
+.loadingSpinner {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2.5px solid var(--border);
+  border-top-color: var(--orange);
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ════════════════════════════════
+   PERFIL COMPORTAMENTAL
+════════════════════════════════ */
 .profileWarning {
   display: flex;
   align-items: flex-start;
@@ -539,9 +799,16 @@
   gap: 12px;
 }
 
-.profileIcon {
-  font-size: 22px;
-  line-height: 1;
+.profileCardIconWrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 9px;
+  background: var(--orange-light);
+  color: var(--orange-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 .profileLabel {
@@ -594,89 +861,129 @@
   text-align: right;
 }
 
-.actionsBar {
-  background-image: linear-gradient(175deg, #d55800, #ffe6db);
+/* Hero card do perfil DISC (primário/secundário) */
+.profileHeroCard {
   border: 1px solid var(--border);
   border-radius: var(--r-md);
-  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.profileHeroTop {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
-  box-shadow: var(--shadow-xs);
+  gap: 14px;
 }
 
-.actionsHint {
-  font-size: 13px;
-  color: white;
-  margin: 0;
-}
-
-.actionsGroup {
+.profileHeroIcon {
+  border-radius: 18px;
   display: flex;
-  gap: 8px;
   align-items: center;
-}
-
-.btnReject {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 9px 18px;
-  font-size: 13px;
-  font-weight: 700;
-  color: #ef4444;
-  background: #fff;
-  border: 1.5px solid #ef4444;
-  border-radius: var(--r-sm);
-  cursor: pointer;
-  transition: all 0.15s;
-}
-
-.btnReject:hover:not(:disabled) {
-  background: #fee2e2;
-}
-
-.btnReject:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btnAdvance {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  padding: 9px 20px;
-  font-size: 13px;
-  font-weight: 700;
+  justify-content: center;
   color: #fff;
-  background: linear-gradient(135deg, var(--orange) 0%, var(--orange-dark) 100%);
-  border: none;
-  border-radius: var(--r-sm);
-  cursor: pointer;
-  transition: all 0.15s;
-  box-shadow: 0 2px 8px var(--orange-glow);
+  flex-shrink: 0;
 }
 
-.btnAdvance:hover:not(:disabled) {
-  box-shadow: 0 4px 16px var(--orange-glow);
-  transform: translateY(-1px);
+.profileHeroTag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  font-weight: 700;
 }
 
-.btnAdvance:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
+.profileHeroTagBadge {
+  font-size: 10px;
+  font-weight: 800;
+  background: var(--surface);
+  border-radius: 5px;
+  padding: 1px 5px;
+  letter-spacing: 0;
 }
 
-/* ── Match tab ── */
+.profileHeroName {
+  margin: 2px 0 0;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.profileHeroDesc {
+  margin: 2px 0 0;
+  font-size: 13px;
+  color: var(--text-2);
+}
+
+.profileHeroTraits {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.profileHeroTrait {
+  font-size: 12px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--surface);
+  font-weight: 600;
+}
+
+/* Badge circular pequeno (usado no comparativo de match) */
+.discBadge {
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.discBadgeTag {
+  position: absolute;
+  bottom: -4px;
+  right: -4px;
+  width: 16px;
+  height: 16px;
+  border-radius: 5px;
+  background: var(--surface);
+  border: 1px solid currentColor;
+  font-size: 9px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.discRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.discRowName {
+  margin: 0;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.discRowTag {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* ════════════════════════════════
+   MATCH TAB
+════════════════════════════════ */
 .matchHero {
   display: flex;
   align-items: center;
   gap: 24px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
+  background: linear-gradient(135deg, var(--orange-light), var(--surface-2));
+  border: 1px solid var(--orange-border);
   border-radius: var(--r-md);
   padding: 20px 24px;
 }
@@ -726,6 +1033,8 @@
   font-weight: 700;
   padding: 3px 12px;
   display: flex;
+  align-items: center;
+  gap: 5px;
   border-radius: 99px;
 }
 
@@ -734,6 +1043,42 @@
   color: var(--text-2);
   line-height: 1.6;
   margin: 0;
+}
+
+.matchCompareCard {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 18px 20px;
+  background: var(--surface);
+}
+
+.matchCompareCol {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+}
+
+.matchCompareLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+.matchCompareDivider {
+  color: var(--orange);
+  flex-shrink: 0;
+  display: flex;
 }
 
 .matchGrid {
@@ -806,37 +1151,109 @@
   text-align: right;
 }
 
-.parabensWrap {
+/* ════════════════════════════════
+   MODAL — cabeçalho compartilhado
+════════════════════════════════ */
+.modalHeader {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 16px;
-  padding: 16px 0;
-  text-align: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
 }
 
-.parabensIcon {
-  width: 80px;
-  height: 80px;
+.modalHeaderLeft {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.modalHeaderIconWrap {
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
-  background: var(--orange-light);
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
 }
 
-.parabensTitle {
-  font-size: 24px;
-  font-weight: 800;
-  color: var(--text);
-  margin: 0;
-}
-
-.parabensText {
+.modalHeaderTitle {
   font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.modalHeaderSubtitle {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 1px;
+}
+
+.modalHeaderClose {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 4px;
+  border-radius: var(--r-sm);
+  display: flex;
+  transition: color 0.15s, background 0.15s;
+}
+
+.modalHeaderClose:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+/* confirmação genérica (avançar etapa / contratar) */
+.confirmWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.confirmPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  background: var(--orange-light);
+  border: 1px solid var(--orange-border);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--orange-dark);
+}
+
+.confirmPillDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--orange);
+  display: inline-block;
+}
+
+.confirmText {
+  font-size: 13.5px;
   color: var(--text-2);
   line-height: 1.7;
   margin: 0;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 24px;
+  margin: 0 -24px -24px;
+  background: var(--surface-2);
+  border-top: 1px solid var(--border);
+  border-radius: 0 0 var(--r-lg) var(--r-lg);
 }
 
 .btnSecondary {
@@ -864,6 +1281,14 @@
   cursor: not-allowed;
 }
 
+.btnSecondary:focus-visible {
+  outline: 2px solid var(--orange);
+  outline-offset: 2px;
+}
+
+/* ════════════════════════════════
+   MODAL ENTREVISTA
+════════════════════════════════ */
 .switchWrapper {
   display: flex;
   background: var(--surface-2);
@@ -872,35 +1297,29 @@
   padding: 4px;
   gap: 4px;
   width: 100%;
-  margin-bottom: 12px;
+  margin-bottom: 16px;
 }
 
 .switchBtn {
   flex: 1;
-  height: 32px;
-
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-
+  gap: 8px;
   border: none;
   border-radius: 10px;
-
   background: transparent;
   color: var(--text-2);
-
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 600;
-
   cursor: pointer;
-
-  transition: all 0.25s ease;
+  transition: all 0.2s ease;
 }
 
 .switchBtn svg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
 }
 
 .switchBtn:hover {
@@ -909,25 +1328,21 @@
 }
 
 .switchBtnActive {
-  background: var(--orange);
+  background: linear-gradient(135deg, var(--orange) 0%, var(--orange-dark) 100%);
   color: white;
-
-  box-shadow:
-    0 4px 14px var(--orange-glow),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
-
+  box-shadow: 0 4px 14px var(--orange-glow), inset 0 1px 0 rgba(255, 255, 255, 0.15);
   transform: translateY(-1px);
 }
 
 .switchBtnActive:hover {
-  background: var(--orange-dark);
+  color: white;
 }
 
-/* Form grid */
 .formGrid {
   display: grid;
-  gridTemplateColumns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: 16px;
+  margin-bottom: 16px;
 }
 
 .formGridCepAddress {
@@ -950,80 +1365,54 @@
   padding-bottom: 4px;
 }
 
-.infoIcon {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: #e0e7ff;
-  color: #2563eb;
+.infoPopoverBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-muted);
+  padding: 2px;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: default;
-  user-select: none;
+  transition: color 0.15s;
+}
+
+.infoPopoverBtn:hover {
+  color: var(--orange);
 }
 
 .popover {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  right: 0;
-  width: 260px;
-  background: #1e293b;
-  color: #f1f5f9;
-  font-size: 12px;
-  line-height: 1.5;
-  padding: 10px 14px;
+  width: 240px;
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 8px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
-  z-index: 100;
+  padding: 10px 12px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-2);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.14);
   pointer-events: none;
+}
+
+.popoverInner {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
 }
 
 .popoverArrow {
   position: absolute;
   bottom: -6px;
-  right: 8px;
-  width: 12px;
-  height: 12px;
-  background: #1e293b;
-  transform: rotate(45deg);
-  border-radius: 2px;
+  left: 50%;
+  transform: translateX(-50%) rotate(45deg);
+  width: 10px;
+  height: 10px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 
-.contactBadge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
-  background: #d1fae5;
-  color: #065f46;
-  border: 1px solid #6ee7b7;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.01em;
-}
-
-.contactHidden {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 4px 10px;
-  background: var(--surface-2, #f9fafb);
-  color: var(--text-muted);
-  border: 1px dashed var(--border);
-  border-radius: 999px;
-  font-size: 12px;
-  font-style: italic;
-}
-
-.inputError {
-  border-color: #ef4444 !important;
-  background: #fff5f5;
-}
-
+/* ════════════════════════════════
+   AUDITORIA
+════════════════════════════════ */
 .auditTimeline {
   display: flex;
   flex-direction: column;
@@ -1073,9 +1462,9 @@
 }
 
 .auditDot_rescheduled {
-  background: #fef3c7;
-  color: #92400e;
-  border-color: #fcd34d;
+  background: #ede9fe;
+  color: #5b21b6;
+  border-color: #c4b5fd;
 }
 
 .auditDot_status_change {
@@ -1115,6 +1504,9 @@
   font-size: 11.5px;
   color: var(--text-muted);
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 3px;
 }
 
 .auditDescription {
@@ -1127,7 +1519,7 @@
 .auditNote {
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-left: 3px solid var(--border);
+  border-left: 3px solid var(--orange);
   border-radius: 0 6px 6px 0;
   padding: 8px 10px;
   font-size: 12.5px;
@@ -1137,32 +1529,8 @@
   margin-top: 6px;
 }
 
-.auditBadge {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 10px;
-  border-radius: 999px;
-  font-size: 11.5px;
-  font-weight: 500;
-  margin-top: 6px;
-}
-
-.auditBadge_confirmed {
-  background: #d1fae5;
-  color: #065f46;
-  border: 1px solid #6ee7b7;
-}
-
-.auditBadge_declined {
-  background: #fee2e2;
-  color: #991b1b;
-  border: 1px solid #fca5a5;
-}
-
-.auditBadge_rescheduled {
-  background: #fef3c7;
-  color: #92400e;
-  border: 1px solid #fcd34d;
+.auditNote p {
+  margin: 0;
 }
 
 .auditLegend {
@@ -1192,27 +1560,26 @@
   flex-shrink: 0;
 }
 
-.auditDotMini.auditDot_invite_sent {
-  background: #93c5fd;
-}
+.auditDotMini.auditDot_invite_sent { background: #93c5fd; }
+.auditDotMini.auditDot_confirmed { background: #6ee7b7; }
+.auditDotMini.auditDot_declined { background: #fca5a5; }
+.auditDotMini.auditDot_rescheduled { background: #c4b5fd; }
 
-.auditDotMini.auditDot_confirmed {
-  background: #6ee7b7;
-}
-
-.auditDotMini.auditDot_declined {
-  background: #fca5a5;
-}
-
-.auditDotMini.auditDot_rescheduled {
-  background: #fcd34d;
+/* ════════════════════════════════
+   MODAL REPROVAR
+════════════════════════════════ */
+.modalReprovarBody {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 20px;
 }
 
 .modalReprovarCandidate {
   display: flex;
   align-items: center;
   gap: 10px;
-  background: #fafafa;
+  background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 10px 14px;
@@ -1350,58 +1717,90 @@
   transform: none;
 }
 
-.modalReprovarHeader {
+/* ════════════════════════════════
+   MODAL PARABÉNS
+════════════════════════════════ */
+.parabensWrap {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
+  gap: 16px;
+  padding: 16px 0;
+  text-align: center;
 }
 
-.modalReprovarHeaderLeft {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.modalReprovarHeaderIcon {
-  width: 36px;
-  height: 36px;
+.parabensIcon {
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  background: #fee2e2;
-  border: 1px solid #fca5a5;
+  background: var(--orange-light);
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
 }
 
-.modalReprovarHeaderTitle {
-  font-size: 14px;
-  font-weight: 700;
+.parabensTitle {
+  font-size: 24px;
+  font-weight: 800;
   color: var(--text);
+  margin: 0;
 }
 
-.modalReprovarHeaderSub {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 1px;
+.parabensText {
+  font-size: 14px;
+  color: var(--text-2);
+  line-height: 1.7;
+  margin: 0;
 }
 
-.modalReprovarCloseBtn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: var(--text-muted);
-  padding: 4px;
-  border-radius: var(--r-sm);
-  display: flex;
+/* ════════════════════════════════
+   RESPONSIVO
+════════════════════════════════ */
+@media (max-width: 720px) {
+  .heroCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .heroRight {
+    align-items: flex-start;
+    width: 100%;
+  }
+
+  .actionsBar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .actionsGroup {
+    width: 100%;
+  }
+
+  .actionsGroup .btnReject,
+  .actionsGroup .btnAdvance {
+    flex: 1;
+    justify-content: center;
+  }
+
+  .profileGrid,
+  .matchGrid,
+  .formGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .matchCompareCard {
+    flex-direction: column;
+  }
+
+  .matchCompareDivider {
+    transform: rotate(90deg);
+  }
+
+  .dateTimeRow {
+    grid-template-columns: 1fr;
+  }
 }
 
-.modalReprovarBody {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  margin-bottom: 20px;
+@media (prefers-reduced-motion: reduce) {
+  .timelinePulse, .loadingSpinner { animation: none; }
 }
