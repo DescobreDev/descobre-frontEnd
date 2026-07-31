@@ -3,10 +3,7 @@
    pra ficar em sync com o tema global.
 ════════════════════════════════ */
 .page {
-  --rust-950: color-mix(in srgb, var(--orange) 40%, black);
-  --rust-800: color-mix(in srgb, var(--orange) 65%, black);
-  --amber-glow: color-mix(in srgb, var(--orange) 30%, white);
-
+  --char-950: #140e0b;
   --char-900: #1c1410;
   --char-800: #241a15;
   --cream: #fff7ed;
@@ -86,9 +83,9 @@
   border-radius: 20px;
   padding: 26px 28px 68px;
   background:
-    radial-gradient(circle at 12% -20%, var(--amber-glow), transparent 50%),
-    linear-gradient(125deg, var(--rust-950) 0%, var(--rust-800) 50%, var(--orange) 115%);
-  box-shadow: 0 16px 32px -20px color-mix(in srgb, var(--orange) 55%, black);
+    linear-gradient(to bottom, color-mix(in srgb, var(--orange) 70%, transparent) 0%, transparent 34%),
+    var(--char-900);
+  box-shadow: 0 16px 32px -20px rgba(0, 0, 0, 0.5);
 }
 
 .heroTopRow {
