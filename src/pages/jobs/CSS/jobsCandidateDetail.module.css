@@ -106,7 +106,7 @@
   display: flex;
   flex-direction: column;
   gap: 18px;
-  background: linear-gradient(to bottom, #ed6304 10% 16%, #fbbd91);
+  background: linear-gradient(to bottom, #f87419 10% 16%, #fbbd91);
   box-shadow: 0 14px 30px -20px rgba(0, 0, 0, 0.35);
 }
 
