@@ -3,9 +3,9 @@
    pra ficar em sync com o tema global.
 ════════════════════════════════ */
 .page {
-  --char-950: #140e0b;
-  --char-900: #1c1410;
-  --char-800: #241a15;
+  --char-950: color-mix(in srgb, var(--orange) 18%, black);
+  --char-900: color-mix(in srgb, var(--orange) 14%, black);
+  --char-800: color-mix(in srgb, var(--orange) 10%, black);
   --cream: #fff7ed;
   --cream-dim: rgba(255, 247, 237, 0.62);
 
