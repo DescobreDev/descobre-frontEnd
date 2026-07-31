@@ -11,40 +11,53 @@ import styles from "./CSS/jobs.module.css";
 
 function SkeletonCard() {
   return (
-    <div className={styles.skeletonCard}>
-      <div className={styles.skeletonRow}>
-        <div className={styles.skeletonCol}>
-          <div className={`${styles.skeletonBlock} ${styles.skeletonTitle}`} />
-          <div className={`${styles.skeletonBlock} ${styles.skeletonSubtitle}`} />
+    <div style={{
+      background: "var(--surface)", borderRadius: 18, padding: 20,
+      border: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: 14,
+    }}>
+      <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+        <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 8 }}>
+          <div style={{ height: 15, width: "70%", background: "var(--surface-2)", borderRadius: 6 }} />
+          <div style={{ height: 12, width: "45%", background: "var(--surface-2)", borderRadius: 6 }} />
         </div>
-        <div className={`${styles.skeletonBlock} ${styles.skeletonBadge}`} />
+        <div style={{ height: 26, width: 80, background: "var(--surface-2)", borderRadius: 99 }} />
       </div>
-      <div className={styles.skeletonTags}>
-        <div className={`${styles.skeletonBlock} ${styles.skeletonTag}`} />
-        <div className={`${styles.skeletonBlock} ${styles.skeletonTag}`} />
-        <div className={`${styles.skeletonBlock} ${styles.skeletonTagSm}`} />
+      <div style={{ display: "flex", gap: 6 }}>
+        <div style={{ height: 22, width: 60, background: "var(--surface-2)", borderRadius: 8 }} />
+        <div style={{ height: 22, width: 70, background: "var(--surface-2)", borderRadius: 8 }} />
+        <div style={{ height: 22, width: 55, background: "var(--surface-2)", borderRadius: 8 }} />
       </div>
-      <div className={styles.skeletonDivider} />
-      <div className={`${styles.skeletonBlock} ${styles.skeletonFooter}`} />
+      <div style={{ height: 1, background: "var(--border)" }} />
+      <div style={{ height: 12, width: "40%", background: "var(--surface-2)", borderRadius: 6 }} />
     </div>
   );
 }
 
 function EmptyState({ hasFilters, onClear, onCreate }) {
   return (
-    <div className={styles.stateWrap}>
-      <div className={styles.stateIcon}>
-        <Briefcase size={22} weight="bold" />
+    <div style={{
+      gridColumn: "1 / -1", display: "flex", flexDirection: "column", alignItems: "center",
+      gap: 8, padding: "56px 24px", textAlign: "center",
+    }}>
+      <div style={{
+        width: 56, height: 56, borderRadius: 16, background: "var(--surface-2)",
+        display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4,
+      }}>
+        <Briefcase size={26} color="var(--text-muted)" />
       </div>
-      <p className={styles.stateTitle}>
+      <p style={{ margin: 0, fontSize: 15.5, fontWeight: 600, color: "var(--text)" }}>
         {hasFilters ? "Nenhuma vaga encontrada" : "Nenhuma vaga cadastrada ainda"}
       </p>
-      <p className={styles.stateText}>
+      <p style={{ margin: 0, fontSize: 13.5, color: "var(--text-2)", maxWidth: 320 }}>
         {hasFilters
           ? "Tente buscar por outro termo ou limpar a busca."
           : "Crie a primeira vaga da sua empresa para começar a receber candidaturas."}
       </p>
-      <button className={styles.btnPrimary} onClick={hasFilters ? onClear : onCreate}>
+      <button
+        className="btn-primary"
+        onClick={hasFilters ? onClear : onCreate}
+        style={{ marginTop: 10 }}
+      >
         {hasFilters ? "Limpar busca" : "Criar vaga"}
       </button>
     </div>
@@ -53,13 +66,19 @@ function EmptyState({ hasFilters, onClear, onCreate }) {
 
 function ErrorState({ message, onRetry }) {
   return (
-    <div className={styles.stateWrap}>
-      <div className={styles.stateIcon} data-tone="error">
-        <CloudWarning size={22} weight="bold" />
+    <div style={{
+      gridColumn: "1 / -1", display: "flex", flexDirection: "column", alignItems: "center",
+      gap: 8, padding: "56px 24px", textAlign: "center",
+    }}>
+      <div style={{
+        width: 56, height: 56, borderRadius: 16, background: "#fef2f2",
+        display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 4,
+      }}>
+        <CloudWarning size={26} color="var(--red)" />
       </div>
-      <p className={styles.stateTitle}>Não foi possível carregar</p>
-      <p className={styles.stateText}>{message}</p>
-      <button className={styles.btnPrimary} onClick={onRetry}>
+      <p style={{ margin: 0, fontSize: 15.5, fontWeight: 600, color: "var(--text)" }}>Não foi possível carregar</p>
+      <p style={{ margin: 0, fontSize: 13.5, color: "var(--text-2)" }}>{message}</p>
+      <button className="btn-primary" onClick={onRetry} style={{ marginTop: 10 }}>
         Tentar de novo
       </button>
     </div>
@@ -72,20 +91,28 @@ function Pagination({ pagination, currentPage, onPageChange }) {
     ?? Math.max(1, Math.ceil((pagination.total ?? 0) / (pagination.limit ?? 10)));
   if (totalPages <= 1) return null;
 
+  const btnStyle = (disabled) => ({
+    display: "flex", alignItems: "center", gap: 6,
+    padding: "8px 14px", borderRadius: 10,
+    border: "1px solid var(--border)", background: "var(--surface)",
+    fontSize: 13, fontWeight: 500, color: disabled ? "var(--text-muted)" : "var(--text-2)",
+    cursor: disabled ? "default" : "pointer",
+  });
+
   return (
-    <div className={styles.pagination}>
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 12, marginTop: 28 }}>
       <button
-        className={styles.pageBtn}
+        style={btnStyle(currentPage <= 1)}
         disabled={currentPage <= 1}
         onClick={() => onPageChange(currentPage - 1)}
       >
         <CaretLeft size={13} weight="bold" /> Anterior
       </button>
-      <span className={styles.pageLabel}>
+      <span style={{ fontSize: 13, fontWeight: 500, color: "var(--text-2)" }}>
         Página {currentPage} de {totalPages}
       </span>
       <button
-        className={styles.pageBtn}
+        style={btnStyle(currentPage >= totalPages)}
         disabled={currentPage >= totalPages}
         onClick={() => onPageChange(currentPage + 1)}
       >
@@ -144,82 +171,77 @@ export default function JobsView() {
   return (
     <PlanGate>
       <div className="page-content">
-        <div className={styles.page}>
-
-          {/* ── Cabeçalho — mesma estrutura do detalhe: título,
-               metadados em linha e barra de ações ── */}
-          <header className={styles.header}>
-            <div className={styles.headerTop}>
-              <div className={styles.headerTitleBlock}>
-                <h1 className={styles.title}>Vagas</h1>
-                <p className={styles.subtitle}>Gerencie todas as vagas abertas da sua empresa</p>
+        <div className={styles.hero}>
+          <div className={styles.heroMain}>
+            <div className={styles.heroIcon}>
+              <Briefcase size={22} weight="fill" />
+            </div>
+            <div>
+              <h1 className={styles.heroTitle}>Vagas</h1>
+              <p className={styles.heroSubtitle}>Gerencie todas as vagas abertas da sua empresa</p>
+              <div className={styles.heroStats}>
+                <div className={styles.statPill}>
+                  <span className={styles.statValue}>{totalVagas}</span>
+                  <span className={styles.statLabel}>{totalVagas === 1 ? "vaga cadastrada" : "vagas cadastradas"}</span>
+                </div>
+                <div className={styles.statPill}>
+                  <span className={styles.statValue}>{vagasAtivas}</span>
+                  <span className={styles.statLabel}>ativas</span>
+                </div>
               </div>
-
-              <button className={styles.btnPrimary} onClick={() => navigate("/jobs/new")}>
-                <Plus size={16} weight="bold" /> Nova vaga
-              </button>
             </div>
-
-            <div className={styles.metaLine}>
-              <span className={styles.metaItem}>
-                <strong className={styles.metaValue}>{totalVagas}</strong>
-                {totalVagas === 1 ? "vaga cadastrada" : "vagas cadastradas"}
-              </span>
-              <span className={styles.metaDivider}>•</span>
-              <span className={styles.metaItem}>
-                <strong className={styles.metaValue}>{vagasAtivas}</strong>
-                {vagasAtivas === 1 ? "ativa" : "ativas"}
-              </span>
-            </div>
-          </header>
-
-          {/* ── Busca ─────────────────────────── */}
-          <div className={styles.toolbar}>
-            <div className={styles.searchBox}>
-              <MagnifyingGlass size={16} />
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Buscar vaga por título"
-                className={styles.searchInput}
-              />
-            </div>
-            {search && (
-              <span className={styles.resultsCount}>
-                {visibleJobs.length} {visibleJobs.length === 1 ? "resultado" : "resultados"}
-              </span>
-            )}
           </div>
 
-          {/* ── Lista ─────────────────────────── */}
-          <div className={styles.grid}>
-            {loading && Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
+          <button className={styles.heroCta} onClick={() => navigate("/jobs/new")}>
+            <Plus size={16} weight="bold" />
+            Nova vaga
+          </button>
+        </div>
 
-            {!loading && error && <ErrorState message={error} onRetry={() => fetchJobs(currentPage)} />}
-
-            {!loading && !error && visibleJobs.length === 0 && (
-              <EmptyState
-                hasFilters={Boolean(search)}
-                onClear={() => setSearch("")}
-                onCreate={() => navigate("/jobs/new")}
-              />
-            )}
-
-            {!loading && !error && visibleJobs.map((job) => (
-              <JobCard
-                key={job.id}
-                job={job}
-                onOpen={(j) => navigate(`/jobs/${j.id}`)}
-                onEdit={(j) => navigate(`/jobs/${j.id}/edit`)}
-                onStatusChange={handleStatusChange}
-              />
-            ))}
+        <div className={styles.toolbar}>
+          <div className={styles.searchBox}>
+            <MagnifyingGlass size={16} />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar vaga por título"
+              className={styles.searchInput}
+            />
           </div>
-
-          {!loading && !error && !search && (
-            <Pagination pagination={pagination} currentPage={currentPage} onPageChange={fetchJobs} />
+          {search && (
+            <span className={styles.resultsCount}>
+              {visibleJobs.length} {visibleJobs.length === 1 ? "resultado" : "resultados"}
+            </span>
           )}
         </div>
+
+        <div className={styles.grid}>
+          {loading && Array.from({ length: 4 }).map((_, i) => <SkeletonCard key={i} />)}
+
+          {!loading && error && <ErrorState message={error} onRetry={() => fetchJobs(currentPage)} />}
+
+          {!loading && !error && visibleJobs.length === 0 && (
+            <EmptyState
+              hasFilters={Boolean(search)}
+              onClear={() => setSearch("")}
+              onCreate={() => navigate("/jobs/new")}
+            />
+          )}
+
+          {!loading && !error && visibleJobs.map((job) => (
+            <JobCard
+              key={job.id}
+              job={job}
+              onOpen={(j) => navigate(`/jobs/${j.id}`)}
+              onEdit={(j) => navigate(`/jobs/${j.id}/edit`)}
+              onStatusChange={handleStatusChange}
+            />
+          ))}
+        </div>
+
+        {!loading && !error && !search && (
+          <Pagination pagination={pagination} currentPage={currentPage} onPageChange={fetchJobs} />
+        )}
       </div>
     </PlanGate>
   );
