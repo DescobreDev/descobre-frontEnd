@@ -82,10 +82,8 @@
   overflow: hidden;
   border-radius: 20px;
   padding: 26px 28px 68px;
-  background:
-    linear-gradient(to bottom, color-mix(in srgb, var(--orange) 70%, transparent) 0%, transparent 34%),
-    var(--char-900);
-  box-shadow: 0 16px 32px -20px rgba(0, 0, 0, 0.5);
+  background: linear-gradient(to bottom, #643211 1%, #f27823);
+  box-shadow: 0 16px 32px -20px #00000080;
 }
 
 .heroTopRow {
@@ -634,12 +632,21 @@
    ANIMAÇÕES
 ════════════════════════════════ */
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes slideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ════════════════════════════════
