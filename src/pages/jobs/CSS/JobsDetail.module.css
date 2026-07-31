@@ -82,7 +82,7 @@
   overflow: hidden;
   border-radius: 20px;
   padding: 26px 28px 68px;
-  background: linear-gradient(to bottom, #643211 1%, #f27823);
+  background: linear-gradient(to bottom, #853700 6%, #e39f70);
   box-shadow: 0 16px 32px -20px #00000080;
 }
 
@@ -145,7 +145,7 @@
 
 .heroSubtitleAccent {
   font-weight: 700;
-  color: var(--char-900);
+  color: white;
   background: rgba(28, 20, 16, 0.2);
   padding: 1px 7px;
   border-radius: 5px;
