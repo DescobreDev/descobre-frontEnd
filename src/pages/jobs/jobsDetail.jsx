@@ -25,49 +25,60 @@ const AFFIRMATIVE_MAP = {
     FIFTY_PLUS: "50+", LGBTQIAPN: "LGBTQIAPN+",
 };
 
-/* Um único acento de cor (--orange) carrega a marca da vaga.
-   Prioridade e status usam apenas peso/opacidade de neutro,
-   exceto Urgente e Contratada, que têm sinal semântico próprio
-   por serem estados que pedem atenção imediata. */
+/* O ponto (dot) sobe em intensidade de laranja conforme a prioridade
+   sobe — só a Urgente quebra pra vermelho, de propósito, pra continuar
+   lendo como alerta mesmo num sistema onde laranja já é a cor de tudo. */
 const PRIORITY_STYLE = {
-    LOW: { dot: "var(--text-muted)" },
-    MEDIUM: { dot: "var(--orange)" },
+    LOW: { dot: "#a8a29e" },
+    MEDIUM: { dot: "#fdba74" },
     HIGH: { dot: "var(--orange)" },
-    URGENT: { dot: "#e5484d" },
+    URGENT: { dot: "#ef4444" },
 };
 
 const STATUS_STYLE = {
-    ACTIVE: { color: "#1a7f4e", bg: "#e9f9f0" },
-    INACTIVE: { color: "var(--text-muted)", bg: "var(--surface-2)" },
-    HIRED: { color: "#1a7f4e", bg: "#e9f9f0" },
+    ACTIVE: { color: "#86efac", bg: "#052e1b" },
+    INACTIVE: { color: "#d6d3d1", bg: "#1c1410" },
+    HIRED: { color: "#6ee7b7", bg: "#052e1b" },
 };
 
-function DetailRow({ label, value, icon: Icon }) {
+function StatTile({ label, value, icon: Icon }) {
     return (
-        <div className={styles.detailRow}>
-            <span className={styles.detailLabel}>
-                {Icon && <Icon size={14} weight="regular" />}
-                {label}
-            </span>
-            <span className={styles.detailValue}>{value || "—"}</span>
+        <div className={styles.statTile}>
+            <div className={styles.statIconWrap}>
+                <Icon size={16} color="var(--orange)" weight="duotone" />
+            </div>
+            <div className={styles.statBody}>
+                <span className={styles.statLabel}>{label}</span>
+                <span className={styles.statValue}>{value || "—"}</span>
+            </div>
         </div>
     );
 }
 
-function Card({ title, subtitle, extra, children, className = "" }) {
+function DetailsRow({ label, value, icon: Icon }) {
     return (
-        <section className={`${styles.card} ${className}`}>
-            {(title || extra) && (
-                <header className={styles.cardHeader}>
-                    <div>
-                        {title && <h2 className={styles.cardTitle}>{title}</h2>}
-                        {subtitle && <p className={styles.cardSubtitle}>{subtitle}</p>}
-                    </div>
-                    {extra}
-                </header>
-            )}
+        <div className={styles.detailsRow}>
+            <span className={styles.detailsLabel}>
+                {Icon && <Icon size={13} weight="bold" className={styles.detailsIcon} />}
+                {label}
+            </span>
+            <span className={styles.detailsValue}>{value || "—"}</span>
+        </div>
+    );
+}
+
+function SectionCard({ title, subtitle, children, extra }) {
+    return (
+        <div className={styles.card}>
+            <div className={styles.cardHeader}>
+                <div>
+                    <p className={styles.cardTitle}>{title}</p>
+                    {subtitle && <p className={styles.cardSub}>{subtitle}</p>}
+                </div>
+                {extra}
+            </div>
             {children}
-        </section>
+        </div>
     );
 }
 
@@ -126,22 +137,24 @@ export default function JobsDetail() {
 
     if (loading) {
         return (
-            <div className={styles.stateWrap}>
+            <div className={styles.centered}>
                 <div className={styles.spinner} />
-                <span className={styles.stateLabel}>Carregando vaga...</span>
+                <span className={styles.spinnerLabel}>Carregando vaga...</span>
             </div>
         );
     }
 
     if (error || !job) {
         return (
-            <div className={styles.stateWrap}>
-                <div className={styles.stateIcon} data-tone="error">
-                    <Warning size={20} weight="bold" />
+            <div className={styles.centered}>
+                <div className={styles.errorIconWrap}>
+                    <Warning size={22} color="#ef4444" weight="duotone" />
                 </div>
-                <p className={styles.stateText}>{error ?? "Vaga não encontrada."}</p>
+                <p className={styles.errorText}>
+                    {error ?? "Vaga não encontrada."}
+                </p>
                 <button className={styles.btnSecondary} onClick={() => navigate("/jobs")}>
-                    <ArrowLeft size={14} weight="bold" /> Voltar para vagas
+                    <ArrowLeft size={14} /> Voltar para vagas
                 </button>
             </div>
         );
@@ -166,169 +179,196 @@ export default function JobsDetail() {
     const fmt = (d) =>
         new Date(d).toLocaleDateString("pt-BR", { day: "2-digit", month: "short", year: "numeric" });
 
-    const hasBenefits = (job.benefits?.length > 0) || (job.customBenefits?.length > 0);
-    const benefitsTotal = (job.benefits?.length ?? 0) + (job.customBenefits?.length ?? 0);
+    const hasBenefits =
+        (job.benefits?.length > 0) || (job.customBenefits?.length > 0);
 
     return (
         <PlanGate>
-            <div className="page-content">
-                <div className={styles.page}>
-                    {statusSaved && (
-                        <div className={styles.toast} role="status">
-                            <CheckCircle size={16} weight="fill" />
-                            Status atualizado com sucesso
-                        </div>
-                    )}
+            <div className="page-content"><div className={styles.page}>
+                {statusSaved && (
+                    <div className={styles.toast}>
+                        <CheckCircle size={16} weight="fill" />
+                        Status da vaga atualizado com sucesso!
+                    </div>
+                )}
 
-                    {/* ── Navegação ─────────────────────── */}
-                    <nav className={styles.breadcrumb} aria-label="Navegação">
-                        <button className={styles.breadcrumbBack} onClick={() => navigate("/jobs")} aria-label="Voltar para vagas">
-                            <ArrowLeft size={15} weight="bold" />
-                        </button>
-                        <button className={styles.breadcrumbLink} onClick={() => navigate("/jobs")}>
-                            Vagas
-                        </button>
-                        <span className={styles.breadcrumbSep}>/</span>
-                        <span>{sector}</span>
-                        <span className={styles.breadcrumbSep}>/</span>
-                        <span className={styles.breadcrumbCurrent}>{job.title}</span>
-                    </nav>
+                <nav className={styles.breadcrumb}>
+                    <button className={styles.breadcrumbLink} onClick={() => navigate("/jobs")}>
+                        Vagas
+                    </button>
+                    <span className={styles.breadcrumbSep}>›</span>
+                    <span>{sector}</span>
+                    <span className={styles.breadcrumbSep}>›</span>
+                    <span className={styles.breadcrumbCurrent}>{job.title}</span>
+                </nav>
 
-                    {/* ── Cabeçalho ─────────────────────── */}
-                    <header className={styles.header}>
-                        <div className={styles.headerTop}>
-                            <div className={styles.headerTitleBlock}>
-                                <h1 className={styles.title}>{job.title}</h1>
-                                <p className={styles.subtitle}>
-                                    {sector} <span className={styles.subtitleSep}>·</span> {position}
-                                </p>
-                            </div>
-
-                            {isHired ? (
-                                <span className={styles.hiredBadge}>
-                                    <Trophy size={14} weight="fill" />
-                                    Contratada
-                                </span>
-                            ) : (
-                                <AsyncSelect
-                                    name="status"
-                                    value={{ value: job.status, label: STATUS_MAP[job.status] }}
-                                    fetchOptions={fetchStatusOptions}
-                                    onChange={handleStatusChange}
-                                    placeholder="Status"
-                                    colorMap={STATUS_STYLE}
-                                />
-                            )}
-                        </div>
-
-                        <div className={styles.metaLine}>
-                            <span className={styles.metaItem}>
-                                <span className={styles.metaDot} style={{ background: priorityStyle.dot }} />
-                                Prioridade {PRIORITY_MAP[job.priority]}
-                            </span>
-                            <span className={styles.metaDivider}>•</span>
-                            <span className={styles.metaItem}>
-                                {job.visible ? <Eye size={13} /> : <EyeSlash size={13} />}
-                                {job.visible ? "Visível para candidatos" : "Oculta"}
-                            </span>
-                            <span className={styles.metaDivider}>•</span>
-                            <span className={styles.metaItem}>Criada {fmt(job.createdAt)}</span>
-                            <span className={styles.metaDivider}>•</span>
-                            <span className={styles.metaItem}>Atualizada {fmt(job.updatedAt)}</span>
-                        </div>
-
-                        <div className={styles.actionBar}>
-                            <button className={styles.btnPrimary} onClick={() => navigate(`/jobs/${id}/candidates`)}>
-                                <Users size={15} weight="bold" /> Ver candidatos
-                            </button>
-                            {!isHired && (
-                                <button className={styles.btnSecondary} onClick={() => navigate(`/jobs/${id}/edit`)}>
-                                    <PencilSimple size={14} weight="bold" /> Editar
+                {/* ── HERO + STATS FLUTUANTES ─────── */}
+                <div className={styles.heroWrap}>
+                    <div className={styles.heroCard}>
+                        <div className={styles.heroTopRow}>
+                            <div className={styles.heroTitleRow}>
+                                <button
+                                    className={styles.heroBackBtn}
+                                    onClick={() => navigate("/jobs")}
+                                    title="Voltar"
+                                >
+                                    <ArrowLeft size={15} weight="bold" />
                                 </button>
-                            )}
-                            {!isHired && (
-                                <button className={styles.btnDanger} onClick={handleDelete}>
-                                    <Trash size={14} weight="bold" /> Desativar
-                                </button>
-                            )}
-                        </div>
-                    </header>
 
-                    {/* ── Resumo ────────────────────────── */}
-                    <div className={styles.summaryGrid}>
-                        <div className={styles.summaryItem}>
-                            <CurrencyDollar size={16} weight="bold" />
-                            <div>
-                                <span className={styles.summaryLabel}>Salário</span>
-                                <span className={styles.summaryValue}>{formattedSalary}</span>
+                                <div className={styles.heroTitleBlock}>
+                                    <h1 className={styles.heroTitle}>{job.title}</h1>
+                                    <p className={styles.heroSubtitle}>
+                                        <span className={styles.heroSubtitleAccent}>{sector}</span>
+                                        <span className={styles.heroSubtitleDivider}>·</span>
+                                        {position}
+                                    </p>
+
+                                    <div className={styles.heroChipRow}>
+                                        <span className={styles.heroChip}>
+                                            <span
+                                                className={styles.heroChipDot}
+                                                style={{ background: priorityStyle.dot }}
+                                            />
+                                            Prioridade {PRIORITY_MAP[job.priority]}
+                                        </span>
+
+                                        <span className={styles.heroChip}>
+                                            {job.visible
+                                                ? <Eye size={12} weight="fill" />
+                                                : <EyeSlash size={12} weight="fill" />
+                                            }
+                                            {job.visible ? "Visível" : "Oculta"}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className={styles.heroStatusZone}>
+                                <span className={styles.heroStatusLabel}>Status</span>
+                                {isHired ? (
+                                    <span className={styles.hiredBadge}>
+                                        <Trophy size={14} weight="fill" color="#6ee7b7" />
+                                        Contratada
+                                    </span>
+                                ) : (
+                                    <AsyncSelect
+                                        name="status"
+                                        value={{ value: job.status, label: STATUS_MAP[job.status] }}
+                                        fetchOptions={fetchStatusOptions}
+                                        onChange={handleStatusChange}
+                                        placeholder="Status"
+                                        colorMap={STATUS_STYLE}
+                                    />
+                                )}
                             </div>
                         </div>
-                        <div className={styles.summaryItem}>
-                            <Calendar size={16} weight="bold" />
-                            <div>
-                                <span className={styles.summaryLabel}>Prazo</span>
-                                <span className={styles.summaryValue}>{formattedDeadline}</span>
+
+                        <div className={styles.heroDivider} />
+
+                        <div className={styles.heroFooter}>
+                            <div className={styles.heroMeta}>
+                                <span>Criada {fmt(job.createdAt)}</span>
+                                <span className={styles.heroMetaDivider}>·</span>
+                                <span>Atualizada {fmt(job.updatedAt)}</span>
                             </div>
-                        </div>
-                        <div className={styles.summaryItem}>
-                            <Buildings size={16} weight="bold" />
-                            <div>
-                                <span className={styles.summaryLabel}>Formato</span>
-                                <span className={styles.summaryValue}>{FORMAT_MAP[job.workFormat]}</span>
-                            </div>
-                        </div>
-                        <div className={styles.summaryItem}>
-                            <Clock size={16} weight="bold" />
-                            <div>
-                                <span className={styles.summaryLabel}>Carga horária</span>
-                                <span className={styles.summaryValue}>{job.workload}h/semana</span>
+
+                            <div className={styles.heroActions}>
+                                {!isHired && (
+                                    <button className={styles.btnGhostOnDark} onClick={() => navigate(`/jobs/${id}/edit`)}>
+                                        <PencilSimple size={14} weight="bold" /> Editar
+                                    </button>
+                                )}
+
+                                <button className={styles.btnPrimary} onClick={() => navigate(`/jobs/${id}/candidates`)}>
+                                    <Users size={14} weight="bold" /> Candidatos
+                                </button>
+
+                                {!isHired && (
+                                    <button className={styles.btnDangerGhost} onClick={handleDelete}>
+                                        <Trash size={14} weight="bold" /> Desativar
+                                    </button>
+                                )}
                             </div>
                         </div>
                     </div>
 
-                    {/* ── Conteúdo ──────────────────────── */}
-                    <div className={styles.layout}>
-                        <div className={styles.layoutMain}>
-                            <Card title="Descrição da vaga">
-                                <p className={styles.description}>{job.description}</p>
-                            </Card>
-
-                            {hasBenefits && (
-                                <Card
-                                    title="Benefícios"
-                                    extra={<span className={styles.countPill}>{benefitsTotal}</span>}
-                                >
-                                    <div className={styles.benefitsWrap}>
-                                        {job.benefits?.map((b) => (
-                                            <span key={b.benefitId} className={styles.chip}>{b.benefit?.name}</span>
-                                        ))}
-                                        {job.customBenefits?.map((b) => (
-                                            <span key={b} className={styles.chipAccent}>{b}</span>
-                                        ))}
-                                    </div>
-                                </Card>
-                            )}
-                        </div>
-
-                        <aside className={styles.layoutSide}>
-                            <Card title="Localização">
-                                <div className={styles.locationRow}>
-                                    <MapPin size={16} weight="bold" className={styles.locationIcon} />
-                                    <p className={styles.locationText}>{fullAddress}</p>
-                                </div>
-                            </Card>
-
-                            <Card title="Detalhes">
-                                <div className={styles.detailList}>
-                                    <DetailRow icon={Briefcase} label="Contrato" value={CONTRACT_MAP[job.contractType]} />
-                                    <DetailRow icon={Tag} label="Tipo de vaga" value={TYPE_MAP[job.jobType]} />
-                                    <DetailRow icon={Users} label="Vaga afirmativa" value={AFFIRMATIVE_MAP[job.affirmative]} />
-                                </div>
-                            </Card>
-                        </aside>
+                    <div className={styles.statsBar}>
+                        <StatTile label="Salário" value={formattedSalary} icon={CurrencyDollar} />
+                        <StatTile label="Prazo" value={formattedDeadline} icon={Calendar} />
+                        <StatTile label="Formato" value={FORMAT_MAP[job.workFormat]} icon={Buildings} />
+                        <StatTile label="Carga horária" value={`${job.workload}h/semana`} icon={Clock} />
                     </div>
                 </div>
+
+                {/* ── DESCRIÇÃO + SIDEBAR ─────────── */}
+                <div className={styles.twoCol}>
+                    <div className={styles.twoColMain}>
+                        <SectionCard title="Descrição da vaga">
+                            <p className={styles.descriptionText}>{job.description}</p>
+                        </SectionCard>
+                    </div>
+
+                    <div className={styles.twoColSide}>
+                        <SectionCard title="Localização" subtitle="Onde a vaga será exercida">
+                            <div className={styles.locationWrap}>
+                                <div className={styles.locationAddress}>
+                                    <MapPin
+                                        size={16}
+                                        color="var(--orange)"
+                                        weight="duotone"
+                                        className={styles.locationAddressIcon}
+                                    />
+                                    <p className={styles.locationText}>{fullAddress}</p>
+                                </div>
+
+                                {job.workFormat === "REMOTE" && (
+                                    <div className={styles.remoteNote}>
+                                        <Buildings size={14} weight="duotone" />
+                                        Trabalho 100% remoto
+                                    </div>
+                                )}
+                            </div>
+                        </SectionCard>
+
+                        <SectionCard title="Detalhes da vaga">
+                            <div className={styles.detailsList}>
+                                <DetailsRow icon={Briefcase} label="Contrato" value={CONTRACT_MAP[job.contractType]} />
+                                <DetailsRow icon={Tag} label="Tipo de vaga" value={TYPE_MAP[job.jobType]} />
+                                <DetailsRow icon={Users} label="Vaga afirmativa" value={AFFIRMATIVE_MAP[job.affirmative]} />
+                                <DetailsRow icon={Calendar} label="Publicada em" value={fmt(job.createdAt)} />
+                            </div>
+                        </SectionCard>
+                    </div>
+                </div>
+
+                {/* ── BENEFÍCIOS ───────────────────── */}
+                {hasBenefits && (
+                    <SectionCard
+                        title="Benefícios"
+                        subtitle="Benefícios oferecidos para esta vaga"
+                        extra={
+                            <span className={styles.benefitsCount}>
+                                {(job.benefits?.length ?? 0) + (job.customBenefits?.length ?? 0)} benefícios
+                            </span>
+                        }
+                    >
+                        <div className={styles.benefitsWrap}>
+                            {job.benefits?.map((b) => (
+                                <span key={b.benefitId} className={styles.chip}>
+                                    {b.benefit?.name}
+                                </span>
+                            ))}
+                            {job.customBenefits?.map((b) => (
+                                <span key={b} className={styles.chipCustom}>
+                                    {b}
+                                </span>
+                            ))}
+                        </div>
+                    </SectionCard>
+                )}
+
             </div>
+        </div>
         </PlanGate>
     );
 }
