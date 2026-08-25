@@ -152,6 +152,19 @@ function Login() {
             Não tem conta? <Link to="/register">Criar conta</Link>
           </div>
 
+          <div className={styles.rememberRow}>
+            <label className={styles.rememberLabel}>
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className={styles.rememberCheckbox}
+              />
+              Mantenha-me conectado
+            </label>
+            <Link to="/forgot-password" className={styles.forgotLink}>Esqueceu a senha?</Link>
+          </div>
+
         </div>
       </main>
 
