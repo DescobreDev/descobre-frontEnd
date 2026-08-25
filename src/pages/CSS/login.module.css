@@ -184,6 +184,80 @@
   text-transform: uppercase;
 }
 
+/* ── Painel lateral (Forgot/Reset Password) ── */
+.panelIconOrb {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  z-index: 1;
+}
+
+/* ── Success state (reset concluído) ── */
+.successState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  padding: 8px 0 4px;
+}
+
+.successIconWrap {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #f0fdf4;
+  border: 1.5px solid #86efac;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: successPop 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes successPop {
+  from { transform: scale(0.6); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+.successTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #111827;
+  margin: 0;
+}
+
+.successText {
+  font-size: 0.85rem;
+  color: #6b7280;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.redirectHint {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.78rem;
+  color: #9ca3af;
+  margin-top: 4px;
+}
+
+.redirectSpinner {
+  width: 12px;
+  height: 12px;
+  border: 2px solid #e5e7eb;
+  border-top-color: #f97316;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
 /* ══════════════════════════════
    RIGHT PANEL — 30 %
    ══════════════════════════════ */
