@@ -245,6 +245,46 @@
   gap: 16px;
 }
 
+/* ── Remember me ── */
+.rememberRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: -4px 0 0;
+  gap: 12px;
+}
+
+.rememberLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.82rem;
+  color: #6b7280;
+  cursor: pointer;
+  user-select: none;
+}
+
+.rememberCheckbox {
+  width: 15px;
+  height: 15px;
+  accent-color: #f97316;
+  cursor: pointer;
+}
+
+.forgotLink {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: #f97316;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+.forgotLink:hover {
+  color: #ea580c;
+  text-decoration: underline;
+}
+
 .authField {
   display: flex;
   flex-direction: column;
