@@ -138,7 +138,7 @@ function Login() {
                 />
                 Mantenha-me conectado
               </label>
-              <Link to="/forgotPassword" className={styles.forgotLink}>
+              <Link to="/forgot-password" className={styles.forgotLink}>
                 Esqueceu a senha?
               </Link>
             </div>
