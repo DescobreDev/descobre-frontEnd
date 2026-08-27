@@ -1,6 +1,9 @@
 import { useState, useEffect, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, ArrowRight, Plus, X, MapPin, Buildings, CheckCircle, Sparkle } from "@phosphor-icons/react";
+import {
+    ArrowLeft, ArrowRight, Plus, X, MapPin, Buildings, CheckCircle,
+    Sparkle, Info, WarningCircle,
+} from "@phosphor-icons/react";
 import Select from "../../components/select";
 import SelectSearch from "../../components/selectSearch";
 import { AuthContext } from "../../context/authContext";
@@ -52,6 +55,8 @@ const STEPS = [
     { label: "Contrato e configurações" },
 ];
 
+const DEFAULT_WORKLOAD = "44";
+
 function StepIndicator({ current }) {
     return (
         <div className={styles.stepIndicator}>
@@ -75,6 +80,52 @@ function StepIndicator({ current }) {
     );
 }
 
+// ── Componente padronizado de erro de campo ──
+function FieldError({ message }) {
+    if (!message) return null;
+    return <span className={styles.errorMsg}>{message}</span>;
+}
+
+// ── Banner padronizado de erro geral do formulário ──
+function FormErrorBanner({ message }) {
+    if (!message) return null;
+    return (
+        <div
+            role="alert"
+            style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                background: "#FEF2F2",
+                border: "1px solid #FCA5A5",
+                color: "#B91C1C",
+                borderRadius: 8,
+                padding: "10px 14px",
+                marginBottom: 16,
+                fontSize: 13,
+                fontWeight: 500,
+            }}
+        >
+            <WarningCircle size={17} weight="fill" style={{ flexShrink: 0 }} />
+            <span>{message}</span>
+        </div>
+    );
+}
+
+// ── Helpers de máscara de salário (R$) ──
+function formatCurrencyDisplay(value) {
+    if (value === "" || value === null || value === undefined) return "";
+    const number = Number(value);
+    if (Number.isNaN(number)) return "";
+    return number.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+function parseCurrencyInput(rawValue) {
+    const digits = rawValue.replace(/\D/g, "");
+    if (!digits) return "";
+    return Number(digits) / 100;
+}
+
 export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar vaga", updateVersion }) {
     const navigate = useNavigate();
     const { user } = useContext(AuthContext);
@@ -87,7 +138,9 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
     const [loadingCep, setLoadingCep] = useState(false);
     const [cepError, setCepError] = useState("");
     const [errors, setErrors] = useState({});
+    const [formError, setFormError] = useState("");
     const [generatingDescription, setGeneratingDescription] = useState(false);
+    const [submitting, setSubmitting] = useState(false);
 
     const [sectorOptions, setSectorOptions] = useState([]);
     const [positionOptions, setPositionOptions] = useState([]);
@@ -98,6 +151,10 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
 
     const [salaryLoading, setSalaryLoading] = useState(false);
     const [salarySuggestion, setSalarySuggestion] = useState(null);
+
+    function scrollToTop() {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+    }
 
     async function handleSalarySuggestion() {
         if (!form.position || !form.sector || !form.title) return;
@@ -157,7 +214,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
         contractType: initialData?.contractType ?? "",
         jobType: initialData?.jobType ?? "STANDARD",
         workFormat: initialData?.workFormat ?? "",
-        workload: initialData?.workload ?? "",
+        workload: initialData?.workload ?? DEFAULT_WORKLOAD,
         salary: initialData?.salary ?? "",
         priority: initialData?.priority ?? "MEDIUM",
         visible: initialData?.visible ?? true,
@@ -168,7 +225,6 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
         city: initialData?.city ?? "",
         district: initialData?.district ?? "",
         address: initialData?.address ?? "",
-        district: initialData?.district ?? "",
         number: initialData?.number ?? "",
         complement: initialData?.complement ?? "",
     });
@@ -197,6 +253,12 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
         const { name, value, type, checked } = e.target;
         setForm((prev) => ({ ...prev, [name]: type === "checkbox" ? checked : value }));
         if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
+
+    function handleSalaryChange(e) {
+        const numericValue = parseCurrencyInput(e.target.value);
+        setForm((prev) => ({ ...prev, salary: numericValue }));
+        if (errors.salary) setErrors((prev) => ({ ...prev, salary: "" }));
     }
 
     async function handleCepBlur() {
@@ -234,7 +296,6 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
             city: company.city || prev.city,
             district: company.district || prev.district,
             state: company.state || prev.state,
-            district: company.district || prev.district,
         }));
     }
 
@@ -247,6 +308,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                 ...(!form.sector && { sector: "Selecione o setor antes de gerar" }),
                 ...(!form.position && { position: "Selecione o cargo antes de gerar" }),
             }));
+            setFormError("Preencha os campos obrigatórios destacados abaixo para gerar a descrição.");
             return;
         }
 
@@ -265,7 +327,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
             setForm((prev) => ({ ...prev, description: generated }));
             if (errors.description) setErrors((prev) => ({ ...prev, description: "" }));
         } catch {
-            // silently fail – user can type manually
+            setFormError("Não foi possível gerar a descrição com IA. Tente novamente ou escreva manualmente.");
         } finally {
             setGeneratingDescription(false);
         }
@@ -294,23 +356,46 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
         const errs = {};
         if (!form.contractType) errs.contractType = "Tipo de contrato obrigatório";
         if (!form.workload) errs.workload = "Carga horária obrigatória";
-        if (!form.deadline) errs.deadline = "Data limite obrigatória";
+        if (!form.deadline) {
+            errs.deadline = "Data limite obrigatória";
+        } else {
+            const selectedDate = new Date(`${form.deadline}T00:00:00`);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (selectedDate < today) {
+                errs.deadline = "A data limite não pode ser anterior a hoje";
+            }
+        }
         setErrors(errs);
         return Object.keys(errs).length === 0;
     }
 
     function handleNext() {
-        if (validateStep1()) setStep(1);
+        if (validateStep1()) {
+            setFormError("");
+            setStep(1);
+            scrollToTop();
+        } else {
+            setFormError("Preencha os campos obrigatórios destacados abaixo.");
+            scrollToTop();
+        }
     }
 
     function handleBack() {
         setStep(0);
         setErrors({});
+        setFormError("");
+        scrollToTop();
     }
 
-    function handleSubmit(e) {
+    async function handleSubmit(e) {
         e?.preventDefault();
-        if (!validateStep2()) return;
+        if (!validateStep2()) {
+            setFormError("Preencha os campos obrigatórios destacados abaixo.");
+            scrollToTop();
+            return;
+        }
+        setFormError("");
 
         const { sector, position, ...rest } = form;
 
@@ -319,7 +404,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
             sectorId: sector?.value ?? null,
             positionId: position?.value ?? null,
             workload: Number(rest.workload),
-            salary: rest.salary ? Number(rest.salary) : null,
+            salary: rest.salary !== "" && rest.salary !== null ? Number(rest.salary) : null,
             cep: isRemote ? null : rest.cep,
             address: isRemote ? null : rest.address,
             district: isRemote ? null : rest.district,
@@ -327,15 +412,23 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
             complement: isRemote ? null : rest.complement,
             city: isRemote ? null : rest.city,
             state: isRemote ? null : rest.state,
-            district: isRemote ? null : rest.district,
             benefitIds: selectedBenefits,
             customBenefits: customBenefits,
         };
 
-        onSubmit(payload);
+        try {
+            setSubmitting(true);
+            await onSubmit(payload);
+        } catch (err) {
+            setFormError(
+                err?.response?.data?.message ||
+                "Erro ao salvar a vaga. Verifique os dados e tente novamente."
+            );
+            scrollToTop();
+        } finally {
+            setSubmitting(false);
+        }
     }
-
-
 
     function toggleBenefit(id) {
         setSelectedBenefits((prev) =>
@@ -354,10 +447,14 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
         setCustomBenefits((prev) => prev.filter((b) => b !== name));
     }
 
+    const isSubmitting = loading || submitting;
+
     return (
         <div className={styles.formPage}>
 
             <StepIndicator current={step} />
+
+            <FormErrorBanner message={formError} />
 
             {/* ════ STEP 1 ════ */}
             {step === 0 && (
@@ -378,7 +475,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                                         <div className="form-field">
                                             <label className="form-label">Título da vaga</label>
                                             <input name="title" value={form.title} placeholder="Ex: Vaga para desenvolvedor" onChange={handleChange} className={`input ${errors.title ? styles.inputError : ""}`} />
-                                            {errors.title && <span className={styles.errorMsg}>{errors.title}</span>}
+                                            <FieldError message={errors.title} />
                                         </div>
                                     </div>
 
@@ -390,7 +487,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                                                 value={workFormatOptions.find(opt => opt.value === form.workFormat)}
                                                 onChange={(opt) => setForm((prev) => ({ ...prev, workFormat: opt.value }))}
                                             />
-                                            {errors.workFormat && <span className={styles.errorMsg}>{errors.workFormat}</span>}
+                                            <FieldError message={errors.workFormat} />
                                         </div>
                                     </div>
                                 </div>
@@ -406,7 +503,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                                         placeholder={loadingSector ? "Carregando..." : "Ex: Tecnologia"}
                                         disabled={updateVersionInfo}
                                     />
-                                    {errors.sector && <span className={styles.errorMsg}>{errors.sector}</span>}
+                                    <FieldError message={errors.sector} />
                                 </div>
 
                                 <div className="form-field">
@@ -420,7 +517,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                                         disabled={updateVersionInfo || !form.sector || loadingPositions}
                                         disabledPlaceholder="Selecione um setor primeiro"
                                     />
-                                    {errors.position && <span className={styles.errorMsg}>{errors.position}</span>}
+                                    <FieldError message={errors.position} />
                                 </div>
                             </div>
                         </div>
@@ -468,9 +565,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                                         />
                                         {loadingCep && <span className="input-badge">Buscando...</span>}
                                     </div>
-                                    {(errors.cep || cepError) && (
-                                        <span className={styles.errorMsg}>{errors.cep || cepError}</span>
-                                    )}
+                                    <FieldError message={errors.cep || cepError} />
                                 </div>
 
                                 <div className="form-field">
@@ -480,7 +575,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                                         value={stateOptions.find(opt => opt.value === form.state)}
                                         onChange={(opt) => setForm((prev) => ({ ...prev, state: opt.value }))}
                                     />
-                                    {errors.state && <span className={styles.errorMsg}>{errors.state}</span>}
+                                    <FieldError message={errors.state} />
                                 </div>
 
                                 <div className="form-field">
@@ -488,7 +583,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                                     <input name="city" value={form.city} onChange={handleChange}
                                         placeholder="São Paulo"
                                         className={`input ${errors.city ? styles.inputError : ""}`} />
-                                    {errors.city && <span className={styles.errorMsg}>{errors.city}</span>}
+                                    <FieldError message={errors.city} />
                                 </div>
 
                                 <div className="form-field">
@@ -496,7 +591,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                                     <input name="district" value={form.district} onChange={handleChange}
                                         placeholder="Bela Vista"
                                         className={`input ${errors.district ? styles.inputError : ""}`} />
-                                    {errors.district && <span className={styles.errorMsg}>{errors.district}</span>}
+                                    <FieldError message={errors.district} />
                                 </div>
 
                                 <div className="form-field col-span-2">
@@ -504,7 +599,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                                     <input name="address" value={form.address} onChange={handleChange}
                                         placeholder="Rua, Avenida..."
                                         className={`input ${errors.address ? styles.inputError : ""}`} />
-                                    {errors.address && <span className={styles.errorMsg}>{errors.address}</span>}
+                                    <FieldError message={errors.address} />
                                 </div>
 
                                 <div className="form-field">
@@ -512,7 +607,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                                     <input name="number" value={form.number} onChange={handleChange}
                                         placeholder="123"
                                         className={`input ${errors.number ? styles.inputError : ""}`} />
-                                    {errors.number && <span className={styles.errorMsg}>{errors.number}</span>}
+                                    <FieldError message={errors.number} />
                                 </div>
 
                                 <div className="form-field">
@@ -545,8 +640,6 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                         </div>
 
                         <div className="form-field col-span-2">
-
-
                             <textarea
                                 name="description"
                                 value={form.description}
@@ -565,9 +658,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                                 </div>
                             )}
 
-                            {errors.description && (
-                                <span className={styles.errorMsg}>{errors.description}</span>
-                            )}
+                            <FieldError message={errors.description} />
                         </div>
                     </div>
                 </>
@@ -592,7 +683,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                                     value={contractOptions.find(opt => opt.value === form.contractType)}
                                     onChange={(opt) => setForm((prev) => ({ ...prev, contractType: opt.value }))}
                                 />
-                                {errors.contractType && <span className={styles.errorMsg}>{errors.contractType}</span>}
+                                <FieldError message={errors.contractType} />
                             </div>
 
                             <div className="form-field">
@@ -606,10 +697,16 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
 
                             <div className="form-field col-span-2">
                                 <label className="form-label">Carga horária semanal (h)</label>
-                                <input name="workload" type="number" value={form.workload} onChange={handleChange}
-                                    placeholder="Ex: 40"
-                                    className={`input ${errors.workload ? styles.inputError : ""}`} />
-                                {errors.workload && <span className={styles.errorMsg}>{errors.workload}</span>}
+                                <input
+                                    name="workload"
+                                    type="number"
+                                    value={form.workload}
+                                    onChange={handleChange}
+                                    onWheel={(e) => e.currentTarget.blur()}
+                                    placeholder="Ex: 44"
+                                    className={`input ${errors.workload ? styles.inputError : ""}`}
+                                />
+                                <FieldError message={errors.workload} />
                             </div>
                         </div>
                     </div>
@@ -635,17 +732,33 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
 
                         <div className="form-grid">
                             <div className="form-field salary-field">
-                                <label className="form-label">Salário (R$)</label>
+                                <label className="form-label">Salário mensal</label>
 
                                 <div className="salary-input-row">
-                                    <input
-                                        name="salary"
-                                        type="number"
-                                        value={form.salary}
-                                        onChange={handleChange}
-                                        placeholder="Ex: 8000"
-                                        className="input"
-                                    />
+                                    <div style={{ position: "relative", flex: 1 }}>
+                                        <span
+                                            style={{
+                                                position: "absolute",
+                                                left: 12,
+                                                top: "50%",
+                                                transform: "translateY(-50%)",
+                                                fontSize: 13,
+                                                color: "var(--text-3, #888)",
+                                                pointerEvents: "none",
+                                            }}
+                                        >
+                                            R$
+                                        </span>
+                                        <input
+                                            name="salary"
+                                            inputMode="numeric"
+                                            value={formatCurrencyDisplay(form.salary)}
+                                            onChange={handleSalaryChange}
+                                            placeholder="0,00"
+                                            className={`input ${errors.salary ? styles.inputError : ""}`}
+                                            style={{ paddingLeft: 32, width: "100%" }}
+                                        />
+                                    </div>
                                     <button
                                         type="button"
                                         onClick={handleSalarySuggestion}
@@ -660,6 +773,8 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                                     </button>
                                 </div>
 
+                                <FieldError message={errors.salary} />
+
                                 {salaryLoading && (
                                     <div className="salary-loading">
                                         <div className="salary-spinner" />
@@ -669,7 +784,18 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
 
                                 {salarySuggestion && !salaryLoading && (
                                     <div className="salary-suggestion-card">
-                                        <span className="salary-suggestion-title">Sugestão de mercado</span>
+                                        <span
+                                            className="salary-suggestion-title"
+                                            style={{ display: "inline-flex", alignItems: "center", gap: 4 }}
+                                        >
+                                            Sugestão de mercado
+                                            <span
+                                                title="Estes valores são estimativas de mercado. Consulte o piso salarial da categoria/sindicato antes de definir o valor final da vaga."
+                                                style={{ display: "inline-flex", cursor: "help", color: "var(--text-3, #999)" }}
+                                            >
+                                                <Info size={13} weight="bold" />
+                                            </span>
+                                        </span>
 
                                         <div className="salary-pills">
                                             {[
@@ -710,9 +836,15 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
 
                             <div className="form-field">
                                 <label className="form-label">Data limite</label>
-                                <input name="deadline" type="date" value={form.deadline}
-                                    onChange={handleChange} className={`input ${errors.deadline ? styles.inputError : ""}`} />
-                                {errors.deadline && <span className={styles.errorMsg}>{errors.deadline}</span>}
+                                <input
+                                    name="deadline"
+                                    type="date"
+                                    value={form.deadline}
+                                    min={new Date().toISOString().split("T")[0]}
+                                    onChange={handleChange}
+                                    className={`input ${errors.deadline ? styles.inputError : ""}`}
+                                />
+                                <FieldError message={errors.deadline} />
                             </div>
 
                             <div className="form-field">
@@ -798,9 +930,9 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                         <ArrowRight size={16} weight="bold" />
                     </button>
                 ) : (
-                    <button type="button" className="btn-primary" onClick={handleSubmit} disabled={loading}>
-                        {loading ? "Salvando..." : submitLabel}
-                        {!loading && <ArrowRight size={16} weight="bold" />}
+                    <button type="button" className="btn-primary" onClick={handleSubmit} disabled={isSubmitting}>
+                        {isSubmitting ? "Salvando..." : submitLabel}
+                        {!isSubmitting && <ArrowRight size={16} weight="bold" />}
                     </button>
                 )}
             </div>
