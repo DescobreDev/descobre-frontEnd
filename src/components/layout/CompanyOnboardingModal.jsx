@@ -8,6 +8,7 @@ import api from "../../services/api";
 import { CompanyIllustration } from "./illustrations/CompanyIllustration";
 import styles from "./CompanyOnboardingModal.module.css";
 import logo from "../../assets/LOGO-DESCOBRE-BRANCA.svg";
+import LogoUploadField from "../logoUploadField";
 
 const ESTADOS = [
   { value: "AC", label: "Acre" }, { value: "AL", label: "Alagoas" },
@@ -67,6 +68,9 @@ function CompanyOnboardingModal({ open, onClose, user, setUser }) {
   const modalBodyRef = useRef(null);
   const lastLookedUp = useRef("");
 
+  const [logoFile, setLogoFile] = useState(null);
+  const [logoPreview, setLogoPreview] = useState(null);
+
   const cnpjDigits = useMemo(() => rawCNPJ(form.cnpj), [form.cnpj]);
   const cnpjComplete = cnpjDigits.length === 14;
   const stepIndex = STEPS.indexOf(step);
@@ -79,6 +83,26 @@ function CompanyOnboardingModal({ open, onClose, user, setUser }) {
     setStep("welcome");
     setFeedback({ type: null, message: "" });
     onClose?.();
+  }
+
+  function handleLogoChange(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+      setFeedback({ type: "error", message: "A logo deve ser JPG, PNG ou WEBP." });
+      e.target.value = "";
+      return;
+    }
+    if (file.size > 2 * 1024 * 1024) {
+      setFeedback({ type: "error", message: "A logo deve ter no máximo 2 MB." });
+      e.target.value = "";
+      return;
+    }
+
+    setFeedback({ type: null, message: "" });
+    setLogoFile(file);
+    setLogoPreview(URL.createObjectURL(file));
   }
 
   function handleChange(e) {
@@ -161,12 +185,29 @@ function CompanyOnboardingModal({ open, onClose, user, setUser }) {
       });
 
       localStorage.setItem("token", response.data.token);
+
+      let logoFailed = false;
+      if (logoFile) {
+        try {
+          const formData = new FormData();
+          formData.append("logo", logoFile);
+          await api.post("/company/logo", formData);
+        } catch {
+          logoFailed = true;
+        }
+      }
+
       const updatedUser = await api.get("/users/me");
       setUser(updatedUser.data);
 
-      setFeedback({ type: "success", message: "Empresa cadastrada com sucesso!" });
+      setFeedback({
+        type: "success",
+        message: logoFailed
+          ? "Empresa cadastrada! Não foi possível enviar a logo, você pode enviá-la depois."
+          : "Empresa cadastrada com sucesso!",
+      });
       scrollToTop();
-      setTimeout(handleClose, 1500);
+      setTimeout(handleClose, logoFailed ? 3000 : 1500);
     } catch (err) {
       setFeedback({ type: "error", message: err.response?.data?.message || "Erro ao cadastrar empresa." });
       scrollToTop();
@@ -256,6 +297,20 @@ function CompanyOnboardingModal({ open, onClose, user, setUser }) {
                 <div className={styles.sectionHeader}>
                   <Buildings size={16} weight="bold" />
                   <span>Identificação</span>
+                </div>
+
+                <div className={`${styles.field} ${styles.colSpan2} mb-3`}>
+                  <LogoUploadField
+                    file={logoFile}
+                    preview={logoPreview}
+                    onChange={(file, previewUrl) => {
+                      setLogoFile(file);
+                      setLogoPreview(previewUrl);
+                    }}
+                    onError={(message) => {
+                      if (message) setFeedback({ type: "error", message });
+                    }}
+                  />
                 </div>
 
                 <div className={styles.grid}>

@@ -3,7 +3,7 @@ import { AuthContext } from "../context/authContext";
 import { Modal } from "../components/modal";
 import { CheckCircle, Lock, CreditCard, Buildings, StarIcon, LightningIcon, CrownIcon } from "@phosphor-icons/react";
 import api from "../services/api";
-import styles from "./AsaasPaymentWizard.module.css";
+import styles from "./CSS/AsaasPaymentWizard.module.css";
 
 // ─── Ícones inline ────────────────────────────────────────────────────────────
 const SpinnerIcon = () => (
