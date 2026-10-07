@@ -1,8 +1,11 @@
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect, useRef } from "react";
 import { NavLink } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
 import api from "../services/api";
 import "./CSS/myCompany.css";
+
+const LOGO_MAX_BYTES = 2 * 1024 * 1024;
+const LOGO_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 const fmtCNPJ = (v = "") =>
     v.replace(/\D/g, "")
@@ -19,6 +22,29 @@ function maskPhone(value) {
 }
 function maskCEP(value) {
     return value.replace(/\D/g, '').slice(0, 8).replace(/^(\d{5})(\d)/, '$1-$2');
+}
+
+function initials(name = "") {
+    return name.trim().split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "?";
+}
+
+function buildForm(company = {}) {
+    return {
+        name: company.name ?? "",
+        email: company.email ?? "",
+        phone: company.phone ?? "",
+        cnpj: company.cnpj ?? "",
+        site: company.site ?? "",
+        cep: company.cep ?? "",
+        address: company.address ?? "",
+        district: company.district ?? "",
+        number: company.number ?? "",
+        complement: company.complement ?? "",
+        city: company.city ?? "",
+        state: company.state ?? "",
+        about: company.about ?? "",
+        employees: company.employees ?? "",
+    };
 }
 
 const planColors = {
@@ -87,27 +113,22 @@ export default function MyCompany() {
     const planStyle = planColors[plan?.name] ?? planColors.Basic;
 
     const [editing, setEditing] = useState(false);
+    const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
+    const [saveError, setSaveError] = useState("");
 
     const [usage, setUsage] = useState(null);
     const [usageLoading, setUsageLoading] = useState(true);
 
-    const [form, setForm] = useState({
-        name: company.name ?? "",
-        email: company.email ?? "",
-        phone: company.phone ?? "",
-        cnpj: company.cnpj ?? "",
-        site: company.site ?? "",
-        cep: company.cep ?? "",
-        address: company.address ?? "",
-        district: company.district ?? "",
-        number: company.number ?? "",
-        complement: company.complement ?? "",
-        city: company.city ?? "",
-        state: company.state ?? "",
-        about: company.about ?? "",
-        employees: company.employees ?? "",
-    });
+    const [form, setForm] = useState(() => buildForm(company));
+
+    // Logo: a atual (vinda do servidor) e a nova (escolhida, ainda não enviada)
+    const fileInputRef = useRef(null);
+    const [logoUrl, setLogoUrl] = useState(null);
+    const [logoBroken, setLogoBroken] = useState(false);
+    const [logoFile, setLogoFile] = useState(null);
+    const [logoPreview, setLogoPreview] = useState(null);
+    const [logoError, setLogoError] = useState("");
 
     useEffect(() => {
         async function fetchUsage() {
@@ -123,24 +144,112 @@ export default function MyCompany() {
         fetchUsage();
     }, []);
 
+    useEffect(() => {
+        async function fetchLogo() {
+            try {
+                const { data } = await api.get("/company/logo");
+                setLogoUrl(data.logoUrl ?? null);
+                setLogoBroken(false);
+            } catch (err) {
+                console.error("Erro ao buscar logo:", err);
+            }
+        }
+        fetchLogo();
+    }, []);
+
+    // Libera da memória a prévia anterior quando troca de imagem ou sai da tela
+    useEffect(() => {
+        return () => {
+            if (logoPreview) URL.revokeObjectURL(logoPreview);
+        };
+    }, [logoPreview]);
+
     const set = (k) => (e) => {
         let v = e.target.value;
         if (k === "cnpj") v = fmtCNPJ(v);
-        if (k === "phone") v = fmtPhone(v);
-        if (k === "cep") v = fmtCEP(v);
+        if (k === "phone") v = maskPhone(v);
+        if (k === "cep") v = maskCEP(v);
         setForm((p) => ({ ...p, [k]: v }));
     };
 
+    const clearLogoSelection = () => {
+        setLogoFile(null);
+        setLogoPreview(null);
+        setLogoError("");
+        if (fileInputRef.current) fileInputRef.current.value = "";
+    };
+
+    const handleLogoChange = (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        if (!LOGO_TYPES.includes(file.type)) {
+            setLogoError("A logo deve ser JPG, PNG ou WEBP.");
+            e.target.value = "";
+            return;
+        }
+        if (file.size > LOGO_MAX_BYTES) {
+            setLogoError("A logo deve ter no máximo 2 MB.");
+            e.target.value = "";
+            return;
+        }
+
+        setLogoError("");
+        setLogoFile(file);
+        setLogoPreview(URL.createObjectURL(file));
+    };
+
+    const handleCancel = () => {
+        setForm(buildForm(company));
+        clearLogoSelection();
+        setSaveError("");
+        setEditing(false);
+    };
+
     const handleSave = async () => {
+        setSaving(true);
+        setSaveError("");
+
         try {
-            await api.post("/company/update", form);
-            setEditing(false);
-            setSaved(true);
-            setTimeout(() => setSaved(false), 3000);
-            window.location.reload();
+            await api.post("/company/update", {
+                ...form,
+                employees: Number(form.employees),
+            });
         } catch (error) {
             console.error(error);
+            setSaveError(error.response?.data?.message || "Não foi possível salvar as alterações.");
+            setSaving(false);
+            return;
         }
+
+        // Logo é opcional: os dados da empresa já foram salvos acima
+        let logoFailed = false;
+        if (logoFile) {
+            try {
+                const formData = new FormData();
+                formData.append("logo", logoFile);
+                const { data } = await api.post("/company/logo", formData);
+                setLogoUrl(data.logoUrl ?? null);
+                setLogoBroken(false);
+                clearLogoSelection();
+            } catch (error) {
+                console.error("Erro ao enviar logo:", error);
+                logoFailed = true;
+                setSaveError(
+                    error.response?.data?.message ||
+                    "Os dados foram salvos, mas não foi possível enviar a logo. Tente novamente."
+                );
+            }
+        }
+
+        setSaving(false);
+
+        if (logoFailed) return; // fica na tela, com a logo escolhida, para tentar de novo
+
+        setEditing(false);
+        setSaved(true);
+        setTimeout(() => setSaved(false), 3000);
+        window.location.reload();
     };
 
     const handleFetchCNPJ = async () => {
@@ -172,6 +281,7 @@ export default function MyCompany() {
     };
 
     const inputClass = `input ${editing ? "mycompany-input--editing" : "mycompany-input--readonly"}`;
+    const shownLogo = logoPreview || (!logoBroken ? logoUrl : null);
 
     return (
         <div className="page-content">
@@ -184,19 +294,19 @@ export default function MyCompany() {
                 <div className="mycompany-header__actions">
                     {editing ? (
                         <>
-                            <button className="btn-secondary" onClick={() => setEditing(false)}>
+                            <button className="btn-secondary" onClick={handleCancel} disabled={saving}>
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                                     <path d="M18 6L6 18M6 6l12 12" />
                                 </svg>
                                 Cancelar
                             </button>
-                            <button className="btn-primary" onClick={handleSave}>
+                            <button className="btn-primary" onClick={handleSave} disabled={saving}>
                                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
                                     <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
                                     <polyline points="17 21 17 13 7 13 7 21" />
                                     <polyline points="7 3 7 8 15 8" />
                                 </svg>
-                                Salvar alterações
+                                {saving ? "Salvando..." : "Salvar alterações"}
                             </button>
                         </>
                     ) : (
@@ -220,6 +330,17 @@ export default function MyCompany() {
                 </div>
             )}
 
+            {saveError && (
+                <div role="alert" className="feedback-banner feedback-error">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                    {saveError}
+                </div>
+            )}
+
             <div className="mycompany-grid">
                 <div className="mycompany-col-left">
                     <Section title="Identidade da empresa" subtitle="Nome, CNPJ e informações básicas"
@@ -233,11 +354,78 @@ export default function MyCompany() {
                     >
 
                         <div className="form-grid">
+                            <Field label="Logo da empresa" span2>
+                                <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                                    <div
+                                        style={{
+                                            width: 88,
+                                            height: 88,
+                                            flexShrink: 0,
+                                            borderRadius: 16,
+                                            border: "1px solid #e4e9f0",
+                                            background: "#f4f6f9",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            justifyContent: "center",
+                                            overflow: "hidden",
+                                        }}
+                                    >
+                                        {shownLogo ? (
+                                            <img
+                                                src={shownLogo}
+                                                alt="Logo da empresa"
+                                                onError={() => setLogoBroken(true)}
+                                                style={{ width: "100%", height: "100%", objectFit: "contain" }}
+                                            />
+                                        ) : (
+                                            <span style={{ fontWeight: 700, fontSize: 26, color: "#6b7684" }}>
+                                                {initials(form.name)}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {editing && (
+                                        <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                                            <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                                                <button
+                                                    type="button"
+                                                    className="btn-secondary"
+                                                    onClick={() => fileInputRef.current?.click()}
+                                                    disabled={saving}
+                                                >
+                                                    {shownLogo ? "Trocar logo" : "Enviar logo"}
+                                                </button>
+                                                {logoFile && (
+                                                    <button
+                                                        type="button"
+                                                        className="btn-secondary"
+                                                        onClick={clearLogoSelection}
+                                                        disabled={saving}
+                                                    >
+                                                        Desfazer
+                                                    </button>
+                                                )}
+                                            </div>
+                                            <span className="mycompany-char-count">JPG, PNG ou WEBP, até 2 MB</span>
+                                            <input
+                                                ref={fileInputRef}
+                                                type="file"
+                                                accept="image/jpeg,image/png,image/webp"
+                                                onChange={handleLogoChange}
+                                                style={{ display: "none" }}
+                                            />
+                                        </div>
+                                    )}
+                                </div>
+                                {logoError && (
+                                    <p style={{ color: "#dc2626", fontSize: 13, marginTop: 6 }}>{logoError}</p>
+                                )}
+                            </Field>
                             <Field label="Razão social" span2>
                                 <input className={inputClass} disabled={!editing} value={form.name} onChange={set("name")} placeholder="Nome da empresa" />
                             </Field>
                             <Field label="CNPJ">
-                                <input className="input mycompany-input--readonly" disabled="true" value={fmtCNPJ(form.cnpj)} onChange={set("cnpj")} placeholder="00.000.000/0000-00" />
+                                <input className="input mycompany-input--readonly" disabled value={fmtCNPJ(form.cnpj)} onChange={set("cnpj")} placeholder="00.000.000/0000-00" />
                             </Field>
                             <Field label="Nº de funcionários">
                                 <input className={inputClass} disabled={!editing} type="number" value={form.employees} onChange={set("employees")} placeholder="Ex: 10" />
@@ -319,7 +507,6 @@ export default function MyCompany() {
                                     `Até ${plan.maxJobs} vagas ativas`,
                                     `${plan.maxAiResume} resumos com IA/mês`,
                                     `${plan.maxAiSalary} análises salariais com IA`,
-                                    // `${plan.maxInterviews} entrevistas com IA`,
                                 ].map((f) => (
                                     <div key={f} className="mycompany-plan__feature">
                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={planStyle.pill} strokeWidth="2.5">
@@ -367,12 +554,6 @@ export default function MyCompany() {
                                             total={usage.aiSalaryUsed.limit}
                                             color="#6366f1"
                                         />
-                                        {/* <UsageBar
-                                            label="Entrevistas com IA"
-                                            used={usage.interviewsUsed.used}
-                                            total={usage.interviewsUsed.limit}
-                                            color="#6366f1"
-                                        /> */}
                                     </>
                                 ) : (
                                     <p className="mycompany-consumption__loading">Dados indisponíveis.</p>
