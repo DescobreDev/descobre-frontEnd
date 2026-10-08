@@ -43,6 +43,7 @@ import { PlanGate } from "../../hooks/planGate";
 import { Modal } from "../../components/modal";
 import api from "../../services/api";
 import styles from "./CSS/jobsCandidateDetail.module.css";
+import { CandidateAvatar } from "../../components/CandidateAvatar/CandidateAvatar";
 
 const STATUS_LABELS = {
   RECEBIDA: "Aguardando",
@@ -1487,7 +1488,12 @@ export default function JobsCandidateDetail() {
             <div className={styles.heroTop}>
               <div className={styles.heroLeft}>
                 <div className={styles.avatarWrap}>
-                  <div className={styles.avatar}>{initials(candidate.name)}</div>
+                  <CandidateAvatar
+                    name={candidate.name}
+                    avatar={candidate.avatar}
+                    legacyUrl={candidate.avatarUrl}
+                    size={64}
+                  />
                   <span className={styles.statusDot} style={{ background: statusStyle.dot }} />
                 </div>
                 <div>

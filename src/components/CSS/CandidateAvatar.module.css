@@ -1,0 +1,12 @@
+.img {
+  border-radius: 50%;
+  object-fit: cover;
+  display: block;
+}
+
+.fallback {
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+}
