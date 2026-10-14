@@ -3,6 +3,7 @@ import { NavLink } from "react-router-dom";
 import { AuthContext } from "../context/authContext";
 import api from "../services/api";
 import "./CSS/myCompany.css";
+import CompanyLogo from "../components/CompanyLogo";
 
 const LOGO_MAX_BYTES = 2 * 1024 * 1024;
 const LOGO_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -22,10 +23,6 @@ function maskPhone(value) {
 }
 function maskCEP(value) {
     return value.replace(/\D/g, '').slice(0, 8).replace(/^(\d{5})(\d)/, '$1-$2');
-}
-
-function initials(name = "") {
-    return name.trim().split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join("").toUpperCase() || "?";
 }
 
 function buildForm(company = {}) {
@@ -122,7 +119,6 @@ export default function MyCompany() {
 
     const [form, setForm] = useState(() => buildForm(company));
 
-    // Logo: a atual (vinda do servidor) e a nova (escolhida, ainda não enviada)
     const fileInputRef = useRef(null);
     const [logoUrl, setLogoUrl] = useState(null);
     const [logoBroken, setLogoBroken] = useState(false);
@@ -157,7 +153,6 @@ export default function MyCompany() {
         fetchLogo();
     }, []);
 
-    // Libera da memória a prévia anterior quando troca de imagem ou sai da tela
     useEffect(() => {
         return () => {
             if (logoPreview) URL.revokeObjectURL(logoPreview);
@@ -281,7 +276,7 @@ export default function MyCompany() {
     };
 
     const inputClass = `input ${editing ? "mycompany-input--editing" : "mycompany-input--readonly"}`;
-    const shownLogo = logoPreview || (!logoBroken ? logoUrl : null);
+    const shownLogo = logoPreview || logoUrl;
 
     return (
         <div className="page-content">
@@ -356,33 +351,7 @@ export default function MyCompany() {
                         <div className="form-grid">
                             <Field label="Logo da empresa" span2>
                                 <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                                    <div
-                                        style={{
-                                            width: 88,
-                                            height: 88,
-                                            flexShrink: 0,
-                                            borderRadius: 16,
-                                            border: "1px solid #e4e9f0",
-                                            background: "#f4f6f9",
-                                            display: "flex",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                            overflow: "hidden",
-                                        }}
-                                    >
-                                        {shownLogo ? (
-                                            <img
-                                                src={shownLogo}
-                                                alt="Logo da empresa"
-                                                onError={() => setLogoBroken(true)}
-                                                style={{ width: "100%", height: "100%", objectFit: "contain" }}
-                                            />
-                                        ) : (
-                                            <span style={{ fontWeight: 700, fontSize: 26, color: "#6b7684" }}>
-                                                {initials(form.name)}
-                                            </span>
-                                        )}
-                                    </div>
+                                    <CompanyLogo name={form.name} src={shownLogo} size={88} />
 
                                     {editing && (
                                         <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>

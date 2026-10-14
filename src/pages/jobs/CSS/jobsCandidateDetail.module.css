@@ -65,6 +65,12 @@
   line-height: 1.2;
 }
 
+.itemPeriod {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+
 .pageSubtitle {
   font-size: 12px;
   color: var(--text-muted);
@@ -73,9 +79,6 @@
   align-items: center;
 }
 
-/* ════════════════════════════════
-   FAIXAS DE ESTADO (banner de vaga encerrada)
-════════════════════════════════ */
 .hiredBanner {
   display: flex;
   align-items: center;

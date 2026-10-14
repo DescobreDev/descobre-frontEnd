@@ -1,5 +1,5 @@
 import { useState } from "react";
-import styles from "../CSS/CandidateAvatar.module.css";
+import styles from "./CSS/CandidateAvatar.module.css";
 
 const initials = (name = "") =>
   name

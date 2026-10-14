@@ -43,7 +43,7 @@ import { PlanGate } from "../../hooks/planGate";
 import { Modal } from "../../components/modal";
 import api from "../../services/api";
 import styles from "./CSS/jobsCandidateDetail.module.css";
-import { CandidateAvatar } from "../../components/CandidateAvatar/CandidateAvatar";
+import { CandidateAvatar } from "../../components/CandidateAvatar";
 
 const STATUS_LABELS = {
   RECEBIDA: "Aguardando",
@@ -562,6 +562,24 @@ function ApplicationOverviewCard({ status, candidate }) {
   );
 }
 
+const formatMonthYear = (value) => {
+  if (!value) return null;
+  const d = new Date(value);
+  if (isNaN(d)) return null;
+  const month = String(d.getUTCMonth() + 1).padStart(2, "0");
+  return `${month}/${d.getUTCFullYear()}`;
+};
+
+const formatEducationPeriod = (edu) => {
+  const start = formatMonthYear(edu.startDate);
+  const end = edu.current ? "Cursando" : formatMonthYear(edu.endDate);
+
+  if (start && end) return `${start} – ${end}`;
+  if (start) return start;
+  if (end) return end;
+  return null;
+};
+
 function CurriculoTab({ resume }) {
   if (!resume) return (
     <div className={styles.emptyState}>
@@ -594,15 +612,20 @@ function CurriculoTab({ resume }) {
         <div className={styles.section}>
           <SectionHeading icon={GraduationCap}>Formação</SectionHeading>
           <div className={styles.itemList}>
-            {resume.educations.map((edu) => (
-              <div key={edu.id} className={styles.itemCard}>
-                <div className={styles.itemAccent} style={{ background: "#8b5cf6" }} />
-                <div className={styles.itemBody}>
-                  <p className={styles.itemTitle}>{edu.course}</p>
-                  <p className={styles.itemSub}>{edu.institution}</p>
+            {resume.educations.map((edu) => {
+              const period = formatEducationPeriod(edu);
+
+              return (
+                <div key={edu.id} className={styles.itemCard}>
+                  <div className={styles.itemAccent} style={{ background: "#8b5cf6" }} />
+                  <div className={styles.itemBody}>
+                    <p className={styles.itemTitle}>{edu.course}</p>
+                    <p className={styles.itemSub}>{edu.institution}</p>
+                    {period && <p className={styles.itemPeriod}>{period}</p>}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
