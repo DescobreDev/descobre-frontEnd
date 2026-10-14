@@ -9,7 +9,6 @@ export default function JobsEdit() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [job, setJob] = useState(null);
-  const [sector, setSector] = useState(null);
   const [position, setPosition] = useState(null);
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
@@ -19,7 +18,6 @@ export default function JobsEdit() {
     api.get(`/jobs/${id}`)
       .then((res) => {
         setJob(res.data[0]);
-        setSector(res.data[1])
         setPosition(res.data[2])
       })
       .catch(() => setError("Vaga não encontrada."))
@@ -61,7 +59,7 @@ export default function JobsEdit() {
           <div className="feedback-banner feedback-error">{error}</div>
         )}
 
-        {job && sector != null && position != null && (
+        {job && position != null && (
           <JobForm
             initialData={{
               ...job,
@@ -71,7 +69,7 @@ export default function JobsEdit() {
                 : null,
 
               position: position
-                ? { value: position.id, label: position.name }
+                ? { value: position.id, label: position.name, sectorName: position.sector?.name ?? null }
                 : null,
             }}
             onSubmit={handleSubmit}

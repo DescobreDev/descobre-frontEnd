@@ -5,7 +5,7 @@ import {
     Sparkle, Info, WarningCircle,
 } from "@phosphor-icons/react";
 import Select from "../../components/select";
-import SelectSearch from "../../components/selectSearch";
+import PositionSearch from "../../components/positionSearch"
 import { AuthContext } from "../../context/authContext";
 import api from "../../services/api";
 import styles from "./CSS/jobs.module.css";
@@ -141,12 +141,6 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
     const [formError, setFormError] = useState("");
     const [generatingDescription, setGeneratingDescription] = useState(false);
     const [submitting, setSubmitting] = useState(false);
-
-    const [sectorOptions, setSectorOptions] = useState([]);
-    const [positionOptions, setPositionOptions] = useState([]);
-    const [loadingSector, setLoadingSector] = useState(true);
-    const [loadingPositions, setLoadingPositions] = useState(false);
-
     const updateVersionInfo = updateVersion ?? false;
 
     const [salaryLoading, setSalaryLoading] = useState(false);
@@ -157,14 +151,14 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
     }
 
     async function handleSalarySuggestion() {
-        if (!form.position || !form.sector || !form.title) return;
+        if (!form.position || !form.title) return;
         setSalaryLoading(true);
         setSalarySuggestion(null);
         try {
             const { data } = await api.post('/ai/salarySuggestion', {
                 title: form.title,
-                sector: form.sector,
-                position: form.position,
+                sector: form.position?.sectorName ?? "",
+                position: form.position?.label,
                 workFormat: form.workFormat,
                 city: form.city,
                 state: form.state,
@@ -178,38 +172,9 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
         }
     }
 
-    useEffect(() => {
-        api.get("/jobs/sector")
-            .then((res) => {
-                setSectorOptions(res.data.map((a) => ({ value: a.id, label: a.name })));
-            })
-            .catch(() => { })
-            .finally(() => setLoadingSector(false));
-    }, []);
-
-    async function fetchPositions(sectorId) {
-        if (!sectorId) return setPositionOptions([]);
-        setLoadingPositions(true);
-        try {
-            const res = await api.get(`jobs/sector/${sectorId}/positions`);
-            setPositionOptions(res.data.positions.map((p) => ({ value: p.id, label: p.name })));
-        } catch {
-            setPositionOptions([]);
-        } finally {
-            setLoadingPositions(false);
-        }
-    }
-
-    useEffect(() => {
-        if (initialData?.sector?.value) {
-            fetchPositions(initialData.sector.value);
-        }
-    }, []);
-
     const [form, setForm] = useState({
         title: initialData?.title ?? "",
         description: initialData?.description ?? "",
-        sector: initialData?.sector ?? null,
         position: initialData?.position ?? null,
         contractType: initialData?.contractType ?? "",
         jobType: initialData?.jobType ?? "STANDARD",
@@ -236,13 +201,6 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
             .then((res) => setBenefits(res.data))
             .catch(() => { });
     }, []);
-
-    function handleSectorChange(option) {
-        setForm((prev) => ({ ...prev, sector: option, position: null }));
-        setPositionOptions([]);
-        fetchPositions(option?.value);
-        if (errors.sector) setErrors((prev) => ({ ...prev, sector: "" }));
-    }
 
     function handlePositionChange(option) {
         setForm((prev) => ({ ...prev, position: option }));
@@ -301,11 +259,10 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
 
     // ── Gerar descrição com IA ──
     async function handleGenerateDescription() {
-        if (!form.sector || !form.position || !form.title) {
+        if (!form.position || !form.title.trim()) {
             setErrors((prev) => ({
                 ...prev,
                 ...(!form.title.trim() && { title: "Preencha o título antes de gerar" }),
-                ...(!form.sector && { sector: "Selecione o setor antes de gerar" }),
                 ...(!form.position && { position: "Selecione o cargo antes de gerar" }),
             }));
             setFormError("Preencha os campos obrigatórios destacados abaixo para gerar a descrição.");
@@ -316,7 +273,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
         try {
             const res = await api.post("/ai/vacancySummary", {
                 title: form.title,
-                sector: form.sector?.label,
+                sector: form.position?.sectorName ?? "",
                 position: form.position?.label,
                 workFormat: form.workFormat,
                 city: form.city,
@@ -336,7 +293,6 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
     function validateStep1() {
         const errs = {};
         if (!form.title.trim()) errs.title = "Título obrigatório";
-        if (!form.sector) errs.sector = "Setor obrigatório";
         if (!form.position) errs.position = "Cargo obrigatório";
         if (!form.description.trim()) errs.description = "Descrição obrigatória";
         if (!form.workFormat) errs.workFormat = "Formato obrigatório";
@@ -397,11 +353,10 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
         }
         setFormError("");
 
-        const { sector, position, ...rest } = form;
+        const { position, ...rest } = form;
 
         const payload = {
             ...rest,
-            sectorId: sector?.value ?? null,
             positionId: position?.value ?? null,
             workload: Number(rest.workload),
             salary: rest.salary !== "" && rest.salary !== null ? Number(rest.salary) : null,
@@ -492,30 +447,14 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                                     </div>
                                 </div>
 
-                                {/* Setor + Cargo */}
-                                <div className="form-field">
-                                    <label className="form-label">Setor</label>
-                                    <SelectSearch
-                                        name="sector"
-                                        options={sectorOptions}
-                                        value={form.sector}
-                                        onChange={handleSectorChange}
-                                        placeholder={loadingSector ? "Carregando..." : "Ex: Tecnologia"}
-                                        disabled={updateVersionInfo}
-                                    />
-                                    <FieldError message={errors.sector} />
-                                </div>
-
-                                <div className="form-field">
-                                    <label className="form-label">Cargo / Nível</label>
-                                    <SelectSearch
-                                        name="position"
-                                        options={positionOptions}
+                                <div className="form-field col-span-2">
+                                    <label className="form-label">Cargo</label>
+                                    <PositionSearch
                                         value={form.position}
                                         onChange={handlePositionChange}
-                                        placeholder={loadingPositions ? "Carregando cargos..." : "Ex: Analista Pleno"}
-                                        disabled={updateVersionInfo || !form.sector || loadingPositions}
-                                        disabledPlaceholder="Selecione um setor primeiro"
+                                        placeholder="Ex: Caixa de restaurante"
+                                        disabled={updateVersionInfo}
+                                        hasError={!!errors.position}
                                     />
                                     <FieldError message={errors.position} />
                                 </div>
@@ -631,7 +570,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                                     type="button"
                                     className="btn-ai-salary"
                                     onClick={handleGenerateDescription}
-                                    disabled={generatingDescription || !form.position || !form.sector}
+                                    disabled={generatingDescription || !form.position}
                                 >
                                     <Sparkle size={14} weight="duotone" />
                                     {generatingDescription ? "Gerando..." : "Gerar com IA"}
@@ -762,7 +701,7 @@ export function JobForm({ initialData, onSubmit, loading, submitLabel = "Salvar 
                                     <button
                                         type="button"
                                         onClick={handleSalarySuggestion}
-                                        disabled={salaryLoading || !form.position || !form.sector}
+                                        disabled={salaryLoading || !form.position}
                                         className="btn-ai-salary"
                                     >
                                         <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">

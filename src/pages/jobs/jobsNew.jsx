@@ -71,7 +71,7 @@ export default function JobsNew() {
               <div>
                 <p className={styles.warning_modal_card_title}>Campos permanentes</p>
                 <p className={styles.warning_modal_card_subtitle}>
-                  "Setor" e "Cargo/Nível" não poderão ser alterados após a criação.
+                  O "Cargo" não poderá ser alterado após a criação.
                 </p>
               </div>
             </div>
