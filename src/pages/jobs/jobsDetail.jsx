@@ -96,8 +96,8 @@ export default function JobsDetail() {
         api.get(`/jobs/${id}`)
             .then((res) => {
                 setJob(res.data[0]);
-                setSector(res.data[1].name);
-                setPosition(res.data[2].name);
+                setSector(res.data[1]?.name ?? null);
+                setPosition(res.data[2]?.name ?? null);
             })
             .catch(() => setError("Vaga não encontrada."))
             .finally(() => setLoading(false));
@@ -196,8 +196,12 @@ export default function JobsDetail() {
                     <button className={styles.breadcrumbLink} onClick={() => navigate("/jobs")}>
                         Vagas
                     </button>
-                    <span className={styles.breadcrumbSep}>›</span>
-                    <span>{sector}</span>
+                    {sector && (
+                        <>
+                            <span className={styles.breadcrumbSep}>›</span>
+                            <span>{sector}</span>
+                        </>
+                    )}
                     <span className={styles.breadcrumbSep}>›</span>
                     <span className={styles.breadcrumbCurrent}>{job.title}</span>
                 </nav>
@@ -218,8 +222,12 @@ export default function JobsDetail() {
                                 <div className={styles.heroTitleBlock}>
                                     <h1 className={styles.heroTitle}>{job.title}</h1>
                                     <p className={styles.heroSubtitle}>
-                                        <span className={styles.heroSubtitleAccent}>{sector}</span>
-                                        <span className={styles.heroSubtitleDivider}>·</span>
+                                        {sector && (
+                                            <>
+                                                <span className={styles.heroSubtitleAccent}>{sector}</span>
+                                                <span className={styles.heroSubtitleDivider}>·</span>
+                                            </>
+                                        )}
                                         {position}
                                     </p>
 
@@ -368,7 +376,7 @@ export default function JobsDetail() {
                 )}
 
             </div>
-        </div>
+            </div>
         </PlanGate>
     );
 }

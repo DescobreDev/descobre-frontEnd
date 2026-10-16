@@ -34,7 +34,7 @@ export default function JobsNew() {
     try {
       const res = await api.post("/jobs", data);
 
-      console.log('resposta do cabloco', res);
+      // console.log('resposta do cabloco', res);
 
       const jobId = res.data.id;
 
